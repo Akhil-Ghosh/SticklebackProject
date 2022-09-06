@@ -1,0 +1,54 @@
+---
+title: "Stickleback EDA"
+author: "Akhil Ghosh"
+date: "2022-09-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Loading Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(dplyr)
+library(DT)
+
+
+```
+
+
+```{r}
+stickle <- read_csv('stickleback_fossil_vs_extant.csv')
+summary(stickle)
+#seems every column outside of ID has missing data to some extent
+#Highest amount of NA's is cle.sc column
+#least amount of NAs in mds column
+```
+
+
+```{r}
+datatable(stickle)
+
+
+#Should I split up univID?
+#Maybe, maybe not
+```
+```{r}
+stickles <- datatable(stickle)
+grepl("M",stickle$univID, fixed=TRUE)
+stickle$univID
+stick <- stickle %>% 
+  mutate(gender = ifelse(grepl("M",univID,fixed=TRUE),"M","F"))
+
+table(stick$gender)
+#Only 130 Males?????
+#sheesh
+
+
+```
+
+
