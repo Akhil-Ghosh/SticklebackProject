@@ -12,9 +12,6 @@ knitr::opts_chunk$set(echo = TRUE)
 #Loading Libraries
 ```{r}
 library(tidyverse)
-library(ggplot2)
-library(readr)
-library(dplyr)
 library(DT)
 
 
@@ -41,14 +38,384 @@ datatable(stickle)
 stickles <- datatable(stickle)
 grepl("M",stickle$univID, fixed=TRUE)
 stickle$univID
+
 stick <- stickle %>% 
-  mutate(gender = ifelse(grepl("M",univID,fixed=TRUE),"M","F"))
+  mutate(gender = case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    )
+  )
+           # ifelse(grepl("M",univID,fixed=TRUE),"M","F"))
 
 table(stick$gender)
-#Only 130 Males?????
-#sheesh
+#Only 284 extant fish
+
+summary(stick)
+
+summary(as.factor(stick$gender))
+
+
+
 
 
 ```
+```{r}
+install.packages("mice")
+library(mice)
+
+md.pattern(stickle)
+
+
+```
+
+
+```{r}
+# devtools::install_github("agnesdeng/mixgb")
+
+library(mixgb)
+
+stick_clean <- stick %>% 
+  select(.,-univID) %>% 
+  mutate(ips = as.factor(ips))
+  
+stick_clean <- data_clean(stick_clean)
+stick_clean
+```
+```{r}
+# imputed_data <- mixgb(data = stick_clean, m = 5)
+# imputed_data
+
+cv.results <- mixgb_cv(data = stick_clean, verbose = FALSE)
+cv.results$response
+cv.results$best.nrounds
+
+cv.results2 <- mixgb_cv(data = stick_clean, nfold = 10, nrounds = 100,
+    early_stopping_rounds = 1, response = "gender", verbose = FALSE)
+cv.results2$best.nrounds
+
+imputed_data2 <- mixgb(data = stick_clean, m = 5, nrounds = 10)
+imputed_data3 <- mixgb(data = stick_clean, m = 5, nrounds = 30)
+imputed_data3
+
+```
+
+```{r}
+
+#Here I try to impute every variable in the data set and then use the imputed dataset to predict gender variable. Through this I can cross validate and avoid data cleaning issues.
+
+#Just a prelim thing I wanted to see the accuracy
+#For this, I will be focusing on the extant dataset.
+
+summary(stick_clean)
+
+
+non_gender <- stick_clean %>% 
+  select(-gender)
+
+cv.results_ <- mixgb_cv(data = non_gender, verbose=FALSE)
+cv.results_$best.nrounds
+cv.results_$response
+
+imputed_data_no_gender <- mixgb(data = no, m = 5, nrounds = 100)
+imputed_data_ng <- mixgb(data = non_gender, m=5, nrounds = 100)
+
+imputed_data_ng
+
+
+```
+
+
+```{r}
+best_rounds <- c()
+for(i in 1:50){
+cv.results_ <- mixgb_cv(data = non_gender, verbose=FALSE,nrounds=200)
+best_rounds <-append(best_rounds, cv.results_$best.nrounds)
+if(best_rounds[i]==max(best_rounds)){
+  maxresponse = cv.results_$response
+  maxRounds <- cv.results_$best.nrounds
+}
+
+}
+
+max(best_rounds)
+maxresponse
+
+
+cv.results_ <- mixgb_cv(data = non_gender,response="stl", verbose=FALSE,nrounds=200)
+cv.results_$best.nrounds
+
+
+parallel::detectCores()
+n.cores <- parallel::detectCores() - 1
+
+
+my.cluster <- parallel::makeCluster(
+  n.cores, 
+  type = "FORK"
+  )
+doParallel::registerDoParallel(cl = my.cluster)
+foreach::getDoParRegistered()
+foreach::getDoParWorkers()
+
+
+best_rounds<-
+x <- foreach(
+  i = 1:100, 
+  .combine = 'c'
+) %dopar% {
+  cv.results_ <- mixgb_cv(data = non_gender, verbose=FALSE,nrounds=200)
+  best_rounds <-append(best_rounds, cv.results_$best.nrounds)
+}  
+best_rounds
+max(x)
+```
+
+
+```{r}
+library(tidymodels)
+install.packages("janitor")
+stickelback_quang <- read_csv("https://www.dropbox.com/s/hpsn643fd8urph2/stickleback_fossil_vs_extant.csv?dl=1") %>% 
+  janitor::clean_names() %>% 
+  separate(univ_id, 
+           into = c("lake", "body_type", "gender", "id"), 
+           sep = "\\.",
+           remove = FALSE)
+
+stickelback_quang
+
+
+extant_quan <- stickelback_quang %>%
+  filter(lake != "Fos") %>% 
+  select(gender, stl, ips, mds, mdf, maf, mav, mcv, mpt, ips_prop, 
+         contains("_sc"), str_remove(names(stickelback_quang)[24:32], "_sc")) %>% 
+  mutate(across(where(is_character), as_factor))
+extant_quan
+
+
+
+```
+```{r}
+my_data <- imputed_data_ng[1]
+imputed_data_ng
+
+my_data_new <- cbind(my_data, stick_clean[c("gender")])
+
+my_data_extant <- my_data_new %>% 
+  filter(gender == "Female" | gender=="Male") %>% 
+  mutate(gender=as.factor(case_when(gender=="Female" ~ "F",
+                   gender=="Male" ~ "M"
+    
+          )
+         )
+  )
+
+
+
+```
+
+```{r}
+all_cores <- parallel::detectCores(logical = FALSE)
+library(doParallel)
+
+cl <- makePSOCKcluster(all_cores)
+registerDoParallel(cl)
+```
+
+
+
+
+
+
+
+```{r}
+set.seed(100)
+
+split <- initial_split(my_data_extant, prop = 0.7, strata = gender)
+
+train <- training(split)
+test <- testing(split)
+
+train_fold <- vfold_cv(train, v = 10, strata = gender)
+train_fold$splits
+
+xg_spec <- boost_tree(trees = tune(),
+                      tree_depth = tune(), 
+                      min_n = tune(), 
+                      loss_reduction = tune(),
+                      sample_size = tune(), 
+                      mtry = tune(),
+                      learn_rate = tune()) %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification")
+
+
+xg_rec <- recipe(gender ~., data = train) %>% 
+  step_dummy(all_nominal_predictors())
+
+xg_rec$var_info
+
+xg_wf <- workflow() %>% 
+  add_model(xg_spec) %>% 
+  add_recipe(xg_rec)
+
+
+set.seed(105)
+xg_grid <- grid_latin_hypercube(trees(),
+                                tree_depth(),
+                                min_n(),
+                                loss_reduction(),
+                                sample_size = sample_prop(),
+                                finalize(mtry(), train),
+                                learn_rate(),
+                                size = 100)
+
+xg_tune <- tune_grid(xg_wf,
+                     resamples = train_fold,
+                     grid = xg_grid,
+                     control = control_grid(save_pred = TRUE))
+
+xg_tune$.predictions
+best_acc <- xg_tune %>% 
+  select_best("accuracy")
+
+best_acc
+
+xg_final <- finalize_workflow(
+  xg_wf,
+  best_acc
+)
+
+xg_final
+
+xg_last <- last_fit(xg_final, split)
+
+xg_last %>% 
+  collect_predictions() %>% 
+  roc_curve(gender, .pred_F) %>% 
+  ggplot(aes(1 - specificity, sensitivity)) +
+  geom_abline() +
+  geom_path() +
+  coord_fixed()
+
+xg_last %>% 
+  collect_predictions() %>% 
+  roc_auc(gender, .pred_F)
+
+xg_last %>% 
+  collect_predictions() %>% 
+  accuracy(gender, .pred_class)
+table(xg_last$.predictions[[1]]$.pred_class==xg_last$.predictions[[1]]$gender)
+
+```
+
+```{r}
+library(tidymodels)
+getImputedExtantData <- function(data,data2,num){
+  data_out <- data[num]
+  data_out <- cbind(data_out,data2[c("gender")])
+  data_out <- data_out %>% 
+    filter(gender == "Female" | gender=="Male") %>% 
+    mutate(gender=as.factor(case_when(gender=="Female" ~ "F",
+                   gender=="Male" ~ "M"
+    
+          )
+         )
+  )
+  return(data_out)
+}
+
+
+
+
+
+
+
+getAccuracy  <- function(data){
+  
+  split <- initial_split(data, prop = 0.7, strata = gender)
+  train <- training(split)
+  test <- testing(split)
+  
+  train_fold <- vfold_cv(train, v = 10, strata = gender)
+  
+  xg_spec <- boost_tree(trees = tune(),
+                        tree_depth = tune(), 
+                        min_n = tune(), 
+                        loss_reduction = tune(),
+                        sample_size = tune(), 
+                        mtry = tune(),
+                        learn_rate = tune()) %>% 
+    set_engine("xgboost") %>% 
+    set_mode("classification")
+  
+  xg_rec <- recipe(gender ~., data = train) %>% 
+    step_dummy(all_nominal_predictors())
+  
+  xg_wf <- workflow() %>% 
+    add_model(xg_spec) %>% 
+    add_recipe(xg_rec)
+  xg_grid <- grid_latin_hypercube(trees(),
+                                  tree_depth(),
+                                  min_n(),
+                                  loss_reduction(),
+                                  sample_size = sample_prop(),
+                                  finalize(mtry(), train),
+                                  learn_rate(),
+                                  size = 100)
+  xg_tune <- tune_grid(xg_wf,
+                       resamples = train_fold,
+                       grid = xg_grid,
+                       control = control_grid(save_pred = TRUE))
+  
+  best_acc <- xg_tune %>% 
+    select_best("accuracy")
+  
+  xg_final <- finalize_workflow(
+    xg_wf,
+    best_acc
+  )
+  xg_last <- last_fit(xg_final, split)
+  
+  data_output <- xg_last %>% 
+    collect_predictions() %>% 
+    accuracy(gender, .pred_class)
+  
+  return(data_output)
+  
+}
+
+
+
+
+
+
+
+imputed_data_tuned <- mixgb(data = non_gender, m=5, nrounds = 140)
+
+
+new_list <- list()
+
+for(i in 1:5){
+  new_list[[i]] <- getAccuracy(getImputedExtantData(imputed_data_tuned,stick_clean,i))
+}
+
+new_list[[1]]
+c <- c()
+
+
+
+est/5
+imputed_data_tuned
+
+```
+
+
+
+
+
+
+
+
 
 
