@@ -1,0 +1,235 @@
+---
+title: "imputation_stickle"
+author: "Akhil Ghosh"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(mixgb)
+library(mice)
+library(tidyverse)
+library(janitor)
+library(missMethods)
+library(ROCR)
+
+
+```
+
+
+
+DATA DICTIONARY
+stl: standard length. A measure of size from tip of snout to end of tail. (mm)
+
+ips: index pelvic score. a categorical measure of pelvic complexity based on the number of pelvic elements observed. 0-3 in fossils. 0-8 in extant fish.
+ips.prop: ips/3 (fossils) or ips/8 (extant) to put ips on same scale from 0 to 1.
+lps: length of a pelvic spine (if ips <3 (fossils) or ips < 8 (extant), then pelvic spines were considered evolutionarily lost, and were assigned lengths of 0)
+tpg: pelvic girdle length (mm). (when missing (ips = 0), considered evolutionarily lost and assigned lengths of 0.)
+
+mav: abdominal vertebrae number (count)
+mcv: caudal vertebrae number (count)
+mdf: dorsal fin ray number. number of bones in the dorsal fin (count)
+maf: anal fin ray number (count)
+
+mds: dorsal spine number (count)
+ds1: length of the first dorsal spine (mm) (when missing, the first dorsal spine was considered evolutionarily lost, and assigned lengths of 0. when spines were broken assigned NA)
+ds2: length of the second dorsal spine (mm) (when missing, the second dorsal spine was considered evolutionarily lost, and assigned lengths of 0. when spines were broken assigned NA)
+ds3: length of the third dorsal spine (mm) (when missing, the third dorsal spine was considered evolutionarily lost, and assigned lengths of 0. when spines were broken assigned NA)
+
+mpt: pterygiophore number (count). Number of armor bones on the "back". 
+lpt: length of the pterygiophore anterior to the the third spine (mm)
+
+ect: ectocoracoid length (mm)
+cle: cleithrum length (mm)
+pmx: premaxila length (mm)
+
+
+```{r}
+stickle <- read_csv('stickle_revamped.csv')
+
+stick <- stickle %>% 
+  mutate(gender = as.factor(case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    )), ips = as.factor(ips)
+  ) %>% 
+  select(gender, everything())
+
+stick
+
+extant_stickle <- stick %>% filter(gender != "Fossil") %>% select(!univID)
+extant_stickle
+summary(extant_stickle)
+```
+
+
+
+```{r}
+
+#Checking imputation accuracy/viability
+
+M = 5
+k = 5
+stick_matrix <- matrix(NA, nrow=nrow(extant_stickle), ncol = M)
+set.seed(12)
+fold <- sample(1:k, size = nrow(extant_stickle), replace=TRUE)
+for(i in 1:k){
+extant_stickle_temp <- extant_stickle
+extant_stickle_temp$gender[fold==i] <- NA
+imputed_stick <- mice(extant_stickle_temp,m=M)
+for(n in 1:M){
+  
+  complete_stick <- complete(imputed_stick, n)
+  
+  complete_stick$gender[fold==i]
+  stick_matrix[fold==i, n] <- as.character(complete_stick$gender[fold==i])
+}
+
+}
+pct_male <- apply(stick_matrix,1,function(x){
+  mean(x == "Male")
+})
+
+imptest <- data_frame(truth = as.factor(extant_stickle$gender), pct_male)
+roc_pred <- prediction(imptest$pct_male, imptest$truth)
+
+auc_rocr <- performance(roc_pred, measure="auc")
+plot(performance(roc_pred, measure="tpr", x.measure="fpr"))
+
+auc_rocr@y.values[[1]]
+
+```
+
+
+
+
+
+
+
+```{r}
+#Using MICE imputation to get imputed datasets
+M = 5
+stick_whole <- stick %>% select(-c(univID, ips))
+summary(stick_whole)
+imputed_stick_whole <- mice(stick_whole,m=5)
+complete_stick_list <- list()
+for(m in 1:M){
+  complete_stick_list[[m]] <- complete(imputed_stick_whole, m)
+}
+```
+
+
+```{r}
+#getting time vector, adding it to imputed data
+univ <- stick %>% 
+  mutate(time = as.integer(sub(".*([0-9]{2})\\..*", "\\1",univID)))
+times <- univ %>% drop_na(time) %>% pull(time)
+
+times_vector <- c(rep(1,43)) %>% 
+  append(21-times)
+```
+
+
+```{r}
+#Initial grouping and summarizing
+# temp_comp <- complete_stick_list[[1]][-c(1:367),]
+# temp_comp$time <- times_vector
+# 
+# means_stl_time <- temp_comp %>% group_by(gender, time) %>% summarize(xbar = mean(stl), se = sqrt(var(stl)/n()), n())
+# 
+# 
+# help(mice)
+# temp_comp %>% select(gender, time, stl) %>% filter(time==17)
+# 
+# 
+# with(temp_)
+# 
+# means_stl_time %>% ggplot(aes(x = time, y = xbar, col = gender))+ geom_point() +geom_line()
+# 
+# table(complete_stick_list[[1]][c(1:367),]$gender)
+# 
+# table(complete_stick_list[[1]][-c(1:367),]$gender)
+
+```
+
+
+```{r}
+#doing the grouping and summarizing for all imputed datasets, looking specifically at mean standard length for each group
+
+temp_comp_lists <- list()
+est_list <- list()
+M = 5
+for(m in 1:M){
+
+temp_comp_lists[[m]] <- complete_stick_list[[m]][-c(1:367),]
+temp_comp_lists[[m]]$time <- times_vector
+
+
+est_list[[m]] <- temp_comp_lists[[m]] %>% group_by(gender, time) %>% summarize(xbar = mean(stl), se = sqrt(var(stl)/n()), n())
+est_list[[m]]$imp = m
+}
+
+
+# stacking the datasets
+combined_est <- do.call(rbind,est_list)
+combined_est
+```
+
+
+```{r}
+#Calculating error bars of combined estimates
+
+combined_est_errors <- combined_est %>% group_by(gender, time) %>% summarize(x_bar_bar  = mean(xbar), B_m = var(xbar), W_m = mean(se^2), se_xbar_bar = sqrt(W_m+(1+1/5)*(B_m)), r = (1+1/5)*B_m/W_m, U = (5-1)*(1+(1/r)^2), t_val = qt(0.05/2, df = U, lower.tail = FALSE), uci = x_bar_bar + t_val * se_xbar_bar, lci = x_bar_bar - t_val * se_xbar_bar, t_se = t_val * se_xbar_bar)
+
+combined_est_errors %>% select(gender, time,x_bar_bar, lci, uci)
+
+```
+
+
+```{r}
+#ggplot of the data for 
+
+ggplot(data= combined_est_errors, aes(x = time, y = x_bar_bar, col = gender))+geom_point()+geom_line() + geom_errorbar(aes(ymin = lci, ymax = uci, group = gender),
+     width = 0.2)+ labs(x = "Time", y = "Mean of imputed mean standard length values (STL)")
+
+
+
+```
+
+
+
+
+
+
+```{r}
+#Doing it for cle variable this time
+temp_comp_lists_cle <- list()
+est_list_cle <- list()
+M = 5
+for(m in 1:M){
+
+temp_comp_lists_cle[[m]] <- complete_stick_list[[m]][-c(1:367),]
+temp_comp_lists_cle[[m]]$time <- times_vector
+
+
+est_list_cle[[m]] <- temp_comp_lists_cle[[m]] %>% group_by(gender, time) %>% summarize(xbar = mean(cle), se = sqrt(var(cle)/n()), n())
+est_list_cle[[m]]$imp = m
+}
+
+est_list_cle
+
+combined_est_cle <- do.call(rbind,est_list_cle)
+
+
+#Calculating error bars of combined estimates
+
+combined_est_errors_cle <- combined_est_cle %>% group_by(gender, time) %>% summarize(x_bar_bar  = mean(xbar), B_m = var(xbar), W_m = mean(se^2), se_xbar_bar = sqrt(W_m+(1+1/5)*(B_m)), r = (1+1/5)*B_m/W_m, U = (5-1)*(1+(1/r)^2), t_val = qt(0.05/2, df = U, lower.tail = FALSE), uci = x_bar_bar + t_val * se_xbar_bar, lci = x_bar_bar - t_val * se_xbar_bar, t_se = t_val * se_xbar_bar)
+
+combined_est_errors_cle %>% select(gender, time,x_bar_bar, lci, uci)
+
+
+ggplot(data= combined_est_errors_cle, aes(x = time, y = x_bar_bar, col = gender))+geom_point()+geom_line() + geom_errorbar(aes(ymin = lci, ymax = uci),
+     width = 0.2) + labs(x = "Time", y = "Mean of imputed mean CLE")
+
+```
+
