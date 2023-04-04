@@ -1,0 +1,126 @@
+---
+title: "stickle_plots"
+author: "Akhil Ghosh"
+date: "2022-10-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(mice)
+library(tidyverse)
+library(tidymodels)
+
+library(mitools)
+library(miceadds)
+
+library(janitor)
+library(furrr)
+library(doParallel)
+library(mixgb)
+```
+
+
+```{r}
+stickle <- read_csv('stickle_revamped.csv')
+
+stick <- stickle %>% 
+  mutate(gender = as.factor(case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    )), ips = as.factor(ips)
+  ) %>% 
+  select(gender, everything())
+```
+
+
+```{r}
+set.seed(205)
+
+stick_clean <- stick %>% 
+  select(!c(univID, ips))
+
+stick_clean <- data_clean(stick_clean)
+stick_imputed <- mixgb(data = stick_clean, m = 10, nrounds = 20)
+stick_imputed
+```
+
+```{r}
+mice(stick_clean, )
+as <- mice(stick_clean, method = "pmm")
+as <- mice(stick_clean, method = "rf")
+as$imp
+
+help(datalist2mids)
+```
+
+
+```{r}
+#getting time variable
+datalist2mids(stick_$imputations)
+univ <- stick %>% 
+  mutate(time = as.integer(sub(".*([0-9]{2})\\..*", "\\1",univID)))
+times <- univ %>% drop_na(time) %>% pull(time)
+
+times_vector <- c(rep(1,43)) %>% 
+  append(21-times)
+
+```
+
+
+```{r}
+add_time<- function(data){
+  data %>% 
+  slice(368:1181) %>%
+  mutate(time = times_vector) %>% 
+  select(time, everything())
+}
+
+
+
+
+means_by_time <- function(data){
+  data %>% group_by(time, gender) %>% 
+  summarize(across(where(is.numeric),mean))
+}
+
+mean_diff <- function(data){
+  data %>% group_by(time, gender) %>% 
+  summarize(across(where(is.numeric),mean)) %>% 
+  summarize(across(where(is.numeric),diff))
+
+}
+
+mean_diff2 <- function(data){
+  data %>% 
+  summarize(across(where(is.numeric),diff))
+}
+```
+
+
+```{r}
+set.seed(205)
+stick_ <- imputationList(stick_imputed)
+
+
+final <- with(imputationList(with(imputationList(stick_imputed), fun=add_time)),fun=means_by_time)
+
+mean_differences <- with(imputationList(final[-c(6:10)]),fun=mean_diff2)
+mean_differences
+
+fin <- (mean_differences[[1]]+mean_differences[[2]]+mean_differences[[3]]+mean_differences[[4]]+mean_differences[[5]])/5
+fin
+
+fin %>% ungroup() %>%
+  select(where(is.numeric)&!time) %>% colnames() %>% 
+  map( ~ {ggplot(fin, aes(x = time,y=.data[[.]])) + geom_line()})
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

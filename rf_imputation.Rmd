@@ -1,0 +1,115 @@
+---
+title: "mice_rf"
+author: "Akhil Ghosh"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(mice)
+library(tidyverse)
+library(janitor)
+library(missMethods)
+library(ROCR)
+```
+
+
+```{r setup, include=FALSE}
+stickle <- read_csv('stickle_revamped.csv')
+
+stick <- stickle %>% 
+  mutate(gender = as.factor(case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    )), ips = as.factor(ips)
+  ) %>% 
+  select(gender, everything())
+
+stick_whole <- stick %>% select(-c(univID, ips))
+
+extant_stickle <- stick %>% filter(gender != "Fossil") %>% select(!univID)
+extant_stickle <- extant_stickle %>% select(!ips)
+
+
+mice(extant_stickle, method="rf")
+
+```
+
+```{r}
+library(mice)
+  
+```
+
+```{r}
+library(missForest)
+summary(extant_stickle)
+test <- extant_stickle
+missing_cols <- c(2:7,9:27)
+extant_stickle_MAR <- delete_MCAR(extant_stickle, 0.3, "gender")
+imputed_data <- missForest(extant_stickle_MAR)
+test[, missing_cols] <- imputed_data$ximp[, missing_cols]
+```
+
+```{r}
+extant_stickle_df <- as.data.frame(extant_stickle)
+extant_stickle_impo <- missForest(extant_stickle_df)
+
+new_data <- extant_stickle_impo$ximp
+new_data
+
+doParallel::registerDoParallel(cores = 8) # set based on number of CPU cores
+doRNG::registerDoRNG(seed = 2023)
+new_data <- missForest(extant_stickle_df, parallelize = 'forests')$ximp
+
+```
+
+
+```{r}
+M = 5
+k = 5
+mice(extant_stickle, method = 'rf', rfpackage = "randomForest")
+
+stick_matrix <- matrix(NA, nrow=nrow(extant_stickle), ncol = M)
+set.seed(2023)
+fold <- sample(1:k, size = nrow(extant_stickle), replace=TRUE)
+for(i in 1:k){
+extant_stickle_temp <- extant_stickle
+extant_stickle_temp$gender[fold==i] <- NA
+extant_stickle_temp_df <- as.data.frame(extant_stickle_temp)
+doParallel::registerDoParallel(cores = 8) # set based on number of CPU cores
+doRNG::registerDoRNG(seed = 2023)
+
+imputed_stick <- missForest(extant_stickle_temp_df, parallelize = 'variables')$ximp
+
+
+
+for(n in 1:M){
+  
+  imputed_stick$gender[fold==i]
+  stick_matrix[fold==i, n] <- as.character(imputed_stick$gender[fold==i])
+}
+
+}
+
+pct_male <- apply(stick_matrix,1,function(x){
+  mean(x == "Male")
+})
+
+imptest <- data_frame(truth = as.factor(extant_stickle$gender), pct_male)
+roc_pred <- prediction(imptest$pct_male, imptest$truth)
+
+auc_rocr <- performance(roc_pred, measure="auc")
+plot(performance(roc_pred, measure="tpr", x.measure="fpr"))
+
+auc_rocr@y.values[[1]]
+```
+
+```{r}
+mice(stick, method='rf')
+```
+
+
+
+
+
+

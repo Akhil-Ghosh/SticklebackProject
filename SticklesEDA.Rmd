@@ -10,123 +10,189 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 #Loading Libraries
+
 ```{r}
 library(tidyverse)
-library(DT)
+library(janitor)
+library(tidymodels)
+library(furrr)
+library(doParallel)
 
 
 ```
 
-
 ```{r}
-stickle <- read_csv('stickleback_fossil_vs_extant.csv')
+stickle <- read_csv('stickle_revamped.csv')
+ggplot2(x=as.integer(stick %>% filter(!is.na(gender)) %>% pull(gender)),stick %>% filter(!(is.na(gender))) %>% pull(ips.prop))
+
+gens <- stick %>% filter(!is.na(gender)) %>% pull(gender)
+props <- stick %>% filter(!(is.na(gender))) %>% pull(ips.prop)
+ggplot(data=stick, aes(x = gens,y=props)) + geom_bar()
 summary(stickle)
 #seems every column outside of ID has missing data to some extent
 #Highest amount of NA's is cle.sc column
 #least amount of NAs in mds column
 ```
 
-
 ```{r}
-datatable(stickle)
-
-
-#Should I split up univID?
-#Maybe, maybe not
-```
-```{r}
-stickles <- datatable(stickle)
-grepl("M",stickle$univID, fixed=TRUE)
-stickle$univID
+#generating gender for the dataset
 
 stick <- stickle %>% 
-  mutate(gender = case_when(
+  mutate(gender = as.factor(case_when(
     grepl(".M.",univID,fixed=TRUE) ~ "Male",
     grepl(".F.",univID,fixed=TRUE) ~ "Female",
     grepl("Fos",univID,fixed=TRUE) ~ NA_character_
-    )
+    )), ips = as.factor(ips)
+  ) %>% 
+  select(gender, everything())
+
+stick_lakes_bl <- stick %>% 
+  mutate( B_L = case_when( 
+    grepl("Emi.",univID,fixed=TRUE) ~ "Emily Lake",
+    grepl("LQx.",univID,fixed=TRUE) ~ "Little Quarry Lake",
+    grepl("Pax.",univID,fixed=TRUE) ~ "Pax Lake",
+    grepl("Pri.",univID,fixed=TRUE) ~ "Pri Lake",
+    grepl("Joe.",univID,fixed=TRUE) ~ "Joe Lake",
+    grepl("Nor.",univID,fixed=TRUE) ~ "Nor Lake",
+    grepl("Swa.",univID,fixed=TRUE) ~ "Swa Lake",
+    grepl("The.",univID,fixed=TRUE) ~ "Theimer Lake",
+    grepl("Vib.",univID,fixed=TRUE) ~ "Village Bay Lake",
+    grepl("Fos.",univID,fixed=TRUE) ~ "Fossil"
+  ), Ecotype = case_when(
+    grepl(".B.",univID,fixed=TRUE) ~ "Benthic",
+    grepl(".G.",univID,fixed=TRUE) ~ "Generalist",
+    grepl(".L.",univID,fixed=TRUE) ~ "Limnetic",
+    grepl(".K.",univID,fixed=TRUE) ~ NA_character_
+    
   )
-           # ifelse(grepl("M",univID,fixed=TRUE),"M","F"))
-
-table(stick$gender)
-#Only 284 extant fish
-
-summary(stick)
-
-summary(as.factor(stick$gender))
+  
+  
+  
+  )
 
 
 
+stick %>% summary(ips)
+range(stick$ips)
+stick %>% filter(is.na(ect))
 
 
-```
-```{r}
-install.packages("mice")
-library(mice)
-
-md.pattern(stickle)
+#ect = bottom of fish, belly
 
 
 ```
 
+```{r}
+
+extant_stickle <- stick %>% filter(gender != "Fossil")
+
+```
+
+Visualizing the missing variables found within dataset.
 
 ```{r}
-# devtools::install_github("agnesdeng/mixgb")
+# install.packages('visdat')
+# install.packages('UpSetR')
+# install.packages('naniar')
+library(naniar)
+library(visdat)
+library(UpSetR)
+```
+
+how many missing obs per variable
+
+```{r}
+gg_miss_var(stick_lakes_bl)
+vis_miss(stick_lakes_bl)
+```
+
+```{r}
+gg_miss_var(stick_no_gender)
+vis_miss(stick_no_gender)
+
+
+```
+
+Are they often missing in conjunction with one another?
+
+```{r}
+n_var_miss(stick) # gives all variables with missing data
+gg_miss_upset(stick) # gives plot that captures combination of missingness in data
+gg_miss_upset(stick,nsets = n_var_miss(stick))
+gg_miss_upset(stick,nsets=2) # gives plot that captures combination of missingness in data
+
+#cle - shoulder bone buried or not there in fossils.
+# NA only, needs a cle for a functional fish
+
+#jawbon - pmx. is always there for a functional fish.
+
+```
+
+How about when excluding gender from the dataset?
+
+```{r}
+
+stick_no_gender <- stick %>% 
+  select(-gender, -univID)
+gg_miss_upset(stick_no_gender)
+gg_miss_upset(stick_no_gender,nsets = n_var_miss(stick_no_gender))
+
+```
+
+```{r}
+ggplot(stick,
+       aes(x = cle.sc,
+           y = cle)) +
+ geom_miss_point() + 
+ facet_wrap(~gender)
+
+```
+
+Might be concerning. Very prelim look, but first thoughts are that the fossil group seems to have cle.sc values between 5-6 that are missing, rest are not. more too look into later.
+
+```{r}
+stick_no_id <- stick %>% select(!univID)
+plot_bar(imputation.list = stick_imputed, var.name = "gender",
+    original.data = stick_no_id)
+```
+
+```{r}
+plot_box(imputation.list = stick_imputed, var.name = "ect",
+    original.data = stick_no_id)
+```
+
+```{r}
+
+```
+
+```{r}
+# devtools::install_github("agnesdeng/mixgb") #installs the mixgb package which utilizes xgboost as imputation method for MI
+stick_clean <- stick %>% 
+  select(!univID)
+
+stick_clean <- data_clean(stick_clean)
+```
+
+```{r}
+#Finding the best rounds, very basic CV. Still need to tune other params outside of gender. confused about the best rounds
 
 library(mixgb)
 
-stick_clean <- stick %>% 
-  select(.,-univID) %>% 
-  mutate(ips = as.factor(ips))
-  
-stick_clean <- data_clean(stick_clean)
-stick_clean
-```
-```{r}
-# imputed_data <- mixgb(data = stick_clean, m = 5)
-# imputed_data
-
 cv.results <- mixgb_cv(data = stick_clean, verbose = FALSE)
+
 cv.results$response
+
 cv.results$best.nrounds
 
-cv.results2 <- mixgb_cv(data = stick_clean, nfold = 10, nrounds = 100,
+cv.results2 <- mixgb_cv(data = stick_clean, nfold = 5, nrounds = 100,
     early_stopping_rounds = 1, response = "gender", verbose = FALSE)
+
 cv.results2$best.nrounds
-
-imputed_data2 <- mixgb(data = stick_clean, m = 5, nrounds = 10)
-imputed_data3 <- mixgb(data = stick_clean, m = 5, nrounds = 30)
-imputed_data3
-
 ```
 
 ```{r}
+#trying to tune parameters, bit lost at this
 
-#Here I try to impute every variable in the data set and then use the imputed dataset to predict gender variable. Through this I can cross validate and avoid data cleaning issues.
-
-#Just a prelim thing I wanted to see the accuracy
-#For this, I will be focusing on the extant dataset.
-
-summary(stick_clean)
-
-
-non_gender <- stick_clean %>% 
-  select(-gender)
-
-cv.results_ <- mixgb_cv(data = non_gender, verbose=FALSE)
-cv.results_$best.nrounds
-cv.results_$response
-
-imputed_data_no_gender <- mixgb(data = no, m = 5, nrounds = 100)
-imputed_data_ng <- mixgb(data = non_gender, m=5, nrounds = 100)
-
-imputed_data_ng
-
-
-```
-
-
-```{r}
 best_rounds <- c()
 for(i in 1:50){
 cv.results_ <- mixgb_cv(data = non_gender, verbose=FALSE,nrounds=200)
@@ -159,59 +225,57 @@ foreach::getDoParRegistered()
 foreach::getDoParWorkers()
 
 
-best_rounds<-
+best_rounds <- c()
 x <- foreach(
-  i = 1:100, 
+  i = 1:1000, 
   .combine = 'c'
 ) %dopar% {
-  cv.results_ <- mixgb_cv(data = non_gender, verbose=FALSE,nrounds=200)
+  cv.results_ <- mixgb_cv(data = stick_clean, verbose=FALSE,nrounds=200)
   best_rounds <-append(best_rounds, cv.results_$best.nrounds)
 }  
 best_rounds
 max(x)
-```
-
-
-```{r}
-library(tidymodels)
-install.packages("janitor")
-stickelback_quang <- read_csv("https://www.dropbox.com/s/hpsn643fd8urph2/stickleback_fossil_vs_extant.csv?dl=1") %>% 
-  janitor::clean_names() %>% 
-  separate(univ_id, 
-           into = c("lake", "body_type", "gender", "id"), 
-           sep = "\\.",
-           remove = FALSE)
-
-stickelback_quang
-
-
-extant_quan <- stickelback_quang %>%
-  filter(lake != "Fos") %>% 
-  select(gender, stl, ips, mds, mdf, maf, mav, mcv, mpt, ips_prop, 
-         contains("_sc"), str_remove(names(stickelback_quang)[24:32], "_sc")) %>% 
-  mutate(across(where(is_character), as_factor))
-extant_quan
-
 
 
 ```
+
 ```{r}
-my_data <- imputed_data_ng[1]
-imputed_data_ng
-
-my_data_new <- cbind(my_data, stick_clean[c("gender")])
-
-my_data_extant <- my_data_new %>% 
-  filter(gender == "Female" | gender=="Male") %>% 
-  mutate(gender=as.factor(case_when(gender=="Female" ~ "F",
-                   gender=="Male" ~ "M"
-    
-          )
-         )
-  )
+#imputed dataset
+stick_imputed <- mixgb(data = stick_clean, m = 15, nrounds = 30)
 
 
+# imputed_data_cvresp_else <- mixgb(data = stick_clean, m = 20, nrounds = 75)
+# stick_imputed_e <- imputed_data_cvresp_else
 
+```
+
+```{r}
+#making a function to grab means cause I'm lazy
+
+grab_means <- function(data, i){
+  data[[i]] %>% 
+    summarize(across(where(is.numeric),mean))
+  }
+
+#grab_means(stick_imputed,1)
+
+
+
+imputed_means <- c(1:10) %>% 
+  future_map_dfr(grab_means,data=stick_imputed)
+
+imputed_means
+
+```
+
+```{r}
+
+#Comparing results to complete case dataset and non completed, non imputed values
+
+mean_extant_complete <- stick %>% 
+  na.omit %>% 
+  summarise(across(where(is.numeric),mean))
+mean_extant_complete
 ```
 
 ```{r}
@@ -222,118 +286,48 @@ cl <- makePSOCKcluster(all_cores)
 registerDoParallel(cl)
 ```
 
-
-
-
-
-
-
 ```{r}
+
 set.seed(100)
+extant <- stick %>% 
+  drop_na(gender) %>%
+  select(-c(univID, gender))
+extant_gender <- stick %>% 
+  drop_na(gender) %>% 
+  pull(gender)
 
-split <- initial_split(my_data_extant, prop = 0.7, strata = gender)
+cv.results_ <- mixgb_cv(data = extant, verbose=FALSE, nfold=10,nrounds=100)
+cv.results_$best.nrounds
+cv.results_$response
 
-train <- training(split)
-test <- testing(split)
+extant_imputed <- mixgb(data = extant, m = 10, nrounds = 100)
 
-train_fold <- vfold_cv(train, v = 10, strata = gender)
-train_fold$splits
-
-xg_spec <- boost_tree(trees = tune(),
-                      tree_depth = tune(), 
-                      min_n = tune(), 
-                      loss_reduction = tune(),
-                      sample_size = tune(), 
-                      mtry = tune(),
-                      learn_rate = tune()) %>% 
-  set_engine("xgboost") %>% 
-  set_mode("classification")
-
-
-xg_rec <- recipe(gender ~., data = train) %>% 
-  step_dummy(all_nominal_predictors())
-
-xg_rec$var_info
-
-xg_wf <- workflow() %>% 
-  add_model(xg_spec) %>% 
-  add_recipe(xg_rec)
-
-
-set.seed(105)
-xg_grid <- grid_latin_hypercube(trees(),
-                                tree_depth(),
-                                min_n(),
-                                loss_reduction(),
-                                sample_size = sample_prop(),
-                                finalize(mtry(), train),
-                                learn_rate(),
-                                size = 100)
-
-xg_tune <- tune_grid(xg_wf,
-                     resamples = train_fold,
-                     grid = xg_grid,
-                     control = control_grid(save_pred = TRUE))
-
-xg_tune$.predictions
-best_acc <- xg_tune %>% 
-  select_best("accuracy")
-
-best_acc
-
-xg_final <- finalize_workflow(
-  xg_wf,
-  best_acc
-)
-
-xg_final
-
-xg_last <- last_fit(xg_final, split)
-
-xg_last %>% 
-  collect_predictions() %>% 
-  roc_curve(gender, .pred_F) %>% 
-  ggplot(aes(1 - specificity, sensitivity)) +
-  geom_abline() +
-  geom_path() +
-  coord_fixed()
-
-xg_last %>% 
-  collect_predictions() %>% 
-  roc_auc(gender, .pred_F)
-
-xg_last %>% 
-  collect_predictions() %>% 
-  accuracy(gender, .pred_class)
-table(xg_last$.predictions[[1]]$.pred_class==xg_last$.predictions[[1]]$gender)
+extant %>% mutate(gender = c(extant_gender)) %>% select(gender, everything())
+add_gender <- function(data,i){
+  data[[i]] %>% 
+    mutate(gender = c(extant_gender)) %>% select(gender, everything())
+  
+}
+imp_extant_with_gender <- c(1:10) %>% 
+  map(data=extant_imputed,add_gender)
 
 ```
 
 ```{r}
+library(tidyverse)
 library(tidymodels)
-getImputedExtantData <- function(data,data2,num){
-  data_out <- data[num]
-  data_out <- cbind(data_out,data2[c("gender")])
-  data_out <- data_out %>% 
-    filter(gender == "Female" | gender=="Male") %>% 
-    mutate(gender=as.factor(case_when(gender=="Female" ~ "F",
-                   gender=="Male" ~ "M"
-    
-          )
-         )
-  )
-  return(data_out)
-}
+library(rsample)
 
+```
 
+```{r}
 
+#general accuracy with imputed datasets(only including extant)
+#maybe figure out a way to combine the results? idk
 
-
-
-
-getAccuracy  <- function(data){
+getAccuracy  <- function(data,i){
   
-  split <- initial_split(data, prop = 0.7, strata = gender)
+  split <- initial_split(data[[i]], prop = 0.7, strata = gender)
   train <- training(split)
   test <- testing(split)
   
@@ -377,45 +371,153 @@ getAccuracy  <- function(data){
   )
   xg_last <- last_fit(xg_final, split)
   
-  data_output <- xg_last %>% 
-    collect_predictions() %>% 
-    accuracy(gender, .pred_class)
+   data_output <- xg_last
+  #   collect_predictions() %>% 
+  #   accuracy(gender, .pred_class)
   
   return(data_output)
   
 }
 
+imp_extant_with_gender[[1]]
+```
 
+```{r}
+library(furrr)
 
-
-
-
-
-imputed_data_tuned <- mixgb(data = non_gender, m=5, nrounds = 140)
-
-
-new_list <- list()
-
-for(i in 1:5){
-  new_list[[i]] <- getAccuracy(getImputedExtantData(imputed_data_tuned,stick_clean,i))
+# list <- c(1:10) %>% 
+#   map(getAccuracy, data=imp_extant_with_gender)
+list_of_acc <- list()
+for(i in 1:10){
+  list_of_acc[[i]] <- getAccuracy(data=imp_extant_with_gender, i)
 }
 
-new_list[[1]]
-c <- c()
+list2 <- list()
+list2[[1]] <- getAccuracy(data=imp_extant_with_gender,1)
+
+imputed_data_tuned <- mixgb(data = non_gender, m=5, nrounds = 140)
+c(1:10)
 
 
+getacc <- function(data,i){
+  data[[i]] %>% 
+  collect_predictions() %>% accuracy(gender,.pred_class)
+}
+accuracy_per_imputed_data <- c(1:10) %>% 
+  map_dfr(getacc,data=list)
+accuracy_per_imputed_data
+```
 
-est/5
-imputed_data_tuned
+```{r}
+library(mice)
+# install.packages("mitools")
+# install.packages('miceadds')
+library(mitools)
+library(miceadds)
+with(stick_imputed, mean)
+as.mids(stick_imputed)
+help(with)
+stick_imputed
+stick %>% 
+  grepl()
+stick_imputed
+all_numeric <- function(data,i){ 
+  data[[i]] %>% 
+    select(!c("gender","ips"))
+}
+
+test4 <- with(test3,expr=mean)
+test[[1]]
+stick_test <- imputationList(stick_imputed)
+#getting time variable
+univ <- stick %>% 
+  mutate(time = as.integer(sub(".*([0-9]{2})\\..*", "\\1",univID)))
+
+
+times <- univ %>% drop_na(time) %>% pull(time)
+
+times_vector <- c(rep(1,43)) %>% 
+  append(21-times)
+
+means<- function(data){
+  data %>% 
+    summarise(across(where(is.numeric),mean))
+}
+abc <- with(stick_test, fun=means)
+MIcombine(abc)
+mm<- as.mira(abc)
+
+summary(MIcombine(abc))
+
+add_time<- function(data){
+data %>% 
+  slice(368:1181) %>%
+  mutate(time = times_vector) %>% 
+  select(time, everything())
+}
+
+
+means_by_time <- function(data){
+  data %>% group_by(time, gender) %>% 
+  summarize(across(where(is.numeric),mean))
+}
+
+
 
 ```
 
+```{r}
+mean_diff <- function(data){
+  data %>% group_by(time, gender) %>% 
+  summarize(across(where(is.numeric),mean)) %>% 
+  summarize(across(where(is.numeric),diff))
+
+}
+
+mean_diff2 <- function(data){
+  data %>% 
+  summarize(across(where(is.numeric),diff))
+
+}
+
+stick_time[[3]] %>% group_by(time,gender) %>% summarize(across(where(is.numeric),mean))
+
+#this is an issue
+#basically, sometimes the imputation doesn't have values for both sexes at a given time point
 
 
+stick_imputed <- mixgb(data = stick_clean, m = 10, nrounds = 15)
 
 
+stick_time <- with(imputationList(stick_imputed), fun=add_time)
+
+stick_means <- with(imputationList(stick_time), fun=means_by_time)
+mean_differences <- with(imputationList(stick_means[-c(2,4,8,9)]),fun=mean_diff2)
+mean_differences
 
 
+```
+
+```{r}
+fin <- (mean_differences[[1]]+mean_differences[[2]]+mean_differences[[3]]+mean_differences[[4]]+mean_differences[[5]]+mean_differences[[6]])/6
 
 
+```
 
+```{r}
+fin %>% ungroup() %>%
+  select(where(is.numeric)&!time) %>% colnames() %>% 
+  map( ~ {ggplot(fin, aes(x = time,y=.data[[.]])) + geom_line()})
+  
+
+
+```
+
+Mean difference has gone up by a decent bit over the course of t=0 to t=21
+
+```{r}
+fin %>% ungroup() %>%
+  select(where(is.numeric)&!time) %>% colnames() %>% 
+  map( ~ {ggplot(fin, aes(x = time,y=.data[[.]])) + geom_line()})
+  
+```

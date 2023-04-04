@@ -1,0 +1,381 @@
+---
+title: "mixgb_imputation"
+author: "Akhil Ghosh"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+library(mice)
+library(tidyverse)
+library(janitor)
+library(missMethods)
+library(ROCR)
+
+
+```
+
+
+```{r}
+stickle <- read_csv('stickle_revamped.csv')
+
+stick <- stickle %>% 
+  mutate(gender = as.factor(case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    )), ips = as.factor(ips)
+  ) %>% 
+  select(gender, everything())
+
+stick_whole <- stick %>% select(-c(univID, ips))
+
+extant_stickle <- stick %>% filter(gender != "Fossil") %>% select(!univID)
+extant_stickle <- extant_stickle %>% select(!ips)
+
+summary(extant_stickle)
+```
+
+
+```{r}
+k = 5
+M = 5
+
+#generate 30% MCAR for gender on extant to find best hyperparams to train mixgb
+#this is most likely data leakage of some form, but I might as well try things and then have Greg tell me I'm an idiot later
+extant_stickle_MAR <- delete_MCAR(extant_stickle, 1, "gender")
+
+mixgb_cv(extant_stickle, response = "gender")
+#seems like best rounds is rarely, if ever, above 15-20.
+#tracks with my previous forays into doing this
+
+#basically, the issue I'm having is how should I "train" the mixgb model without data leakage.
+#maybe since its used for imputation, and not prediction it really doesn't matter
+#need to consult greg
+```
+
+
+```{r}
+library(xgboost)
+library(caret)
+library(caTools)
+library(tidymodels)
+
+#how about we do a grid search to train a xgboost model to predict gender of extants, and use those hyperparameters in the mixgb model for imputation?
+#worth a try
+
+extant_stickle
+
+set.seed(2023) # For reproducibility
+split <- initial_split(extant_stickle, prop = 0.7)
+train <- training(split)
+test <- testing(split)
+```
+
+
+```{r}
+#recipe to pre-process data
+
+set.seed(2023)
+split <- initial_split(extant_stickle, prop = 0.7, strata = gender)
+train <- training(split)
+test <- testing(split)
+library(x)
+dtrain <- xgb.DMatrix(as.matrix(train[,-1]), label = (as.numeric(train$gender)-1))
+dtest <- xgb.DMatrix(as.matrix(test[, -1]), label = (as.numeric(test$gender)-1))
+```
+
+
+```{r}
+
+params <- list(
+  booster = "gbtree",
+  objective = "binary:logistic",
+  eta = 0.3,
+  max_depth = 6,
+  min_child_weight = 1,
+  subsample = 1,
+  colsample_bytree = 1,
+  eval_metric = "error",
+  n_thread=3
+)
+
+
+
+# Train the xgboost model
+xgb_model <- xgb.train(
+  params = params,
+  data = dtrain,
+  nrounds = 100,
+  watchlist = list(train = dtrain, test = dtest),
+  print_every_n = 10
+)
+
+# Make predictions on the test set
+pred <- predict(xgb_model, dtest)
+
+# Calculate the accuracy
+table(test$gender)
+accuracy <- mean((pred > 0.7) == (as.numeric(test$gender)-1))
+cat("Accuracy:", accuracy, "\n")
+```
+
+
+```{r}
+
+folds <- vfold_cv(train, v = 5, strata=gender)
+```
+
+```{r}
+xg_spec <- boost_tree(trees = tune(),
+                      tree_depth = tune(), 
+                      min_n = tune(), 
+                      loss_reduction = tune(),
+                      sample_size = tune(), 
+                      mtry = tune(),
+                      learn_rate = tune()) %>% 
+  set_engine("xgboost") %>% 
+  set_mode("classification")
+
+xg_rec <- recipe(gender ~., data = train) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
+  step_impute_median(all_numeric_predictors())
+
+xg_wf <- workflow() %>% 
+  add_model(xg_spec) %>% 
+  add_recipe(xg_rec)
+
+# tune
+set.seed(105)
+xg_grid <- grid_latin_hypercube(trees(),
+                                tree_depth(),
+                                min_n(),
+                                loss_reduction(),
+                                sample_size = sample_prop(),
+                                finalize(mtry(), train),
+                                learn_rate(),
+                                size = 50)
+
+xg_tune <- tune_grid(xg_wf,
+                     resamples = folds,
+                     grid = xg_grid,
+                     control = control_grid(save_pred = TRUE))
+best_acc <- xg_tune %>% 
+  select_best("accuracy")
+```
+
+
+```{r}
+library(future)
+
+rec <- recipe(gender ~ ., data = train) %>%
+  step_dummy(all_nominal_predictors()) %>% 
+  step_impute_median(all_numeric()) %>% 
+  step_scale(all_numeric())
+
+xg_spec <- boost_tree(trees = tune(),
+                      tree_depth = tune(), 
+                      min_n = tune(), 
+                      loss_reduction = tune(),
+                      sample_size = tune(), 
+                      mtry = tune(),
+                      learn_rate = tune()) %>%   set_engine("xgboost") %>% set_mode("classification")
+
+
+xg_wf <- workflow() %>% 
+  add_model(xg_spec) %>% 
+  add_recipe(rec)
+
+#grid search
+xg_grid <- grid_latin_hypercube(trees(),
+                                tree_depth(),
+                                min_n(),
+                                max_n(),
+                                loss_reduction(),
+                                sample_size = sample_prop(),
+                                finalize(mtry(), train),
+                                learn_rate(),
+                                size = 50)
+
+
+best_model <- select_best(xg_tune, metric = "accuracy")
+
+```
+
+```{r}
+library(doParallel)
+cl <- makeCluster(8)
+registerDoParallel(cl)
+
+xg_tune <- tune_grid(xg_wf,
+                     resamples = folds,
+                     grid = xg_grid,
+                     control = control_grid(save_pred = TRUE, parallel_over = "everything", allow_par = T))
+
+best_acc <- select_best(xg_tune, metric = "accuracy")
+```
+
+```{r}
+xg_final <- finalize_workflow(
+  xg_wf,
+  best_acc
+)
+
+xg_final
+
+xg_last <- last_fit(xg_final, split)
+
+
+xg_last %>% 
+  collect_predictions() %>% 
+  accuracy(gender, .pred_class)
+
+
+xg_last %>% 
+  collect_predictions() %>% 
+  roc_curve(gender, .pred_Female) %>% 
+  ggplot(aes(1 - specificity, sensitivity)) +
+  geom_abline() +
+  geom_path() +
+  coord_fixed()
+
+xg_last %>% 
+  collect_predictions() %>% 
+  roc_auc(gender, .pred_Male)
+
+xg_last %>% 
+  collect_predictions() %>% 
+  accuracy(gender, .pred_class)
+
+```
+
+
+
+
+
+```{r}
+stickle_wf <- workflow() %>%
+  add_recipe(recipe) %>%
+  add_model(xgbtree())
+  
+
+
+
+```
+
+
+```{r}
+library(mixgb)
+
+
+```
+
+```{r}
+#okay, onto the real thing here
+#Looking to validate how imputation is doing against reality
+M=5
+k = 5
+stick_matrix <- matrix(NA, nrow=nrow(extant_stickle), ncol = M)
+
+set.seed(2023) # seed used for 86% was 12
+
+fold <- sample(1:k, size = nrow(extant_stickle), replace=TRUE)
+for(i in 1:k){
+extant_stickle_temp <- extant_stickle
+extant_stickle_temp$gender[fold==i] <- NA
+
+#imputed_stick <- mixgb(extant_stickle_temp,nrounds = 100, m = 5, xgb.params = list(max_depth = 12, eta = 0.014311225124087, gamma = 0,min_child_weight = 1,subsample = 1, colsample_bytree = 1, colsample_bylevel = 1, colsample_bynode = 1,tree_method = "auto", gpu_id = 0, predictor = "auto"))
+
+imputed_stick <- mixgb(extant_stickle_temp, nrounds = 100, m=5)
+#all that tuning for it to be a worse imputer....
+#whatever
+
+
+for(n in 1:M){
+  
+  complete_stick <- imputed_stick[[n]]
+  
+  complete_stick$gender[fold==i]
+  stick_matrix[fold==i, n] <- as.character(complete_stick$gender[fold==i])
+}
+
+}
+
+pct_male <- apply(stick_matrix,1,function(x){
+  mean(x == "Male")
+})
+
+imptest <- data_frame(truth = as.factor(extant_stickle$gender), pct_male)
+roc_pred <- prediction(imptest$pct_male, imptest$truth)
+
+auc_rocr <- performance(roc_pred, measure="auc")
+plot(performance(roc_pred, measure="tpr", x.measure="fpr"))
+
+auc_rocr@y.values[[1]]
+
+
+```
+
+
+```{r}
+#Using MixGB imputation to get imputed datasets
+M = 5
+stick_whole <- stick %>% select(-c(univID, ips))
+imputed_stick_whole <- mixgb(stick_whole,m=5, nrounds=100)
+imputed_stick_whole[[1]]
+```
+
+```{r}
+univ <- stick %>% 
+  mutate(time = as.integer(sub(".*([0-9]{2})\\..*", "\\1",univID)))
+times <- univ %>% drop_na(time) %>% pull(time)
+
+times_vector <- c(rep(1,43)) %>% 
+  append(21-times)
+```
+
+```{r}
+#again issues with not having enough males :/
+#what to do...
+
+temp_comp_lists <- list()
+est_list <- list()
+M = 5
+for(m in 1:M){
+
+temp_comp_lists[[m]] <- imputed_stick_whole[[m]][-c(1:367),]
+temp_comp_lists[[m]]$time <- times_vector
+
+
+est_list[[m]] <- temp_comp_lists[[m]] %>% group_by(gender, time) %>% summarize(xbar = mean(stl), se = sqrt(var(stl)/n()), n())
+est_list[[m]]$imp = m
+}
+
+
+# stacking the datasets
+combined_est <- do.call(rbind,est_list)
+combined_est
+```
+
+```{r}
+#Calculating error bars of combined estimates
+
+combined_est_errors <- combined_est %>% group_by(gender, time) %>% summarize(x_bar_bar  = mean(xbar), B_m = var(xbar), W_m = mean(se^2), se_xbar_bar = sqrt(W_m+(1+1/5)*(B_m)), r = (1+1/5)*B_m/W_m, U = (5-1)*(1+(1/r)^2), t_val = qt(0.05/2, df = U, lower.tail = FALSE), uci = x_bar_bar + t_val * se_xbar_bar, lci = x_bar_bar - t_val * se_xbar_bar, t_se = t_val * se_xbar_bar)
+
+combined_est_errors %>% select(gender, time,x_bar_bar, lci, uci)
+
+```
+
+```{r}
+ggplot(data= combined_est_errors, aes(x = time, y = x_bar_bar, col = gender))+geom_point()+geom_line() + geom_errorbar(aes(ymin = lci, ymax = uci, group = gender),
+     width = 0.2)+ labs(x = "Time", y = "Mean of imputed mean standard length values (STL)")
+
+```
+
+
+
+
+
