@@ -21,7 +21,7 @@ author: |
   | \normalsize [`ystuart@luc.edu`](mailto:ystuart@luc.edu) \vspace{-1mm}
   |
   | \large Gregory J. Matthews \vspace{-1.1mm}
-  | \normalsize Department of Mathematics and Statistics \vspace{-1mm}
+  | \normalsize Center for Data Science and Consulting; Department of Mathematics and Statistics \vspace{-1mm}
   | \normalsize Loyola University Chicago \vspace{-1mm}
   | \normalsize Chicago, IL 60660 \vspace{-1mm}
   | \normalsize [`gmatthews1@luc.edu`](mailto:gmatthews1@luc.edu) \vspace{-1mm}
@@ -158,23 +158,29 @@ Let $X_{gti}$ be a phenotype of interest for the $i$-th observation $i = 1\ldots
 
 
 $$
-X_{gti} \sim N(\mu_{gt}, \sigma^2)\\
-
-\mu_{gt} \sim \kappa \mu_{g(t-1)} + (1-\kappa)\theta_g + \nu_{gt}\\
-
-\nu_{gt} \sim N(0,\tau^2)\\
+X_{gti} \sim N(\mu_{gt}, \sigma^2)
+$$
+$$
+\mu_{gt} \sim \kappa \mu_{g(t-1)} + (1-\kappa)\theta_{g} + \nu_{gt}
+$$
+$$
+\nu_{gt} \sim N(0,\tau^2)
 $$
 Priors: 
 $$
-\sigma^2 \sim Scaled-Inv \chi^2(1)\\
-\tau^2 \sim Scaled-Inv \chi^2(1)\\
-
+\sigma^2 \sim Scaled-Inv \chi^2(1)
+$$
+$$
+\tau^2 \sim Scaled-Inv \chi^2(1)
+$$
+$$
 \mu_{g0} \sim N(0,10000000000000), g = 1,2\\
-
-
+$$
+$$
 \kappa \sim N(0,10000000000)\\
+$$
+$$
 \theta \sim N(0,10000000000) \\
-
 $$
 
 All models were built using @R2022language
