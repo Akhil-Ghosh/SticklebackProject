@@ -66,8 +66,16 @@ library(Lahman)
 \newpage
 
 # Introduction {#sec:intro}
+Sexual Dimorphism is interesting because...... 
 
-# Data
+Sexual Dimoprhism lit review:
+@SaittaEtAl2020 
+
+Studying sexual dimorphism of phenotypes in modern species is a straightforward endeavor: measure a phenotype of interest and statistically test for differences between the sexes.  However, examining sexual dimorphism in fossils is complicated substantially by the issue that sex may not be able to be directly observed from fossil specimens.  For this study, we have two sources of data: 1) Modern stickleback specimens with observed sex and 2) fossil specimens with sex unobserved.  We view the sex of the fossils as missing data and use multiple imputation (@little2002statistical) to impute the sex of the fossils using the modern stickleback fish with observed sex to model the relationship between sex and observed phenotypes.  Once sex is imputed, an Ornstein–Uhlenbeck (OU) model is fit using a Bayesian framework to look for sexual dimorphism across a variety of stickleback phenotypes (e.g. length, vertebrae count?, etc).
+
+The remainder of this manuscript contains a description of the data in section \ref{sec:data} and a description of our models in \ref{sec:models}. Section \ref{sec:results} presents a summary of our results, and we end with our conclusion and future work in section \ref{sec:conclusions}.  
+
+# Data {#sec:data}
 
 ```{r}
 stickle <- read_csv('stickle_revamped.csv')
@@ -95,9 +103,9 @@ fortab <- data.frame(time = 1:18, count = as.character(as.numeric((table(times_v
 #print(xtable(fortab),include.rownames = FALSE)
 ```
 
-The data used here consists of a total of `r sum(!is.na(stick$gender))` extant specimens with known sex.  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively.  
+The data used here consists of a total of `r sum(!is.na(stick$gender))` extant specimens with known sex all collected in the last 30 years.  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively.  
 
-In addition there are `r sum(is.na(stick$gender))` fossil specimens with unknown sex over 18 time periods. Table 1 shows the sample size at each of the 18 time periods.  There are at least 22 specimens at each time period with a high of 67 specimens in period 7.  
+In addition there are `r sum(is.na(stick$gender))` fossil specimens from approximately 10.3 million years ago with unknown sex over 18 time periods spaced about 1000 years apart. Table 1 shows the sample size at each of the 18 time periods.  There are at least 22 specimens at each time period with a high of 67 specimens in period 7.  
 
 
 <!-- % latex table generated in R 4.2.2 by xtable 1.8-4 package -->
@@ -133,13 +141,52 @@ time & count \\
 \end{table}
 
 
+What covariates do we have in the data: length, what else, 
 
-# Models 
+
+
+# Models  {#sec:models}
+## Imputation model 
+Let $W$ be sex and $X$ are covariates.  This data set up here is $n_{fossil} + n_{modern}$.  
+$W = (W_{obs},W_{mis})$ where $W_{obs}$ and $W_{mis}$ are the observed and missing parts of the covariate sex.  In this setting, $W_{obs}$ perfectly corresponds to the sex of the modern specimens, and $W_{mis}$ perfectly corresponds to the fossil data.  Missing values of sex are imputed by drawing from the posterior predictive distribution $P(W_{mis}|W_{obs}, X)$. Multiple imputation was implemented here using MICE (CITE) with predictive mean matching.  The data were imputed M = 100 times.  
+
+## OU model 
+After imputing sex, we fit an OU model for different phenotypes of interest. We only look at $n_{fossil}$ fossil observations.  
+WLOG we choose one of the columns of $X$ to be the target ophenotype and our analysis is repeated for all phenotypes of interest.  
+
+Let $X_{gti}$ be a phenotype of interest for the $i$-th observation $i = 1\ldots,n_{tg}$, in sex $g = 1, 2$ and $t = 1, \ldots, 18$.   
+
+
+$$
+X_{gti} \sim N(\mu_{gt}, \sigma^2)\\
+
+\mu_{gt} \sim \kappa \mu_{g(t-1)} + (1-\kappa)\theta_g + \nu_{gt}\\
+
+\nu_{gt} \sim N(0,\tau^2)\\
+$$
+Priors: 
+$$
+\sigma^2 \sim Scaled-Inv \chi^2(1)\\
+\tau^2 \sim Scaled-Inv \chi^2(1)\\
+
+\mu_{g0} \sim N(0,10000000000000), g = 1,2\\
+
+
+\kappa \sim N(0,10000000000)\\
+\theta \sim N(0,10000000000) \\
+
+$$
+
 All models were built using @R2022language
 
-# Results
+@Cornault2022 Bayesian OU model.  
 
-# Future work and conclusions
+Bayesian Analysis after multiple imputation @ZhouReiter2009: They recommend using a large number of imputrations.  5 or 10 is too small.  We are using M = 100.  
+
+
+# Results {#sec:results}
+
+# Future work and conclusions {#sec:conclusions}
 
 
 # Acknowledgements {-}
