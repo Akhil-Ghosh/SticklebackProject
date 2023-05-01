@@ -1,0 +1,90 @@
+---
+title: |
+  |  \Large Stickle!
+author: | 
+  | \large Matthew Stuart \vspace{-1.1mm}
+  | \normalsize Department of Mathematics and Statistics \vspace{-1mm}
+  | \normalsize Loyola University Chicago \vspace{-1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1mm}
+  | \normalsize [`mstuart@luc.edu`](mailto:mstuart@luc.edu) \vspace{-1mm}
+  |
+  | \large Akhil Ghosh \vspace{-1.1mm}
+  | \normalsize Department of Mathematics and Statistics \vspace{-1mm}
+  | \normalsize Loyola University Chicago \vspace{-1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1mm}
+  | \normalsize [`aghosh@luc.edu`](mailto:aghosh@luc.edu) \vspace{-1mm}
+  |
+  | \large Yoel Stuart \vspace{-1.1mm}
+  | \normalsize Department of Biology \vspace{-1mm}
+  | \normalsize Loyola University Chicago \vspace{-1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1mm}
+  | \normalsize [`ystuart@luc.edu`](mailto:ystuart@luc.edu) \vspace{-1mm}
+  |
+  | \large Gregory J. Matthews \vspace{-1.1mm}
+  | \normalsize Department of Mathematics and Statistics \vspace{-1mm}
+  | \normalsize Loyola University Chicago \vspace{-1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1mm}
+  | \normalsize [`gmatthews1@luc.edu`](mailto:gmatthews1@luc.edu) \vspace{-1mm}
+abstract: |
+  | Evewryone loves the stickle \vspace{2mm}
+  | *Keywords*: Stickle
+bibliography: references.bib
+fontsize: 12pt
+link-citations: true
+linkcolor: cyan
+urlcolor: cyan
+output:
+  pdf_document:
+    df_print: kable
+    number_sections: true
+    keep_tex: true
+header-includes:
+ \usepackage{setspace}
+ \setstretch{1.15}
+ \usepackage{float}
+ \floatplacement{figure}{t}
+---
+
+```{r setup, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.align = "center",
+	message = FALSE,
+	warning = FALSE
+)
+
+gjm <- function(x, color = "red") {
+  sprintf("\\textcolor{%s}{%s}", color, x)}
+```
+
+```{r pkgs}
+library(tidyverse)
+theme_set(theme_minimal())
+library(Lahman)
+```
+
+\newpage
+
+# Introduction {#sec:intro}
+
+# Exploratory Analysis
+
+
+# Models 
+All models were built using @R2022language
+
+# Results
+
+# Future work and conclusions
+
+
+# Acknowledgements {-}
+
+
+Stickle!
+
+# Supplementary Material {-}
+
+All code for reproducing the analyses in this paper is publicly available at https://github.com/Akhil-Ghosh/SticklebackProject
+
+# References
