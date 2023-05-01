@@ -67,7 +67,71 @@ library(Lahman)
 
 # Introduction {#sec:intro}
 
-# Exploratory Analysis
+# Data
+
+```{r}
+stickle <- read_csv('stickle_revamped.csv')
+
+stick <- stickle %>% 
+  mutate(gender = as.factor(case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    )), ips = as.factor(ips)
+  ) %>% 
+  select(gender, everything())
+
+#getting time vector, adding it to imputed data
+univ <- stick %>% 
+  mutate(time = as.integer(sub(".*([0-9]{2})\\..*", "\\1",univID)))
+times <- univ %>% drop_na(time) %>% pull(time)
+
+times_vector <- c(rep(1,43)) %>% 
+  append(21-times)
+
+#fossil n
+fortab <- data.frame(time = 1:18, count = as.character(as.numeric((table(times_vector)))))
+#knitr::kable(fortab)
+#print(xtable(fortab),include.rownames = FALSE)
+```
+
+The data used here consists of a total of `r sum(!is.na(stick$gender))` extant specimens with known sex.  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively.  
+
+In addition there are `r sum(is.na(stick$gender))` fossil specimens with unknown sex over 18 time periods. Table 1 shows the sample size at each of the 18 time periods.  There are at least 22 specimens at each time period with a high of 67 specimens in period 7.  
+
+
+<!-- % latex table generated in R 4.2.2 by xtable 1.8-4 package -->
+<!-- % Mon May  1 11:20:28 2023 -->
+\begin{table}[ht]
+\centering
+\begin{tabular}{rl}
+  \hline
+time & count \\ 
+  \hline
+  1 & 43 \\ 
+    2 & 41 \\ 
+    3 & 51 \\ 
+    4 & 41 \\ 
+    5 & 46 \\ 
+    6 & 48 \\ 
+    7 & 67 \\ 
+    8 & 55 \\ 
+    9 & 42 \\ 
+   10 & 33 \\ 
+   11 & 37 \\ 
+   12 & 22 \\ 
+   13 & 41 \\ 
+   14 & 43 \\ 
+   15 & 46 \\ 
+   16 & 47 \\ 
+   17 & 56 \\ 
+   18 & 55 \\ 
+   \hline
+\end{tabular}
+<!-- \label{tab1} -->
+\caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.}
+\end{table}
+
 
 
 # Models 
