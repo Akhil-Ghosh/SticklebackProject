@@ -18,7 +18,8 @@ parameters{
   real<lower=0> theta_m;
   real u_f[T];
   real u_m[T];
-  real<lower=-1,upper=1> kappa;
+  real<lower=-1,upper=1> kappa_f;
+  real<lower=-1,upper=1> kappa_m;
   real<lower=0> sigma;
   real<lower=0> tau;
 }
@@ -36,15 +37,16 @@ model{
                   (1 - gender[i])*(mu_m[time[i]]),sigma);
   }
   for (t in 2:T){
-    u_f[t] ~ normal(kappa*u_f[t-1],tau);
-    u_m[t] ~ normal(kappa*u_m[t-1],tau);
+    u_f[t] ~ normal(kappa_f*u_f[t-1],tau);
+    u_m[t] ~ normal(kappa_m*u_m[t-1],tau);
   }
-  u_f[1] ~ normal(0,tau/sqrt(1-kappa*kappa));
-  u_m[1] ~ normal(0,tau/sqrt(1-kappa*kappa));
+  u_f[1] ~ normal(0,tau/sqrt(1-kappa_f*kappa_f));
+  u_m[1] ~ normal(0,tau/sqrt(1-kappa_m*kappa_m));
 
   theta_f ~ normal(54,20);
   theta_m ~ normal(54,20);
-  kappa ~ normal(0.5,1);
+  kappa_f ~ normal(0.5,1);
+  kappa_m ~ normal(0.5,1);
   sigma ~ normal(0,10);
   tau ~ normal(0,10);
 }
@@ -64,7 +66,7 @@ for (m in 1:M){
   fit <- sampling(sm,
                   list(N=N,T=T,y=y,gender=gender,time=time),
                   iter=10000,chains=1,warmup=5000,thin=5,
-                  pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
+                  pars = c("theta_f","theta_m","mu_f","mu_m","kappa_f","kappa_m","sigma","tau"))
 
   if (m == 1){
     samps <- as.data.frame(fit)
@@ -73,4 +75,4 @@ for (m in 1:M){
   }
 }
 
-saveRDS(samps,"posterior_samples.RDS")
+saveRDS(samps,"posterior_samples_kappa.RDS")

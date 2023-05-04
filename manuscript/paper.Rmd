@@ -154,40 +154,47 @@ $W = (W_{obs},W_{mis})$ where $W_{obs}$ and $W_{mis}$ are the observed and missi
 After imputing sex, we fit an OU model for different phenotypes of interest. We only look at $n_{fossil}$ fossil observations.  
 WLOG we choose one of the columns of $X$ to be the target ophenotype and our analysis is repeated for all phenotypes of interest.  
 
-Let $X_{gti}$ be a phenotype of interest for the $i$-th observation $i = 1\ldots,n_{tg}$, in sex $g = 1, 2$ and $t = 1, \ldots, 18$.   
+Let $X_{gti}$ be a phenotype of interest for the $i$-th observation $i = 1\ldots,n_{gt}$, in sex $g = 1, 2$ and $t = 1, \ldots, 18$.   
 
 
 $$
-X_{gti} \sim N(\mu_{gt}, \sigma^2)
+X_{gti} = \theta_g + u_{gt} + \epsilon_{gti}
 $$
 $$
-\mu_{gt} \sim \kappa \mu_{g(t-1)} + (1-\kappa)\theta_{g} + \nu_{gt}
+u_{gt} = \kappa u_{g(t-1)} + \nu_{gt}
 $$
 $$
-\nu_{gt} \sim N(0,\tau^2)
+u_{g1} \sim \mathcal{N}\left(0,\frac{\tau^2}{1-\kappa^2}\right)
 $$
+
+$$
+\nu_{gt} \sim \mathcal{N}(0,\tau^2)
+$$
+
+$$
+\epsilon_{gti} \sim \mathcal{N}(0,\sigma^2)
+$$
+
 Priors: 
 $$
-\sigma^2 \sim Scaled-Inv \chi^2(1)
+\sigma \sim \mathcal{N}(0,100)I_{\{\sigma > 0\}}
 $$
 $$
-\tau^2 \sim Scaled-Inv \chi^2(1)
+\tau \sim \mathcal{N}(0,100)I_{\{\tau > 0\}}
+$$
+
+$$
+\kappa \sim \mathcal{N}(0,25)I_{\{-1 < \kappa < 1\}} \\
 $$
 $$
-\mu_{g0} \sim N(0,10000000000000), g = 1,2\\
-$$
-$$
-\kappa \sim N(0,10000000000)\\
-$$
-$$
-\theta \sim N(0,10000000000) \\
+\theta_g \sim \mathcal{N}(54,625)I_{\{\theta_g > 0\}} \\
 $$
 
 All models were built using @R2022language
 
 @Cornault2022 Bayesian OU model.  
 
-Bayesian Analysis after multiple imputation @ZhouReiter2009: They recommend using a large number of imputrations.  5 or 10 is too small.  We are using M = 100.  
+Bayesian Analysis after multiple imputation @ZhouReiter2009: They recommend using a large number of imputations.  5 or 10 is too small.  We are using M = 100.  
 
 
 # Results {#sec:results}
