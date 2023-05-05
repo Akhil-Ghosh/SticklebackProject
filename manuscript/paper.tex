@@ -251,15 +251,15 @@ u_{g1} \sim \mathcal{N}\left(0,\frac{\tau^2}{1-\kappa^2}\right)
 \]
 
 Priors: \[
-\sigma \sim \mathcal{N}(0,2)I_{\sigma > 0}
+\sigma \sim \mathcal{N}(0,100)I_{\{\sigma > 0\}}
 \] \[
-\tau \sim \mathcal{N}(0,2)I_{\tau > 0}
+\tau \sim \mathcal{N}(0,100)I_{\{\tau > 0\}}
 \]
 
 \[
-\kappa \sim N(0.5,1)\\
+\kappa \sim \mathcal{N}(0,25)I_{\{-1 < \kappa < 1\}} \\
 \] \[
-\theta_g \sim N(54,400) \\
+\theta_g \sim \mathcal{N}(54,625)I_{\{\theta_g > 0\}} \\
 \]
 
 All models were built using R Core Team
