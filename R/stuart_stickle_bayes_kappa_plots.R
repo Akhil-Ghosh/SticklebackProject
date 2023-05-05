@@ -1,4 +1,6 @@
-samps <- readRDS("posterior_samples.RDS")
+library(tidyverse)
+library(ggridges)
+samps <- readRDS("posterior_samples_kappa.RDS")
 
 samps %>%
   rename(Female = theta_f) %>%
@@ -13,6 +15,19 @@ samps %>%
   ylab(expression(paste("p(",theta[g],"|",bold(X),")")))
 
 length(which(samps$theta_m > samps$theta_f))/nrow(samps)
+
+samps %>%
+  rename(Female = kappa_f) %>%
+  rename(Male = kappa_m) %>%
+  select(Female,Male) %>%
+  gather("Gender","Value") %>%
+  ggplot() +
+  geom_density(aes(x=Value,color=Gender)) +
+  theme_bw() +
+  xlab(expression(kappa[g])) +
+  ylab(expression(paste("p(",kappa[g],"|",bold(X),")")))
+
+length(which(samps$kappa_m > samps$kappa_f))/nrow(samps)
 
 mu_f <- samps %>% select(contains("mu_f"))
 mu_m <- samps %>% select(contains("mu_m"))
@@ -50,7 +65,7 @@ data.frame(time=1:18,probs=post_probs) %>%
   geom_line(aes(x=time,y=probs)) +
   geom_hline(aes(yintercept=0.5),color="red",linetype=2)+
   xlab(expression(t)) +
-  ylab(expression(paste(P,"(",mu[mt] > mu[ft],"|",bold(X),")"))) +
+  ylab(expression(paste(P,"(",mu[mt] > mu[ft],"|",X,")"))) +
   theme_bw()
 
 
