@@ -6,7 +6,7 @@ author: |
   | \normalsize Department of Mathematics and Statistics \vspace{-1.1mm}
   | \normalsize Loyola University Chicago \vspace{-1.1mm}
   | \normalsize Chicago, IL 60660 \vspace{-1.1mm}
-  | \normalsize [`mstuart@luc.edu`](mailto:mstuart@luc.edu) \vspace{-1.1mm}
+  | \normalsize [`mstuart1@luc.edu`](mailto:mstuart1@luc.edu) \vspace{-1.1mm}
   |
   | \large Akhil Ghosh \vspace{-1.1mm}
   | \normalsize Department of Mathematics and Statistics \vspace{-1.1mm}
