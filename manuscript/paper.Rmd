@@ -3,28 +3,28 @@ title: |
   |  \Large Stickle!
 author: | 
   | \large Matthew Stuart \vspace{-1.1mm}
-  | \normalsize Department of Mathematics and Statistics \vspace{-1mm}
-  | \normalsize Loyola University Chicago \vspace{-1mm}
-  | \normalsize Chicago, IL 60660 \vspace{-1mm}
-  | \normalsize [`mstuart@luc.edu`](mailto:mstuart@luc.edu) \vspace{-1mm}
+  | \normalsize Department of Mathematics and Statistics \vspace{-1.1mm}
+  | \normalsize Loyola University Chicago \vspace{-1.1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1.1mm}
+  | \normalsize [`mstuart@luc.edu`](mailto:mstuart@luc.edu) \vspace{-1.1mm}
   |
   | \large Akhil Ghosh \vspace{-1.1mm}
-  | \normalsize Department of Mathematics and Statistics \vspace{-1mm}
-  | \normalsize Loyola University Chicago \vspace{-1mm}
-  | \normalsize Chicago, IL 60660 \vspace{-1mm}
-  | \normalsize [`aghosh@luc.edu`](mailto:aghosh@luc.edu) \vspace{-1mm}
+  | \normalsize Department of Mathematics and Statistics \vspace{-1.1mm}
+  | \normalsize Loyola University Chicago \vspace{-1.1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1.1mm}
+  | \normalsize [`aghosh@luc.edu`](mailto:aghosh@luc.edu) \vspace{-1.1mm}
   |
   | \large Yoel Stuart \vspace{-1.1mm}
-  | \normalsize Department of Biology \vspace{-1mm}
-  | \normalsize Loyola University Chicago \vspace{-1mm}
-  | \normalsize Chicago, IL 60660 \vspace{-1mm}
-  | \normalsize [`ystuart@luc.edu`](mailto:ystuart@luc.edu) \vspace{-1mm}
+  | \normalsize Department of Biology \vspace{-1.1mm}
+  | \normalsize Loyola University Chicago \vspace{-1.1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1.1mm}
+  | \normalsize [`ystuart@luc.edu`](mailto:ystuart@luc.edu) \vspace{-1.1mm}
   |
   | \large Gregory J. Matthews \vspace{-1.1mm}
-  | \normalsize Center for Data Science and Consulting; Department of Mathematics and Statistics \vspace{-1mm}
-  | \normalsize Loyola University Chicago \vspace{-1mm}
-  | \normalsize Chicago, IL 60660 \vspace{-1mm}
-  | \normalsize [`gmatthews1@luc.edu`](mailto:gmatthews1@luc.edu) \vspace{-1mm}
+  | \normalsize Center for Data Science and Consulting; Department of Mathematics and Statistics \vspace{-1.1mm}
+  | \normalsize Loyola University Chicago \vspace{-1.1mm}
+  | \normalsize Chicago, IL 60660 \vspace{-1.1mm}
+  | \normalsize [`gmatthews1@luc.edu`](mailto:gmatthews1@luc.edu) \vspace{-1.1mm}
 abstract: |
   | Evewryone loves the stickle \vspace{2mm}
   | *Keywords*: Stickle
@@ -147,53 +147,47 @@ What covariates do we have in the data: length, what else,
 
 # Models  {#sec:models}
 ## Imputation model 
-Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate gender of the stickleback fish and $\boldsymbol{X}$ be an $(n_{extant} + n_{fossil}) \times p$ matrix of the $p$ phenotypes of interest of the fish.  Because $\boldsymbol{W}$ contains missing data, we further define $\boldsymbol{W} = (\boldsymbol{W}_{obs}^T,\boldsymbol{W}_{mis}^T)^T$ where $\boldsymbol{W}_{obs}$ and $\boldsymbol{W}_{mis}$ are the observed and missing data of the covariate gender, respectively.  In this setting, $\boldsymbol{W}_{obs}$ is a $n_{extant} \times 1$ vector and $\boldsymbol{W}_{obs}$ is a $n_{fossil} \times 1$ vector, perfectly corresponding to the observable gender of the modern extants and the unobservable gender of the fossil data, respectively.  
+Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate gender of the stickleback fish and $\boldsymbol{X}$ be an $(n_{extant} + n_{fossil}) \times k$ matrix of the $k$ phenotypes of interest of the fish.  Because $\boldsymbol{W}$ contains missing data, we further define $\boldsymbol{W} = (\boldsymbol{W}_{obs}^T,\boldsymbol{W}_{mis}^T)^T$ where $\boldsymbol{W}_{obs}$ and $\boldsymbol{W}_{mis}$ are the observed and missing data of the covariate gender, respectively.  In this setting, $\boldsymbol{W}_{obs}$ is a $n_{extant} \times 1$ vector and $\boldsymbol{W}_{obs}$ is a $n_{fossil} \times 1$ vector, perfectly corresponding to the observable gender of the modern extants and the unobservable gender of the fossil data, respectively.  
 
 We impute the missing gender for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{mis}|\boldsymbol{W}_{obs}, \boldsymbol{X})$ using the multiple imputation with chained equations (MICE) algorithm (@MICE) with predictive mean matching.  The imputation algorithm is run to obtain a total of $M = 100$ completed datasets.
 
 ## OU model 
-After imputing sex, we fit an OU model for different phenotypes of interest. We only look at $n_{fossil}$ fossil observations.  
-WLOG we choose one of the columns of $X$ to be the target phenotype and our analysis is repeated for all phenotypes of interest.  
+After imputing sex, we fit an OU model for different phenotypes of interest.  WLOG we choose one of the columns of $X$ to be the target phenotype and our analysis is repeated for all phenotypes of interest.  
 
 Let $W_{ti}$ and $X_{ti}$ be the gender and phenotype of interest for the $i$-th observation in year $t$ for $t = 1, \ldots, 18$ and  $i = 1\ldots,n_{t}$.  We assume that 
 
 
 $$
 \begin{aligned}
-X_{ti} \iid \left\{\begin{array}{ll} \mathcal{N}(\mu_{ft},\sigma^2) & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{mt},\sigma^2) & W_{ti} = \text{Male} \end{array}\right.
+X_{ti} \iid \left\{\begin{array}{ll} \mathcal{N}(\theta_f + u_{ft},\sigma^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\theta_m + u_{mt},\sigma^2), & W_{ti} = \text{Male} \end{array}\right.
 \end{aligned}
 $$
-We then fit the time and gender dependent means, $\mu_{ft}$ and $\mu_{mt}$, to an autoregressive process of lag 1, which is the discretization of an OU process.  For $t = 2,\ldots,T$ and $g \in \{f,m\}$, the AR1 model for the mean structure defined as is
+In this setting, for $g \in \{f,m\}$, $\theta_g$, is the defined as the overall mean of the phenotype of interest for each gender, and $u_{gt}$ are the gender specific random effects, measuring the difference between the gender and time-specific mean and the overall gender-specific mean, which we fit to an autoregressive process of lag 1, which is the discretization of an OU process.  For $t = 2,\ldots,T$ and $g \in \{f,m\}$, the AR1 model for is defined as
 
 $$
 \begin{aligned}
-\mu_{gt} \iid \mathcal{N}(\kappa \mu_{g,t-1} + (1 - \kappa)\theta_g, \tau^2).
+u_{g,t} \iid \mathcal{N}(\kappa_g u_{g,t-1} , \tau^2).
 \end{aligned}
 $$
-In this setting, $\theta_g, g \in \{f,m\}$ is the defined as the overall long-run mean of the phenotype of interest for each gender, and $\kappa$ represents how quickly over time $\mu_{gt}$ reverts back to $\theta_g$; the larger the value of $\kappa$, the slower $\mu_{gt}$ reverts back to $\theta_g$.
+$\kappa_g$ represents the gender-specific correlation between the previous and current time periods' random effects.  In addition, $\text{cor}(u_{g,t},u_{g,t+h}) = (\kappa_g)^h$ for $h \in \mathbb{N}$.
 
 We also set
 
 $$
 \begin{aligned}
-\mu_{g1} \sim \mathcal{N}\left(0,\frac{\tau^2}{1-\kappa^2}\right).
+u_{g,1} \iid \mathcal{N}\left(0,\frac{\tau^2}{1-\kappa_g^2}\right).
 \end{aligned}
 $$
-This model choice is to preserve stationarity, i.e. $p(\mu_{gs}) = p(\mu_{gt})$ for $s,t \in \{1,\dots,T\}$.
+This model choice is to make the distribution of the random effects stationary, i.e. $p(\mu_{g,s}) = p(\mu_{g,t})$ for $s,t \in \{1,\dots,T\}$.
 
 Priors: 
 $$
-\sigma \sim \mathcal{N}(0,100)I_{\{\sigma > 0\}}
-$$
-$$
-\tau \sim \mathcal{N}(0,100)I_{\{\tau > 0\}}
-$$
-
-$$
-\kappa \sim \mathcal{N}(0,25)I_{\{0 < \kappa < 1\}} \\
-$$
-$$
-\theta_g \sim \mathcal{N}(54,625)I_{\{\theta_g > 0\}} \\
+\begin{aligned}
+\sigma & \sim \mathcal{N}(0,100)I_{\{\sigma > 0\}} \\
+\tau & \sim \mathcal{N}(0,100)I_{\{\tau > 0\}} \\
+\kappa & \iid \mathcal{N}(0.5,1)I_{\{-1 < \kappa_g < 1\}} \\
+\theta_g & \iid \mathcal{N}(54,400)I_{\{\theta_g > 0\}}
+\end{aligned}
 $$
 
 All models were built using @R2022language
