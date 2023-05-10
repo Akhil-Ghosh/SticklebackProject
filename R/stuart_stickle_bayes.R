@@ -3,7 +3,7 @@ library(tidyverse)
 library(rstan)
 library(ggridges)
 
-dat <- read.csv("Data/stuart_stickle_imp_100_raw.csv")
+dat <- read.csv("Data/stuart_stickle_100imputations_all.csv")
 
 mod <- "
 data{
@@ -50,27 +50,47 @@ model{
 }
 "
 sm <- stan_model(model_code = mod, verbose = TRUE)
-M <- max(dat$imputation_number)
+M <- max(dat$imp)
 
 for (m in 1:M){
-  tmp <- dat %>% filter(imputation_number == m)
-  y <- tmp$stl
+  tmp <- dat %>% filter(imp == m)
+  stl <- tmp$stl
+  cle <- tmp$cle
+  pmx <- tmp$pmx
   gender <- ifelse(tmp$gender == "Female",1,0)
   time <- tmp$time
 
-  N <- length(y)
+  N <- length(stl)
   T <- max(time)
 
-  fit <- sampling(sm,
-                  list(N=N,T=T,y=y,gender=gender,time=time),
-                  iter=10000,chains=1,warmup=5000,thin=5,
-                  pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
+  print(paste("Running Imputation",m,"for stl"))
+  fit.stl <- sampling(sm,
+                      list(N=N,T=T,y=stl,gender=gender,time=time),
+                      iter=10000,chains=1,warmup=5000,thin=5,
+                      pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
+  print(paste("Running Imputation",m,"for cle"))
+  fit.cle <- sampling(sm,
+                      list(N=N,T=T,y=cle,gender=gender,time=time),
+                      iter=10000,chains=1,warmup=5000,thin=5,
+                      pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
+  print(paste("Running Imputation",m,"for pmx"))
+  fit.pmx <- sampling(sm,
+                      list(N=N,T=T,y=pmx,gender=gender,time=time),
+                      iter=10000,chains=1,warmup=5000,thin=5,
+                      pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
 
   if (m == 1){
-    samps <- as.data.frame(fit)
+    samps.stl <- as.data.frame(fit.stl)
+    samps.cle <- as.data.frame(fit.cle)
+    samps.pmx <- as.data.frame(fit.pmx)
   } else {
-    samps <- rbind(samps,as.data.frame(fit))
+    samps.stl <- rbind(samps.stl,as.data.frame(fit.stl))
+    samps.cle <- rbind(samps.cle,as.data.frame(fit.cle))
+    samps.pmx <- rbind(samps.stl,as.data.frame(fit.pmx))
   }
 }
 
-saveRDS(samps,"posterior_samples.RDS")
+saveRDS(samps.stl,"posterior_samples_stl.RDS")
+saveRDS(samps.cle,"posterior_samples_cle.RDS")
+saveRDS(samps.pmx,"posterior_samples_pmx.RDS")
+
