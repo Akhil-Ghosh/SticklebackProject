@@ -14,7 +14,7 @@ author: |
   | \normalsize Chicago, IL 60660 \vspace{-1.1mm}
   | \normalsize [`aghosh@luc.edu`](mailto:aghosh@luc.edu) \vspace{-1.1mm}
   |
-  | \large Yoel Stuart \vspace{-1.1mm}
+  | \large Yoel E. Stuart \vspace{-1.1mm}
   | \normalsize Department of Biology \vspace{-1.1mm}
   | \normalsize Loyola University Chicago \vspace{-1.1mm}
   | \normalsize Chicago, IL 60660 \vspace{-1.1mm}
