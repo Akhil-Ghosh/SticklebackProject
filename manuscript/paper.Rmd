@@ -159,8 +159,11 @@ Let $W_{ti}$ and $X_{ti}$ be the gender and phenotype of interest for the $i$-th
 
 
 \begin{align}
-X_{ti} \iid \left\{\begin{array}{ll} \mathcal{N}(\theta_f + u_{ft},\sigma^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\theta_m + u_{mt},\sigma^2), & W_{ti} = \text{Male} \end{array}\right. 
+X_{ti} \iid \left\{\begin{array}{ll} \mathcal{N}(\theta_f + u_{ft},\sigma^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\theta_m + u_{mt},\sigma^2), & W_{ti} = \text{Male} \end{array}\right.
+\label{eq:1}
 \end{align}
+
+Look at \ref{eq:1}
 
 In this setting, for $g \in \{f,m\}$, $\theta_g$, is the defined as the overall mean of the phenotype of interest for each gender, and $u_{gt}$ are the gender specific random effects, measuring the difference between the gender and time-specific mean and the overall gender-specific mean, which we fit to an autoregressive process of lag 1, which is the discretization of an OU process.  For $t = 2,\ldots,T$ and $g \in \{f,m\}$, the AR1 model for is defined as
 
