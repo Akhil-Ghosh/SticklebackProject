@@ -106,7 +106,7 @@
 \normalsize \href{mailto:aghosh@luc.edu}{\texttt{aghosh@luc.edu}}
 \vspace{-1.1mm}\\
 \strut \\
-\large Yoel Stuart \vspace{-1.1mm}\\
+\large Yoel E. Stuart \vspace{-1.1mm}\\
 \normalsize Department of Biology \vspace{-1.1mm}\\
 \normalsize Loyola University Chicago \vspace{-1.1mm}\\
 \normalsize Chicago, IL 60660 \vspace{-1.1mm}\\
@@ -246,45 +246,51 @@ Let \(W_{ti}\) and \(X_{ti}\) be the gender and phenotype of interest
 for the \(i\)-th observation in year \(t\) for \(t = 1, \ldots, 18\) and
 \(i = 1\ldots,n_{t}\). We assume that
 
-\[
-\begin{aligned}
+\begin{align}
 X_{ti} \overset{iid}{\sim}\left\{\begin{array}{ll} \mathcal{N}(\theta_f + u_{ft},\sigma^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\theta_m + u_{mt},\sigma^2), & W_{ti} = \text{Male} \end{array}\right.
-\end{aligned}
-\] In this setting, for \(g \in \{f,m\}\), \(\theta_g\), is the defined
-as the overall mean of the phenotype of interest for each gender, and
-\(u_{gt}\) are the gender specific random effects, measuring the
-difference between the gender and time-specific mean and the overall
-gender-specific mean, which we fit to an autoregressive process of lag
-1, which is the discretization of an OU process. For \(t = 2,\ldots,T\)
-and \(g \in \{f,m\}\), the AR1 model for is defined as
+\label{eq:x}
+\end{align}
 
-\[
-\begin{aligned}
+Look at \ref{eq:x}
+
+For \(g \in \{f,m\}\), \(\theta_g\), is the defined as the overall mean
+of the phenotype of interest for each gender, and \(u_{gt}\) are the
+gender specific random effects, measuring the difference between the
+gender and time-specific mean and the overall gender-specific mean,
+which we fit to an autoregressive process of lag 1, which is the
+discretization of an OU process. For \(t = 2,\ldots,T\) and
+\(g \in \{f,m\}\), the AR1 model for is defined as
+
+\begin{align}
 u_{g,t} \overset{iid}{\sim}\mathcal{N}(\kappa_g u_{g,t-1} , \tau^2).
-\end{aligned}
-\] \(\kappa_g\) represents the gender-specific correlation between the
+\label{eq:ar1}
+\end{align}
+
+\(\kappa_g\) represents the gender-specific correlation between the
 previous and current time periods' random effects. In addition,
 \(\text{cor}(u_{g,t},u_{g,t+h}) = (\kappa_g)^h\) for
 \(h \in \mathbb{N}\).
 
 We also set
 
-\[
-\begin{aligned}
+\begin{align}
 u_{g,1} \overset{iid}{\sim}\mathcal{N}\left(0,\frac{\tau^2}{1-\kappa_g^2}\right).
-\end{aligned}
-\] This model choice is to make the distribution of the random effects
+\label{eq:u1}
+\end{align}
+
+This model choice is to make the distribution of the random effects
 stationary, i.e.~\(p(\mu_{g,s}) = p(\mu_{g,t})\) for
 \(s,t \in \{1,\dots,T\}\).
 
-Priors: \[
-\begin{aligned}
-\sigma & \sim \mathcal{N}(0,100)I_{\{\sigma > 0\}} \\
-\tau & \sim \mathcal{N}(0,100)I_{\{\tau > 0\}} \\
-\kappa & \overset{iid}{\sim}\mathcal{N}(0.5,1)I_{\{-1 < \kappa_g < 1\}} \\
+Priors:
+
+\begin{align}
+\sigma & \sim \mathcal{N}(0,100)I_{\{\sigma > 0\}} \nonumber \\
+\tau & \sim \mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
+\kappa & \overset{iid}{\sim}\mathcal{N}(0.5,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
 \theta_g & \overset{iid}{\sim}\mathcal{N}(54,400)I_{\{\theta_g > 0\}}
-\end{aligned}
-\]
+\label{eq:priors}
+\end{align}
 
 All models were built using R Core Team
 (\protect\hyperlink{ref-R2022language}{2022})
