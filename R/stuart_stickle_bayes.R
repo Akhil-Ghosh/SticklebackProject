@@ -55,8 +55,8 @@ M <- max(dat$imp)
 for (m in 1:M){
   tmp <- dat %>% filter(imp == m)
   stl <- tmp$stl
-  cle <- tmp$cle
-  pmx <- tmp$pmx
+  cle <- tmp$cle.sc
+  pmx <- tmp$pmx.sc
   gender <- ifelse(tmp$gender == "Female",1,0)
   time <- tmp$time
 

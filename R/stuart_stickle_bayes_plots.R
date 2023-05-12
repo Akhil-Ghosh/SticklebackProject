@@ -9,7 +9,7 @@ for (x in vars){
   xlim <- if (x == "stl"){
     xlim(30,80)
   } else if (x == "cle"){
-    xlim(5,20)
+    xlim(5,12)
   } else {
     xlim(25,85)
   }
