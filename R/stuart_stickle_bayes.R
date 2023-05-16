@@ -34,6 +34,7 @@ parameters{
   real<lower=-1,upper=1> kappa[16];
   real<lower=0> sigma[10];
   real<lower=0> tau[16];
+  real beta[15];
   vector[2*T] u_stl;
   vector[2*T] u_lps;
   vector[2*T] u_ect;
@@ -104,21 +105,21 @@ transformed parameters{
 }
 model{
   stl ~ normal(X * mu_stl,sigma[1]);
-  lps ~ normal(X * mu_lps,sigma[2]);
-  ect ~ normal(X * mu_ect,sigma[3]);
-  tpg ~ normal(X * mu_tpg,sigma[4]);
-  cle ~ normal(X * mu_cle,sigma[5]);
-  pmx ~ normal(X * mu_pmx,sigma[6]);
-  ds1 ~ normal(X * mu_ds1,sigma[7]);
-  ds2 ~ normal(X * mu_ds2,sigma[8]);
-  ds3 ~ normal(X * mu_ds3,sigma[9]);
-  lpt ~ normal(X * mu_lpt,sigma[10]);
-  mds ~ poisson(exp(X * mu_mds));
-  mdf ~ poisson(exp(X * mu_mdf));
-  mav ~ poisson(exp(X * mu_mav));
-  maf ~ poisson(exp(X * mu_maf));
-  mcf ~ poisson(exp(X * mu_mcf));
-  mpt ~ poisson(exp(X * mu_mpt));
+  lps ~ normal(X * mu_lps + beta[1] * (stl - X * mu_stl),sigma[2]);
+  ect ~ normal(X * mu_ect + beta[2] * (stl - X * mu_stl),sigma[3]);
+  tpg ~ normal(X * mu_tpg + beta[3] * (stl - X * mu_stl),sigma[4]);
+  cle ~ normal(X * mu_cle + beta[4] * (stl - X * mu_stl),sigma[5]);
+  pmx ~ normal(X * mu_pmx + beta[5] * (stl - X * mu_stl),sigma[6]);
+  ds1 ~ normal(X * mu_ds1 + beta[6] * (stl - X * mu_stl),sigma[7]);
+  ds2 ~ normal(X * mu_ds2 + beta[7] * (stl - X * mu_stl),sigma[8]);
+  ds3 ~ normal(X * mu_ds3 + beta[8] * (stl - X * mu_stl),sigma[9]);
+  lpt ~ normal(X * mu_lpt + beta[9] * (stl - X * mu_stl),sigma[10]);
+  mds ~ poisson(exp(X * mu_mds + beta[10] * (stl - X * mu_stl)));
+  mdf ~ poisson(exp(X * mu_mdf + beta[11] * (stl - X * mu_stl)));
+  mav ~ poisson(exp(X * mu_mav + beta[12] * (stl - X * mu_stl)));
+  maf ~ poisson(exp(X * mu_maf + beta[13] * (stl - X * mu_stl)));
+  mcf ~ poisson(exp(X * mu_mcf + beta[14] * (stl - X * mu_stl)));
+  mpt ~ poisson(exp(X * mu_mpt + beta[15] * (stl - X * mu_stl)));
 
   u_stl[2:T] ~ normal(kappa[1]*u_stl[1:(T-1)],tau[1]);
   u_stl[(T+2):(2*T)] ~ normal(kappa[1]*u_stl[(T+1):(2*T-1)],tau[1]);
@@ -175,6 +176,7 @@ model{
   kappa ~ normal(0,1);
   sigma ~ normal(0,10);
   tau ~ normal(0,10);
+  beta ~ normal(0,5);
 }
 "
 sm <- stan_model(model_code = mod, verbose = TRUE)
