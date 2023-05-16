@@ -114,12 +114,12 @@ model{
   ds2 ~ normal(X * mu_ds2 + beta[7] * (stl - X * mu_stl),sigma[8]);
   ds3 ~ normal(X * mu_ds3 + beta[8] * (stl - X * mu_stl),sigma[9]);
   lpt ~ normal(X * mu_lpt + beta[9] * (stl - X * mu_stl),sigma[10]);
-  mds ~ poisson(exp(X * mu_mds + beta[10] * (stl - X * mu_stl)));
-  mdf ~ poisson(exp(X * mu_mdf + beta[11] * (stl - X * mu_stl)));
-  mav ~ poisson(exp(X * mu_mav + beta[12] * (stl - X * mu_stl)));
-  maf ~ poisson(exp(X * mu_maf + beta[13] * (stl - X * mu_stl)));
-  mcf ~ poisson(exp(X * mu_mcf + beta[14] * (stl - X * mu_stl)));
-  mpt ~ poisson(exp(X * mu_mpt + beta[15] * (stl - X * mu_stl)));
+  mds ~ poisson(exp(X * mu_mds + beta[10] * (stl - X * mu_stl) - pow(beta[10]*sigma[1],2)/2));
+  mdf ~ poisson(exp(X * mu_mdf + beta[11] * (stl - X * mu_stl) - pow(beta[11]*sigma[1],2)/2));
+  mav ~ poisson(exp(X * mu_mav + beta[12] * (stl - X * mu_stl) - pow(beta[12]*sigma[1],2)/2));
+  maf ~ poisson(exp(X * mu_maf + beta[13] * (stl - X * mu_stl) - pow(beta[13]*sigma[1],2)/2));
+  mcf ~ poisson(exp(X * mu_mcf + beta[14] * (stl - X * mu_stl) - pow(beta[14]*sigma[1],2)/2));
+  mpt ~ poisson(exp(X * mu_mpt + beta[15] * (stl - X * mu_stl) - pow(beta[15]*sigma[1],2)/2));
 
   u_stl[2:T] ~ normal(kappa[1]*u_stl[1:(T-1)],tau[1]);
   u_stl[(T+2):(2*T)] ~ normal(kappa[1]*u_stl[(T+1):(2*T-1)],tau[1]);
