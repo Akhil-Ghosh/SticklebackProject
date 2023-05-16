@@ -34,7 +34,7 @@ parameters{
   real<lower=-1,upper=1> kappa[16];
   real<lower=0> sigma[10];
   real<lower=0> tau[16];
-  real beta[15];
+  real beta[9];
   vector[2*T] u_stl;
   vector[2*T] u_lps;
   vector[2*T] u_ect;
@@ -114,12 +114,12 @@ model{
   ds2 ~ normal(X * mu_ds2 + beta[7] * (stl - X * mu_stl),sigma[8]);
   ds3 ~ normal(X * mu_ds3 + beta[8] * (stl - X * mu_stl),sigma[9]);
   lpt ~ normal(X * mu_lpt + beta[9] * (stl - X * mu_stl),sigma[10]);
-  mds ~ poisson(exp(X * mu_mds + beta[10] * (stl - X * mu_stl) - pow(beta[10]*sigma[1],2)/2));
-  mdf ~ poisson(exp(X * mu_mdf + beta[11] * (stl - X * mu_stl) - pow(beta[11]*sigma[1],2)/2));
-  mav ~ poisson(exp(X * mu_mav + beta[12] * (stl - X * mu_stl) - pow(beta[12]*sigma[1],2)/2));
-  maf ~ poisson(exp(X * mu_maf + beta[13] * (stl - X * mu_stl) - pow(beta[13]*sigma[1],2)/2));
-  mcf ~ poisson(exp(X * mu_mcf + beta[14] * (stl - X * mu_stl) - pow(beta[14]*sigma[1],2)/2));
-  mpt ~ poisson(exp(X * mu_mpt + beta[15] * (stl - X * mu_stl) - pow(beta[15]*sigma[1],2)/2));
+  mds ~ poisson(exp(X * mu_mds));
+  mdf ~ poisson(exp(X * mu_mdf));
+  mav ~ poisson(exp(X * mu_mav));
+  maf ~ poisson(exp(X * mu_maf));
+  mcf ~ poisson(exp(X * mu_mcf));
+  mpt ~ poisson(exp(X * mu_mpt));
 
   u_stl[2:T] ~ normal(kappa[1]*u_stl[1:(T-1)],tau[1]);
   u_stl[(T+2):(2*T)] ~ normal(kappa[1]*u_stl[(T+1):(2*T-1)],tau[1]);
@@ -185,42 +185,45 @@ M <- max(dat$imp)
 for (m in 1:M){
   tmp <- dat %>% filter(imp == m)
   stl <- tmp$stl
-  cle <- tmp$cle.sc
-  pmx <- tmp$pmx.sc
-  gender <- ifelse(tmp$gender == "Female",1,0)
-  time <- tmp$time
+  mds <- tmp$mds
+  mdf <- tmp$mdf
+  maf <- tmp$maf
+  lps <- tmp$lps
+  ect <- tmp$ect
+  tpg <- tmp$tpg
+  mav <- tmp$mav
+  mcv <- tmp$mcv
+  mpt <- tmp$mpt
+  cle <- tmp$cle
+  pmx <- tmp$pmx
+  ds1 <- tmp$ds1
+  ds2 <- tmp$ds2
+  ds3 <- tmp$ds3
+  lpt <- tmp$lpt
+  X <- model.matrix(~0+group,tmp)
 
   N <- length(stl)
   T <- max(time)
 
   print(paste("Running Imputation",m,"for stl"))
-  fit.stl <- sampling(sm,
-                      list(N=N,T=T,y=stl,gender=gender,time=time),
-                      iter=10000,chains=1,warmup=5000,thin=5,
-                      pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
-  print(paste("Running Imputation",m,"for cle"))
-  fit.cle <- sampling(sm,
-                      list(N=N,T=T,y=cle,gender=gender,time=time),
-                      iter=10000,chains=1,warmup=5000,thin=5,
-                      pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
-  print(paste("Running Imputation",m,"for pmx"))
-  fit.pmx <- sampling(sm,
-                      list(N=N,T=T,y=pmx,gender=gender,time=time),
-                      iter=10000,chains=1,warmup=5000,thin=5,
-                      pars = c("theta_f","theta_m","mu_f","mu_m","kappa","sigma","tau"))
-
+  fit <- sampling(sm,
+                  list(N=N,T=T,X=X,stl=stl,
+                       lpt=lpt,mds=mds,mdf=mdf,
+                       maf=maf,lps=lps,ect=ect,
+                       tpg=tpg,mav=mav,mcv=mcv,
+                       mpt=mpt,cle=cle,pmx=pmx,
+                       ds1=ds1,ds2=ds2,ds3=ds3),
+                  iter=6000,chains=1,warmup=5000,thin=10,
+                  pars = c("theta_f","theta_m","kappa","sigma","tau","beta",
+                           "mu_stl","mu_lps","mu_ect","mu_tpg",
+                           "mu_cle","mu_pmx","mu_ds1","mu_ds2",
+                           "mu_ds3","mu_lpt","mu_mds","mu_mdf",
+                           "mu_mav","mu_maf","mu_mcf","mu_mpt"))
   if (m == 1){
-    samps.stl <- as.data.frame(fit.stl)
-    samps.cle <- as.data.frame(fit.cle)
-    samps.pmx <- as.data.frame(fit.pmx)
+    samps <- as.data.frame(fit)
   } else {
-    samps.stl <- rbind(samps.stl,as.data.frame(fit.stl))
-    samps.cle <- rbind(samps.cle,as.data.frame(fit.cle))
-    samps.pmx <- rbind(samps.stl,as.data.frame(fit.pmx))
+    samps <- rbind(samps,as.data.frame(fit))
   }
 }
 
-saveRDS(samps.stl,"posterior_samples_stl.RDS")
-saveRDS(samps.cle,"posterior_samples_cle.RDS")
-saveRDS(samps.pmx,"posterior_samples_pmx.RDS")
-
+saveRDS(samps,"posterior_samples.RDS")
