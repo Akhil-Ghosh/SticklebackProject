@@ -205,7 +205,7 @@ for (m in 1:M){
   N <- length(stl)
   T <- max(time)
 
-  print(paste("Running Imputation",m,"for stl"))
+  print(paste("Running Imputation",m))
   fit <- sampling(sm,
                   list(N=N,T=T,X=X,stl=stl,
                        lpt=lpt,mds=mds,mdf=mdf,
