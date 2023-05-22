@@ -203,7 +203,7 @@ for (m in 1:M){
   X <- model.matrix(~0+group,tmp)
 
   N <- length(stl)
-  T <- max(time)
+  T <- max(tmp$time)
 
   print(paste("Running Imputation",m))
   fit <- sampling(sm,
