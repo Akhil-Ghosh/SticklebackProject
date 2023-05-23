@@ -212,83 +212,105 @@ What covariates do we have in the data: length, what else,
 \section{Models}\label{sec:models}}
 
 \hypertarget{imputation-model}{%
-\subsection{Imputation model}\label{imputation-model}}
+\subsection{Imputation Model}\label{imputation-model}}
 
 Let \(\boldsymbol{W}\) be an \((n_{extant} + n_{fossil}) \times 1\)
-vector of the covariate gender of the stickleback fish and
-\(\boldsymbol{X}\) be an \((n_{extant} + n_{fossil}) \times k\) matrix
-of the \(k\) phenotypes of interest of the fish. Because
-\(\boldsymbol{W}\) contains missing data, we further define
-\(\boldsymbol{W} = (\boldsymbol{W}_{obs}^T,\boldsymbol{W}_{mis}^T)^T\)
-where \(\boldsymbol{W}_{obs}\) and \(\boldsymbol{W}_{mis}\) are the
-observed and missing data of the covariate gender, respectively. In this
-setting, \(\boldsymbol{W}_{obs}\) is a \(n_{extant} \times 1\) vector
-and \(\boldsymbol{W}_{obs}\) is a \(n_{fossil} \times 1\) vector,
-perfectly corresponding to the observable gender of the modern extants
-and the unobservable gender of the fossil data, respectively.
+vector of the covariate gender of the stickleback fish,
+\(\boldsymbol{X}\) be an \((n_{extant} + n_{fossil}) \times K\) matrix
+of the \(K\) continuous phenotypes of interest, and \(\boldsymbol{Y}\)
+be an \((n_{extant} + n_{fossil}) \times L\) matrix of the \(L\)
+discrete phenotypes of interest. Because the gender of the fossilized
+stickleback fish is unobservable, we further define
+\(\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T\)
+where \(\boldsymbol{W}_{extant}\) and \(\boldsymbol{W}_{fossil}\) are
+the \(n_{extant} \times 1\) and \(n_{fossil} \times 1\) vectors of the
+observed extant gender and missing fossil gender, respectively.
 
 We impute the missing gender for the fossil data by sampling from the
 posterior predictive distribution
-\(P(\boldsymbol{W}_{mis}|\boldsymbol{W}_{obs}, \boldsymbol{X})\) using
-the multiple imputation with chained equations (MICE) algorithm (Buuren
-and Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011})) with
-predictive mean matching. The imputation algorithm is run to obtain a
-total of \(M = 100\) completed datasets.
+\(P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant}, \boldsymbol{X}, \boldsymbol{Y})\)
+using the multiple imputation with chained equations (MICE) algorithm
+(Buuren and Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011}))
+with predictive mean matching. The imputation algorithm is run to obtain
+a total of \(M = 100\) completed datasets.
 
-\hypertarget{ou-model}{%
-\subsection{OU model}\label{ou-model}}
+\hypertarget{completed-data-model}{%
+\subsection{Completed Data Model}\label{completed-data-model}}
 
-After imputing sex, we fit an OU model for different phenotypes of
-interest. WLOG we choose one of the columns of \(X\) to be the target
-phenotype and our analysis is repeated for all phenotypes of interest.
+For a given imputed dataset, let \(W_{ti}\) be the imputed gender,
+\(\boldsymbol{X}_{ti}\) be the \(K \times 1\) vector of continuous
+phenotypes, and \(\boldsymbol{Y}_{ti}\) be the \(L \times 1\) vector of
+discrete phenotypes for \(t = 1, \ldots, T\) and \(i = 1\ldots,n_{t}\)).
 
-Let \(W_{ti}\) and \(X_{ti}\) be the gender and phenotype of interest
-for the \(i\)-th observation in year \(t\) for \(t = 1, \ldots, 18\) and
-\(i = 1\ldots,n_{t}\). We assume that
-
+Define the last element of \(\boldsymbol{X}_{ti}\) (\(X_{K,ti}\)) as the
+length of the stickleback. For \(k = 1,\cdots,K - 1\), we will assume
 \begin{align}
-X_{ti} \overset{iid}{\sim}\left\{\begin{array}{ll} \mathcal{N}(\theta_f + u_{ft},\sigma^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\theta_m + u_{mt},\sigma^2), & W_{ti} = \text{Male} \end{array}\right.
-\label{eq:x}
+{X}_{k,ti} & \overset{iid}{\sim}\left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft} & + \beta_k(X_{K,ti} - \mu_{K,ft}),&\sigma_k^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{k,mt} & + \beta_k(X_{K,ti} - \mu_{K,mt}),&\sigma_k^2), & W_{ti} = \text{Male} \end{array}\right. \\
+{X}_{K,ti} & \overset{iid}{\sim}\left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft},&\sigma_{K}^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{K,mt},&\sigma_{K}^2), & W_{ti} = \text{Male} \end{array}\right.
+\label{eq:X}
+\end{align} where \(\mu_{k,ft}\) and \(\mu_{k,mt}\) represent the
+time-\(t\) specific mean of phenotype \(k\) for female and male
+stickleback fish, respectively, and \(\beta_k\) is an additional
+parameter to account for the biological phenomenon that other continuous
+phenotypes for a particular animal are positively correlated with their
+length \textbf{CITATION NEEDED}. We further set \begin{align}
+\mu_{k,gt} = \theta_{k,g} + u_{k,gt},
+\label{eq:mu}
+\end{align} for \(g \in \{f,m\}\) where \(\theta_{k,g}\) is the overall
+mean of phenotype \(X_k\) for each gender, and \(u_{k,gt}\) measures the
+difference between \(\mu_{k,gt}\) and \(\theta_{k,g}\). We then fit
+\(\boldsymbol{u}_{k,g} = \{u_{k,g1},\cdots,u_{k,gT}\}\) to an
+Ornstein-Uhlenback (OU) process
+((\protect\hyperlink{ref-OUprocess}{\textbf{OUprocess?}})) where we
+assume \(u_{k,gT}\) have a marginal mean of 0. Because each time period
+is \textasciitilde1000 years, we will discretize the OU process without
+loss of generality. For \(t = 2,\ldots,T\), we assume \begin{align}
+u_{k,gt} \overset{iid}{\sim}\mathcal{N}(\kappa_{k} u_{k,g(t-1)} , \tau_k^2).
+\label{eq:u_ar1}
 \end{align}
 
-Look at \ref{eq:x}
-
-For \(g \in \{f,m\}\), \(\theta_g\), is the defined as the overall mean
-of the phenotype of interest for each gender, and \(u_{gt}\) are the
-gender specific random effects, measuring the difference between the
-gender and time-specific mean and the overall gender-specific mean,
-which we fit to an autoregressive process of lag 1, which is the
-discretization of an OU process. For \(t = 2,\ldots,T\) and
-\(g \in \{f,m\}\), the AR1 model for is defined as
-
-\begin{align}
-u_{g,t} \overset{iid}{\sim}\mathcal{N}(\kappa_g u_{g,t-1} , \tau^2).
-\label{eq:ar1}
-\end{align}
-
-\(\kappa_g\) represents the gender-specific correlation between the
-previous and current time periods' random effects. In addition,
-\(\text{cor}(u_{g,t},u_{g,t+h}) = (\kappa_g)^h\) for
-\(h \in \mathbb{N}\).
-
-We also set
-
-\begin{align}
-u_{g,1} \overset{iid}{\sim}\mathcal{N}\left(0,\frac{\tau^2}{1-\kappa_g^2}\right).
+\(\kappa_{k,g}\) represents the correlation between \(\mu_{k,gt}\) and
+\(\mu_{k,g(t+1)}\), and it also follows that
+\(\text{cor}(u_{g,t},u_{g,t+h}) = \kappa^h\) for \(h \in \mathbb{N}\).
+In addition, we assume \begin{align}
+u_{k,g1} \overset{iid}{\sim}\mathcal{N}\left(0,\frac{\tau_k^2}{1-\kappa_{k}^2}\right).
 \label{eq:u1}
+\end{align} This model choice is to preserve stationarity;
+i.e.~\(p(u_{k,gs}) = p(u_{k,gt})\) for \(s \neq t\).
+
+For the discrete phenotypes, we will assume \begin{align}
+{Y}_{l,ti} & \sim \left\{\begin{array}{ll} Poisson(\lambda_{l,ft}), & W_{ti} = \text{Female} \\ Poisson(\lambda_{l,mt}), & W_{ti} = \text{Male} \end{array}\right.,
+\label{eq:Y}
+\end{align} for \(l = 1,\cdots,L\). Similar to the continuous
+phenotypes, we set \begin{align}
+\log(\lambda_{l,gt}) = \gamma_{l,g} + v_{l,gt}.
+\label{eq:lambda}
+\end{align} We use the log function to allow \(v_{l,gt}\) to take all
+values on the real number line so we can properly fit an OU process to
+these effects. We further assume \begin{align}
+v_{l,gt} \overset{iid}{\sim}\mathcal{N}(\phi_{l} v_{l,g(t-1)} , \omega_l^2),
+\label{eq:v_ar1}
+\end{align} and \begin{align}
+v_{l,g1} \overset{iid}{\sim}\mathcal{N}\left(0,\frac{\omega_l^2}{1 - \phi_{l}^2}\right)..
+\label{eq:v1}
 \end{align}
 
-This model choice is to make the distribution of the random effects
-stationary, i.e.~\(p(\mu_{g,s}) = p(\mu_{g,t})\) for
-\(s,t \in \{1,\dots,T\}\).
+Because we are fitting a dataset with a stochastic structure on the
+means of the phenotypes, we analyze the data via a Bayesian analysis.
+Bayesian data analysis is also more naturally used when we have to
+impute data (\textbf{CITATION}).
 
-Priors:
+Priors: For \(k = 1,\cdots,K\) and \(l = 1,\cdots,L\),
 
 \begin{align}
-\sigma & \sim \mathcal{N}(0,100)I_{\{\sigma > 0\}} \nonumber \\
-\tau & \sim \mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
-\kappa & \overset{iid}{\sim}\mathcal{N}(0.5,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
-\theta_g & \overset{iid}{\sim}\mathcal{N}(54,400)I_{\{\theta_g > 0\}}
+\sigma_k & \overset{iid}{\sim}\mathcal{N}(0,100)I_{\{\sigma > 0\}} \nonumber \\
+\tau_k & \overset{iid}{\sim}\mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
+\kappa_k & \overset{iid}{\sim}\mathcal{N}(0,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
+\beta_k & \overset{iid}{\sim}\mathcal{N}(0,5) \\
+\theta_{k,g} & \overset{iid}{\sim}\mathcal{N}(0,10000)
+\omega_l & \overset{iid}{\sim}\mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
+\phi_l & \overset{iid}{\sim}\mathcal{N}(0,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
+\gamma_{l,g} & \overset{iid}{\sim}\mathcal{N}(0,10000)
 \label{eq:priors}
 \end{align}
 
