@@ -117,6 +117,31 @@ for (i in 1:16){
       ylab(expression(paste("p(",beta[g],"|",bold(X),")")))
     ggsave(paste0("Figures/",phenotype,"/beta.pdf"),width=5,height=8)
   }
+  if (phenotype == "mav"){
+    samps %>%
+      rename(beta = paste0("beta[",10,"]"))%>%
+      select(beta) %>%
+      ggplot() +
+      geom_density(aes(x=beta)) +
+      geom_vline(aes(xintercept = 0),colour = "red",linetype=2) +
+      theme_bw() +
+      xlab(expression(beta[g])) +
+      ylab(expression(paste("p(",beta[g],"|",bold(X),")")))
+    ggsave(paste0("Figures/",phenotype,"/beta.pdf"),width=5,height=8)
+  }
+
+  if (phenotype == "mcv"){
+    samps %>%
+      rename(beta = paste0("beta[",11,"]"))%>%
+      select(beta) %>%
+      ggplot() +
+      geom_density(aes(x=beta)) +
+      geom_vline(aes(xintercept = 0),colour = "red",linetype=2) +
+      theme_bw() +
+      xlab(expression(beta[g])) +
+      ylab(expression(paste("p(",beta[g],"|",bold(X),")")))
+    ggsave(paste0("Figures/",phenotype,"/beta.pdf"),width=5,height=8)
+  }
 }
 
 
