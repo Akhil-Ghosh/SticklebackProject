@@ -35,7 +35,7 @@ parameters{
   real<lower=-1,upper=1> kappa[16];
   real<lower=0> sigma[10];
   real<lower=0> tau[16];
-  real beta[9];
+  real beta[11];
   vector[2*T] u_stl;
   vector[2*T] u_lps;
   vector[2*T] u_ect;
@@ -116,9 +116,9 @@ model{
   ds3 ~ normal(X * mu_ds3 + beta[8] * (stl - X * mu_stl),sigma[9]);
   lpt ~ normal(X * mu_lpt + beta[9] * (stl - X * mu_stl),sigma[10]);
   mdf ~ poisson(exp(X * mu_mdf));
-  mav ~ poisson(exp(X * mu_mav));
+  mav ~ poisson(exp(X * mu_mav + beta[10] * (stl - X * mu_stl) - pow(beta[10]*sigma[1],2)/2));
   maf ~ poisson(exp(X * mu_maf));
-  mcv ~ poisson(exp(X * mu_mcv));
+  mcv ~ poisson(exp(X * mu_mcv + beta[11] * (stl - X * mu_stl) - pow(beta[11]*sigma[1],2)/2));
   mds ~ poisson(exp(X * mu_mds));
   mpt ~ poisson(exp(X * mu_mpt));
 
