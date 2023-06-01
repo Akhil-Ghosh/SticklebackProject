@@ -36,6 +36,16 @@
 \makeatother
 \usepackage{xcolor}
 \usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -91,41 +101,24 @@
   urlcolor={cyan},
   pdfcreator={LaTeX via pandoc}}
 
-\title{~\Large Stickle!}
-\author{\large Matthew Stuart \vspace{-1.1mm}\\
-\normalsize Department of Mathematics and Statistics \vspace{-1.1mm}\\
-\normalsize Loyola University Chicago \vspace{-1.1mm}\\
-\normalsize Chicago, IL 60660 \vspace{-1.1mm}\\
-\normalsize \href{mailto:mstuart1@luc.edu}{\texttt{mstuart1@luc.edu}}
+\title{~\Large Increased sexual dimorphism evolves in a fossil
+stickleback following ecological release from fish piscivores}
+\author{\large Allison Ozark\(^1\), Akhil Ghosh\(^1\), Raheyma
+Siddiqui\(^1\), Matthew Stuart\(^1\),\\
+\large  Samantha Swank\(^1\), Michael A. Bell\(^2\), Gregory J.
+Matthews\(^1\), and Yoel E. Stuart\(^1\) \vspace{-1.1mm}\\
+\strut \\
+\large \(^1\) Loyola University Chicago, Chicago, IL, USA
 \vspace{-1.1mm}\\
 \strut \\
-\large Akhil Ghosh \vspace{-1.1mm}\\
-\normalsize Department of Mathematics and Statistics \vspace{-1.1mm}\\
-\normalsize Loyola University Chicago \vspace{-1.1mm}\\
-\normalsize Chicago, IL 60660 \vspace{-1.1mm}\\
-\normalsize \href{mailto:aghosh@luc.edu}{\texttt{aghosh@luc.edu}}
-\vspace{-1.1mm}\\
-\strut \\
-\large Yoel E. Stuart \vspace{-1.1mm}\\
-\normalsize Department of Biology \vspace{-1.1mm}\\
-\normalsize Loyola University Chicago \vspace{-1.1mm}\\
-\normalsize Chicago, IL 60660 \vspace{-1.1mm}\\
-\normalsize \href{mailto:ystuart@luc.edu}{\texttt{ystuart@luc.edu}}
-\vspace{-1.1mm}\\
-\strut \\
-\large Gregory J. Matthews \vspace{-1.1mm}\\
-\normalsize Center for Data Science and Consulting; Department of
-Mathematics and Statistics \vspace{-1.1mm}\\
-\normalsize Loyola University Chicago \vspace{-1.1mm}\\
-\normalsize Chicago, IL 60660 \vspace{-1.1mm}\\
-\normalsize \href{mailto:gmatthews1@luc.edu}{\texttt{gmatthews1@luc.edu}}
-\vspace{-1.1mm}}
+\large \(^2\) University of California Museum of Paleontology, Berkeley,
+CA, USA \vspace{-1.1mm}\\}
 \date{}
 
 \begin{document}
 \maketitle
 \begin{abstract}
-Evewryone loves the stickle \vspace{2mm}\\
+Everyone loves the stickle \vspace{2mm}\\
 \emph{Keywords}: Stickle
 \end{abstract}
 
@@ -136,26 +129,72 @@ Evewryone loves the stickle \vspace{2mm}\\
 \hypertarget{sec:intro}{%
 \section{Introduction}\label{sec:intro}}
 
+Ecological release theory suggests that a prey population's niche should
+expand when predation is relaxed or removed (reviewed in Herrmann,
+Stroud, and Losos (\protect\hyperlink{ref-Herrmann2021}{2021})). Niche
+changes in habitat and resource use should then drive phenotypic
+evolution as the population adapts to new conditions (Herrmann, Stroud,
+and Losos (\protect\hyperlink{ref-Herrmann2021}{2021})). For example,
+resource use expansion should result in trophic trait evolution (cite;
+e.g.,). Habitat expansion should result in locomotor change (cite;
+e.g.,). And release from enemies should result in reduction of costly
+defense traits (cite; e.g.,).
+
+Niche expansion could manifest through a combination of increasing
+within- and between-individual niche widths (Bolnick et al.
+(\protect\hyperlink{ref-Bolnick2010}{2010}); Herrmann, Stroud, and Losos
+(\protect\hyperlink{ref-Herrmann2021}{2021})), including divergence
+between the sexes (Bolnick and Doebeli
+(\protect\hyperlink{ref-Bolnick2003}{2003}); Cooper, Gilman, and
+Boughman (\protect\hyperlink{ref-Cooper2011}{2011})). Theory and
+empirical data suggest that a population presented with novel ecological
+opportunity might experience disruptive selection on males and females
+stemming from intraspecific competition over newly accessible resources,
+resulting in intersexual divergence in habitat use and associated
+phenotypes (Schoener 1968; Shine
+(\protect\hyperlink{ref-Shine1989}{1989}); Bolnick and Doebeli
+(\protect\hyperlink{ref-Bolnick2003}{2003}); Butler, Sawyer, and Losos
+(\protect\hyperlink{ref-Butler2007}{2007}); Bolnick and Lau
+(\protect\hyperlink{ref-Bolnick2008}{2008}); Cooper, Gilman, and
+Boughman (\protect\hyperlink{ref-Cooper2011}{2011}); but see Stuart et
+al. (\protect\hyperlink{ref-Stuart2021}{2021}); Blain
+(\protect\hyperlink{ref-Blain2022}{2022})). Such character displacement
+between the sexes is therefore one explanation for sexual dimorphism (de
+Lisle papers).
+
+We tested this link between release from predators and the evolution of
+sexual dimorphism in a well-preserved, high resolution lineage of the
+fossil stickleback fish (Gasterosteus doryssus). The sex of the
+individual fossils, which is unobserved in practice, was imputed using
+multiple imputation by chained equations (MICE) (Buuren and
+Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011})) with observed
+data used to train the imputation model based on extant stickleback with
+known sex. Then we tracked the multivariate evolution of sexual
+dimorphism over \textasciitilde16,000 years for traits related to
+swimming, feeding and defense. The fossil sequence captures a bout of
+adaptive evolution following ecological release from predators, as
+follows. The fossil lineage appeared in the depositional environment as
+a fully armored form, with complete pelvic girdles, two pelvic spines,
+and three dorsal spines, on average (Michael A. Bell, Travis, and Blouw
+(\protect\hyperlink{ref-Bell2006}{2006}); Stuart, Travis, and Bell
+(\protect\hyperlink{ref-Stuart2020}{2020})). However, this habitat
+appears to have been missing fish piscivores (e.g., trout and other
+salmonids known to prey on modern stickleback; M. A. Bell
+(\protect\hyperlink{ref-Bell2009}{2009})), relaxing putative selection
+for armor (Reimchen papers, Bell papers, Bowne
+(\protect\hyperlink{ref-Bowne1994}{1994}); Roesti et al.~2023). The
+lineage thus adaptively evolved armor loss and reduction in several
+other traits as well (Hunt, Bell, and Travis
+(\protect\hyperlink{ref-Hunt2008}{2008}); Stuart, Travis, and Bell
+(\protect\hyperlink{ref-Stuart2020}{2020}); Siddiqui et al.~in prep),
+and tooth wear data suggest that the population also began eating more
+planktonic prey, expanding to an open water lifestyle (Purnell et
+al.~2007).
+
 Sexual Dimorphism is interesting because\ldots\ldots{}
 
 Sexual Dimoprhism lit review: Saitta et al.
 (\protect\hyperlink{ref-SaittaEtAl2020}{2020})
-
-Studying sexual dimorphism of phenotypes in modern species is a
-straightforward endeavor: measure a phenotype of interest and
-statistically test for differences between the sexes. However, examining
-sexual dimorphism in fossils is complicated substantially by the issue
-that sex may not be able to be directly observed from fossil specimens.
-For this study, we have two sources of data: 1) Modern stickleback
-specimens with observed sex and 2) fossil specimens with sex unobserved.
-We view the sex of the fossils as missing data and use multiple
-imputation (Little and Rubin
-(\protect\hyperlink{ref-little2002statistical}{2002})) to impute the sex
-of the fossils using the modern stickleback fish with observed sex to
-model the relationship between sex and observed phenotypes. Once sex is
-imputed, an Ornstein--Uhlenbeck (OU) model is fit using a Bayesian
-framework to look for sexual dimorphism across a variety of stickleback
-phenotypes (e.g.~length, vertebrae count?, etc).
 
 The remainder of this manuscript contains a description of the data in
 section \ref{sec:data} and a description of our models in
@@ -163,21 +202,142 @@ section \ref{sec:data} and a description of our models in
 results, and we end with our conclusion and future work in section
 \ref{sec:conclusions}.
 
+\hypertarget{methods-and-materials}{%
+\section{Methods and Materials}\label{methods-and-materials}}
+
+A major challenge in this work is inferring the sex of fossil specimens.
+This typically cannot be done directly, except for lineages whose sexes
+are distinguished by the presence or absence of sex-specific characters
+(Hone and Mallon (\protect\hyperlink{ref-Hone2017}{2017}); Saitta et al.
+(\protect\hyperlink{ref-SaittaEtAl2020}{2020})). Instead,
+paleobiologists resort to statistical detection of sex and sexual
+dimorphism, including tests for bimodality in trait distributions (e.g.,
+Hone and Mallon (\protect\hyperlink{ref-Hone2017}{2017})) and divergence
+in growth curves (e.g., Saitta et al.
+(\protect\hyperlink{ref-SaittaEtAl2020}{2020})).
+
+We used a third approach to infer fossil sex and study the evolution of
+sexual dimorphism by taking advantage of the fact that G. doryssus is
+part of the extant threespine stickleback species complex (Gastersteus
+aculeatus). Along with the fossil data collected for this study, we also
+have data from extant populations of the Threespine Stickleback,
+Gasterosteus aculeatus, measuring the same traits for individuals whose
+sex could be determined directly. We then combined these sets of data
+and treat the sex of the fossil specimens as missing and used multiple
+imputation (Little and Rubin
+(\protect\hyperlink{ref-little2002statistical}{2002})) to impute the sex
+of the fossils many times. Imputations were performed using the MICE
+(Buuren and Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011}))
+algorithm and implemented in R (R Core Team
+(\protect\hyperlink{ref-R2022language}{2022})) with M = 100 imputations
+performed.
+
+After imputing the sex of the fossil data, each completed data set is
+then used to fit a modified Ornstein--Uhlenbeck (OU) (Uhlenbeck and
+Ornstein (\protect\hyperlink{ref-OUProcess}{1930})) model using a
+Bayesian framework to look for sexual dimorphism across a variety of
+stickleback phenotypes
+
 \hypertarget{sec:data}{%
 \section{Data}\label{sec:data}}
 
-The data used here consists of a total of 367 extant specimens with
-known sex all collected in the last 30 years. Of these, there are 202
-and 165 female and male specimens, respectively.
+\hypertarget{fossil-specimen-data}{%
+\subsection{Fossil Specimen Data}\label{fossil-specimen-data}}
 
-In addition there are 814 fossil specimens from approximately 10.3
-million years ago with unknown sex over 18 time periods spaced about
-1000 years apart. Table 1 shows the sample size at each of the 18 time
-periods. There are at least 22 specimens at each time period with a high
-of 67 specimens in period 7.
+We used Gasterosteus doryssus data that were previously reported by
+Stuart, Travis, and Bell (\protect\hyperlink{ref-Stuart2020}{2020}),
+Voje, Bell, and Stuart (\protect\hyperlink{ref-Voje2022}{2022}), and
+Siddiqui et al.~(in review). Briefly, the data were collected from
+fossil Series K from Quarry D (Cerasoni et al., in review), dug from an
+open pit diatomite mine at 9.526° N, 119.094° W, near Fernley, Nevada,
+USA. Series K consisted of 18 samples taken at \textasciitilde1000-year
+intervals, and mean sample times span \textasciitilde16,363 years. Fish
+from series K were measured for 16 ecomorphological traits related to
+armor, swimming, and feeding (Table 1). Series K started at a previously
+documented horizon when a low armored lineage of stickleback with zero
+to one dorsal spines, zero pelvic spines, and highly reduced pelvises
+was completely replaced by a high armored lineage of stickleback with
+three dorsal spines, two pelvic spines, and complete (Bell et al.~2006;
+Bell 2009; Stuart et al.~2020). This lineage subsequently evolved
+reduction in armor, body size, and traits related to swimming and
+feeding (Bell et al.~2006; Stuart et al.~2020; Siddiqui et al.~in
+review). The tempo and mode of armor reduction during this sequence
+suggests adaptive evolution by natural selection (Hunt et al.~2008), and
+we focus on the multivariate evolution of sexual dimorphism by this
+second lineage.
+
+The fossil data consists of 814 specimens with unknown sex over 18 time
+periods spaced \textasciitilde1000 years apart. Table 2 shows the sample
+size at each of the 18 time periods. There are at least 22 specimens at
+each time period with a high of 67 specimens in period 7.
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3492}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1905}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4603}}@{}}
+\caption{Traits and trait descriptions. `sc' denotes size correction of
+trait against standard length. Names of bones follow Bowne
+(\protect\hyperlink{ref-Bowne1994}{1994}) unless otherwise
+noted.}\tabularnewline
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+Trait Name
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trait Code
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trait Description
+\end{minipage} \\
+\midrule()
+\endfirsthead
+\toprule()
+\begin{minipage}[b]{\linewidth}\raggedright
+Trait Name
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trait Code
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trait Description
+\end{minipage} \\
+\midrule()
+\endhead
+Standard Length & sl & Distance from anterior tip of premaxilla to
+posterior end of last vertebra (hypural plate) \\
+Dorsal Spine & mds & Number of dorsal spines from 0 to 3 \\
+Dorsal Fin Ray & mdf & Number of bones in the dorsal fin posterior to
+the third dorsal spine (i.e., soft dorsal fin rays) \\
+Anal Fin Ray & maf & Number of bones in the anal fin posterior to the
+anal spine (i.e., soft dorsal fin rays) \\
+Abdominal Vertebra & mav & Number of vertebrae anterior to the first
+vertebra contacting an anal fin pterygiophore (Aguirre et al.~2014) \\
+Caudal Vertebra & mcv & Number of vertebrae posterior to and including
+the first vertebra contacting an anal fin pterygiophore (Aguirre et
+al.~2014) \\
+Pterygiophore number & mpt & Number of pterygiophores anterior to but
+excluding the pterygiophore under the third dorsal spine, which is
+immediately anterior to and contiguous with the dorsal fin \\
+Pelvic Spine length & lps.sc & Length from the base of one pelvic spine
+above its articulation with the pelvic girdle to its distal tip \\
+Ectocoracoid & ect.sc & Length between the anterior and posterior tips
+of the shoulder girdle base (i.e., ectocoracoid) \\
+Pelvic Girdle & tpg.sc & Length between the anterior to posterior tips
+along midline. If vestigial, the sum of longest anterior-posterior axis
+for the vestiges \\
+Cleithrum length & cle.sc & Length from free dorsal tip to ventral tip
+of the cleithrum on the anterior margin of the shoulder girdle (i.e.,
+cleithrum) \\
+Premaxilla & pmx.sc & Length from the anterior tip of the premaxilla to
+the distal tip of the ascending process of the premaxilla \\
+Dorsal Spine & Ds\#.sc\# = 1,2,or 3 & Length from the base of a dorsal
+spine above the pterygiophore to its distal tip along the anterior
+edge \\
+Pterygiophore & lpt.sc & Distance between the anterior to posterior tips
+of the pterygiophore immediately preceding the 3rd dorsal spine (when
+present) \\
+\bottomrule()
+\end{longtable}
 
 \begin{table}[ht]
 \centering
+\caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.}
 \begin{tabular}{rl}
   \hline
 time & count \\ 
@@ -202,9 +362,85 @@ time & count \\
    18 & 55 \\ 
    \hline
 \end{tabular}
-\label{tab1}
-\caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.}
+\label{tabn}
+
 \end{table}
+
+\hypertarget{extant-specimen-data}{%
+\subsection{Extant Specimen data}\label{extant-specimen-data}}
+
+To span the gamut of stickleback diversity for our predictive model, we
+sampled modern stickleback from lakes containing generalist stickleback
+populations (Hendry et al. (\protect\hyperlink{ref-Hendry2009}{2009});
+Bolnick (\protect\hyperlink{ref-Bolnick2011}{2011})) and from lakes
+containing benthic-limnetic species pairs (Baumgartner et al.~1988;
+Schluter and McPhail (\protect\hyperlink{ref-Schluter1992}{1992}))
+(Table 2 (What is this?)). The generalist populations were collected by
+YES in 2013 and previously described in Stuart et al.
+(\protect\hyperlink{ref-Stuart2017}{2017}). These samples were fixed in
+formalin, then stained for bone with Alizarin Red in 2013. Benthic and
+limnetic specimens were kindly loaned by D. Schluter and his lab at
+University of British Columbia. They collected benthic and limnetic
+individuals from Enos Lake in 1988 and from Emily Lake, Little Quarry
+Lake, Paxton Lake, and Priest Lake in 2018. The Enos specimens had been
+fixed whole in formalin and stored in 40\% isopropanol. The specimens
+from the other lakes were initially preserved whole in 95\% ethanol in
+the field before being gradually transferred to water then formalin in
+the lab and ultimately stored in 40\% isopropanol. In 2019, we stained
+these specimens for bone using Alizarin Red.
+
+We next replicated fossil data collection (Table 1) on these extant
+specimens. Standard length as well as pelvic-spine length on each side
+were measured with calipers. We used a dissection microscope to count
+dorsal spines, pelvic spines, dorsal-fin rays, and anal-fin rays. Right
+and left-side pelvic girdle lengths and ectocoracoid lengths were
+measured from ventral photographs taken using a Canon EOS Rebel T7 with
+a Tamron 16-300 mm MACRO lens mounted on a leveled Kaiser RS1 copy
+stand. Specimens were held in place for ventral photographs using a
+small tabletop vise with an attached scale bar. Lateral X-rays were used
+to measure dorsal spine length, number of pterygiophores anterior to the
+pterygiophore holding the third spine, length of the pterygiophore just
+anterior to the third spine, cleithrum length, and pre-maxilla ascending
+branch length. We also counted vertebrae from the X-rays: abdominal
+vertebrae were counted anterior to the first vertebra with a haemal
+spine contacting an anal fin pterygiophore. Caudal vertebrae were
+posterior, including the first vertebra with the haemal spine contacting
+the anal fin pterygiophore (following Aguirre, Walker, and Gideon
+(\protect\hyperlink{ref-Aguirre2014}{2014}). X-rays were taken with an
+AXR Hot Shot X-ray Machine (Associated X-ray Corporation) at the Field
+Museum of Natural History. Specimens were exposed at 35kV and 4mA. Small
+fish were exposed for 7s, medium fish for 8s, and large fish for 10s. We
+developed the film and scanned individual images of each fish using the
+B\&W Negatives setting on an Epson Perfection 4990 Photo flatbed at 2400
+dpi. Measurements from photographs and X-rays were taken with FIJI
+(Schindelin et al.~2012) and its plugin ObjectJ
+(\url{https://sils.fnwi.uva.nl/bcb/objectj/}). All photographs, X-rays,
+and ObjectJ files have been uploaded to Morphosource.org (accession \#
+TBD). We dissected individuals from the generalist populations to
+determine sex from the gonads. Individuals from the species-pair lakes
+were sexed by Schluter and his lab, using a genotyping protocol (confirm
+and cite).
+
+The extant data used here consists of a total of 367 specimens all with
+known sex. Of these, there are 202 and 165 female and male specimens,
+respectively.
+
+\hypertarget{outlier-analysis.}{%
+\subsection{Outlier analysis.}\label{outlier-analysis.}}
+
+To check for outliers, we calculated within-group means and standard
+deviations for each trait separately for K series fossil specimens
+(pooled across samples) and for extant specimens (pooled across lakes).
+We noted trait values greater than 3.5 standard deviations from the mean
+as potential outliers. We checked whether these potential outliers were
+a result of data entry and collection error and corrected them if they
+were. We turned the remaining outlier trait values to NAs. (confirm)
+(Wait, what? Why? Anything that was 3.5 SD above the mean was recorded
+as missing? How do you justify this? )
+
+Missing data imputation, including fossil sex
+
+Quantification and evolution of sexual dimorphism
 
 What covariates do we have in the data: length, what else,
 
@@ -229,13 +465,32 @@ observed extant gender and missing fossil gender, respectively.
 We impute the missing gender for the fossil data by sampling from the
 posterior predictive distribution
 \(P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant}, \boldsymbol{X}, \boldsymbol{Y})\)
-using the multiple imputation with chained equations (MICE) algorithm
+using the multiple imputation by chained equations (MICE) algorithm
 (Buuren and Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011}))
-with predictive mean matching. The imputation algorithm is run to obtain
-a total of \(M = 100\) completed datasets.
+with predictive mean matching. Traditionally, the choice for the number
+of completed dats sets is a relatively small number such as \(M = 5\) or
+\(M = 10\). However, Zhou and Reiter
+(\protect\hyperlink{ref-ZhouReiter2009}{2010}) recommend a larger number
+of imputed data sets if the data users intend on performing Bayesians
+analysis after imputation, which in this case, we do. Therefore, the
+imputation algorithm is run to obtain a total of \(M = 100\) completed
+datasets. In addition to this, Zhou and Reiter
+(\protect\hyperlink{ref-ZhouReiter2009}{2010}) suggests rather than
+using Rubin's combining rules to combine across imputed data sets,
+instead pool all of the draws from the posterior distributions across
+all of the imputed data sets to estimate the posterior distributions of
+parameters of interest. We proceed with our Bayesian analysis in this
+manner.
+
+\textcolor{red}{Akhil's stuff about validating the imputation model goes here.}
 
 \hypertarget{completed-data-model}{%
 \subsection{Completed Data Model}\label{completed-data-model}}
+
+\textcolor{red}{We should note somewhere that we are only using the $W_{fossil}$ in the modeling part.  We drop the $W_{extant}$.  So just note that $W_{ti}$ is really $W_{fossil,ti}$.  Not sure how to say this, but we need to make it clear that we are only using the fossil data for the OU modeling.   }
+
+\hypertarget{continuous-phenotypes}{%
+\subsubsection{Continuous Phenotypes}\label{continuous-phenotypes}}
 
 For a given imputed dataset, let \(W_{ti}\) be the imputed gender,
 \(\boldsymbol{X}_{ti}\) be the \(K \times 1\) vector of continuous
@@ -260,10 +515,10 @@ length \textbf{CITATION NEEDED}. We further set \begin{align}
 mean of phenotype \(X_k\) for each gender, and \(u_{k,gt}\) measures the
 difference between \(\mu_{k,gt}\) and \(\theta_{k,g}\). We then fit
 \(\boldsymbol{u}_{k,g} = \{u_{k,g1},\cdots,u_{k,gT}\}\) to an
-Ornstein-Uhlenback (OU) process
-((\protect\hyperlink{ref-OUprocess}{\textbf{OUprocess?}})) where we
-assume \(u_{k,gT}\) have a marginal mean of 0. Because each time period
-is \textasciitilde1000 years, we will discretize the OU process without
+Ornstein-Uhlenback (OU) process (Uhlenbeck and Ornstein
+(\protect\hyperlink{ref-OUProcess}{1930})) where we assume \(u_{k,gT}\)
+have a marginal mean of 0. Because each time period is
+\textasciitilde1000 years, we will discretize the OU process without
 loss of generality. For \(t = 2,\ldots,T\), we assume \begin{align}
 u_{k,gt} \overset{iid}{\sim}\mathcal{N}(\kappa_{k} u_{k,g(t-1)} , \tau_k^2).
 \label{eq:u_ar1}
@@ -277,6 +532,9 @@ u_{k,g1} \overset{iid}{\sim}\mathcal{N}\left(0,\frac{\tau_k^2}{1-\kappa_{k}^2}\r
 \label{eq:u1}
 \end{align} This model choice is to preserve stationarity;
 i.e.~\(p(u_{k,gs}) = p(u_{k,gt})\) for \(s \neq t\).
+
+\hypertarget{discrete-phenotypes}{%
+\subsubsection{Discrete Phenotypes}\label{discrete-phenotypes}}
 
 For the discrete phenotypes, we will assume \begin{align}
 {Y}_{l,ti} & \sim \left\{\begin{array}{ll} Poisson(\lambda_{l,ft}), & W_{ti} = \text{Female} \\ Poisson(\lambda_{l,mt}), & W_{ti} = \text{Male} \end{array}\right.,
@@ -328,13 +586,31 @@ large number of imputations. 5 or 10 is too small. We are using M = 100.
 \section{Results}\label{sec:results}}
 
 \hypertarget{sec:conclusions}{%
-\section{Future work and conclusions}\label{sec:conclusions}}
+\section{Discsusson, Future work and
+conclusions}\label{sec:conclusions}}
+
+We predicted that release from predators would result in niche expansion
+and increased sexual dimorphism, based on several studies of modern
+stickleback. For example, in lakes where sculpin competitors are absent
+and stickleback (Roesti et al.~2023) See Spoljaric and Reimchen 2008,
+page 512 right column for references and discussion of differences
+between benthic males and limnetic females. Male stickleback are benthic
+and littoral (Wootton 1976)\ldots. Reimchen papers in general good for
+this section.
 
 \hypertarget{acknowledgements}{%
 \section*{Acknowledgements}\label{acknowledgements}}
 \addcontentsline{toc}{section}{Acknowledgements}
 
-Stickle!
+We thank O. Abughoush, S. Blaine, A. Chaudhary, M. Islam, F. Joaquin, C.
+Lawson-Weinert, R. Sullivan, J. Tien, M.P. Travis, and W. Shim for help
+with data collection. We thank D. Schluter and S. Blain for loaning
+specimens and sharing data. We thank K. Swagel and C. McMahan of the
+Field Museum for assistance with specimen x-rays. This research was
+supported by NSF grants BSR-8111013, EAR-9870337, and DEB-0322818, the
+Center for Field Research (Earthwatch), and the National Geographic
+Society (2869-84) to MAB. It was also supported by NSF grants
+DEB-1456462 and EAR-2145830 to YES. And NSF DMS-2015374 (GJM)
 
 \hypertarget{supplementary-material}{%
 \section*{Supplementary Material}\label{supplementary-material}}
@@ -349,17 +625,94 @@ available at \url{https://github.com/Akhil-Ghosh/SticklebackProject}
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
+\leavevmode\vadjust pre{\hypertarget{ref-Aguirre2014}{}}%
+Aguirre, Windsor E, Kendal Walker, and Shawn Gideon. 2014. {``Tinkering
+with the Axial Skeleton: Vertebral Number Variation in Ecologically
+Divergent Threespine Stickleback Populations.''} \emph{Biol. J. Linn.
+Soc. Lond.} 113 (1): 204--19.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bell2009}{}}%
+Bell, M A. 2009. {``Implications of a Fossil Stickleback Assemblage for
+Darwinian Gradualism.''} \emph{J. Fish Biol.} 75 (8): 1977--99.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bell2006}{}}%
+Bell, Michael A, Matthew P Travis, and D Max Blouw. 2006. {``Inferring
+Natural Selection in a Fossil Threespine Stickleback.''}
+\emph{Paleobiology} 32 (4): 562--77.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Blain2022}{}}%
+Blain, S A. 2022. \emph{Evolutionary Outcomes of Interactions Among
+Phenotypes in Post-Glacial Lakes}. University of British Columbia,
+Canada.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bolnick2011}{}}%
+Bolnick, Daniel I. 2011. {``Sympatric Speciation in Threespine
+Stickleback: Why Not?''} \emph{Int. J. Ecol.} 2011: 1--15.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bolnick2003}{}}%
+Bolnick, Daniel I, and Michael Doebeli. 2003. {``Sexual Dimorphism and
+Adaptive Speciation: Two Sides of the Same Ecological Coin.''}
+\emph{Evolution} 57 (11): 2433--49.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bolnick2010}{}}%
+Bolnick, Daniel I, Travis Ingram, William E Stutz, Lisa K Snowberg, On
+Lee Lau, and Jeff S Paull. 2010. {``Ecological Release from
+Interspecific Competition Leads to Decoupled Changes in Population and
+Individual Niche Width.''} \emph{Proc. Biol. Sci.} 277 (1689): 1789--97.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bolnick2008}{}}%
+Bolnick, Daniel I, and On Lee Lau. 2008. {``Predictable Patterns of
+Disruptive Selection in Stickleback in Postglacial Lakes.''} \emph{Am.
+Nat.} 172 (1): 1--11.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Bowne1994}{}}%
+Bowne, P S. 1994. {``Systematics and Morphology of the
+Gasterosteiformes.''} In \emph{The Evolutionary Biology of the
+Threespine Stickleback}, edited by M A Bell and S A Foster. Oxford, UK:
+Oxford University Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Butler2007}{}}%
+Butler, Marguerite A, Stanley A Sawyer, and Jonathan B Losos. 2007.
+{``Sexual Dimorphism and Adaptive Radiation in Anolis Lizards.''}
+\emph{Nature} 447 (7141): 202--5.
+
 \leavevmode\vadjust pre{\hypertarget{ref-MICE}{}}%
 Buuren, Stef van, and Karin Groothuis-Oudshoorn. 2011. {``Mice:
 Multivariate Imputation by Chained Equations in r.''} \emph{Journal of
 Statistical Software} 45 (3): 1--67.
 \url{https://doi.org/10.18637/jss.v045.i03}.
 
+\leavevmode\vadjust pre{\hypertarget{ref-Cooper2011}{}}%
+Cooper, Idelle A, R Tucker Gilman, and Janette Wenrick Boughman. 2011.
+{``Sexual Dimorphism and Speciation on Two Ecological Coins: Patterns
+from Nature and Theoretical Predictions.''} \emph{Evolution} 65 (9):
+2553--71.
+
 \leavevmode\vadjust pre{\hypertarget{ref-Cornault2022}{}}%
 Cornuault, Josselin. 2022. {``{Bayesian Analyses of Comparative Data
 with the Ornstein--Uhlenbeck Model: Potential Pitfalls}.''}
 \emph{Systematic Biology} 71 (6): 1524--40.
 \url{https://doi.org/10.1093/sysbio/syac036}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Hendry2009}{}}%
+Hendry, A P, D I Bolnick, D Berner, and C L Peichel. 2009. {``Along the
+Speciation Continuum in Sticklebacks.''} \emph{J. Fish Biol.} 75 (8):
+2000--2036.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Herrmann2021}{}}%
+Herrmann, Nicholas C, James T Stroud, and Jonathan B Losos. 2021. {``The
+Evolution of 'Ecological Release' into the 21st Century.''} \emph{Trends
+Ecol. Evol.} 36 (3): 206--15.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Hone2017}{}}%
+Hone, David W E, and Jordan C Mallon. 2017. {``Protracted Growth Impedes
+the Detection of Sexual Dimorphism in Non-Avian Dinosaurs.''}
+\emph{Palaeontology} 60 (4): 535--45.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Hunt2008}{}}%
+Hunt, Gene, Michael A Bell, and Matthew P Travis. 2008. {``Evolution
+Toward a New Adaptive Optimum: Phenotypic Evolution in a Fossil
+Stickleback Lineage.''} \emph{Evolution} 62 (3): 700--710.
 
 \leavevmode\vadjust pre{\hypertarget{ref-little2002statistical}{}}%
 Little, R. J. A., and D. B. Rubin. 2002. \emph{Statistical Analysis with
@@ -379,6 +732,42 @@ Bonhomme, Michael J Benton, Innes C Cuthill, and Peter J Makovicky.
 dimorphism in non-avian dinosaurs and other extinct taxa}.''}
 \emph{Biological Journal of the Linnean Society} 131 (2): 231--73.
 \url{https://doi.org/10.1093/biolinnean/blaa105}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Schluter1992}{}}%
+Schluter, D, and J D McPhail. 1992. {``Ecological Character Displacement
+and Speciation in Sticklebacks.''} \emph{Am. Nat.} 140 (1): 85--108.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Shine1989}{}}%
+Shine, R. 1989. {``Ecological Causes for the Evolution of Sexual
+Dimorphism: A Review of the Evidence.''} \emph{Q. Rev. Biol.} 64 (4):
+419--61.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Stuart2021}{}}%
+Stuart, Yoel E, J William Sherwin, Ambika Kamath, and Thor Veen. 2021.
+{``Male and Female Anolis Carolinensis Maintain Their Dimorphism Despite
+the Presence of Novel Interspecific Competition.''} \emph{Evolution} 75
+(11): 2708--16.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Stuart2020}{}}%
+Stuart, Yoel E, Matthew P Travis, and Michael A Bell. 2020. {``Inferred
+Genetic Architecture Underlying Evolution in a Fossil Stickleback
+Lineage.''} \emph{Nat. Ecol. Evol.} 4 (11): 1549--57.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Stuart2017}{}}%
+Stuart, Yoel E, Thor Veen, Jesse N Weber, Dieta Hanson, Mark Ravinet,
+Brian K Lohman, Cole J Thompson, et al. 2017. {``Contrasting Effects of
+Environment and Genetics Generate a Continuum of Parallel Evolution.''}
+\emph{Nat. Ecol. Evol.} 1 (6): 158.
+
+\leavevmode\vadjust pre{\hypertarget{ref-OUProcess}{}}%
+Uhlenbeck, G. E., and L. S. Ornstein. 1930. {``On the Theory of the
+Brownian Motion.''} \emph{Phys. Rev.} 36 (September): 823--41.
+\url{https://doi.org/10.1103/PhysRev.36.823}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Voje2022}{}}%
+Voje, Kjetil L, Michael A Bell, and Yoel E Stuart. 2022. {``Evolution of
+Static Allometry and Constraint on Evolutionary Allometry in a Fossil
+Stickleback.''} \emph{J. Evol. Biol.} 35 (3): 423--38.
 
 \leavevmode\vadjust pre{\hypertarget{ref-ZhouReiter2009}{}}%
 Zhou, X., and J. Reiter. 2010. {``A Note on Bayesian Inference After

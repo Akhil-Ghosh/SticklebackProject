@@ -260,8 +260,8 @@ Priors: For $k = 1,\cdots,K$ and $l = 1,\cdots,L$,
 \sigma_k & \iid \mathcal{N}(0,100)I_{\{\sigma > 0\}} \nonumber \\
 \tau_k & \iid \mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
 \kappa_k & \iid \mathcal{N}(0,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
-\beta_k & \iid \mathcal{N}(0,5) \\
-\theta_{k,g} & \iid \mathcal{N}(0,10000)
+\beta_k & \iid \mathcal{N}(0,5) \nonumber \\
+\theta_{k,g} & \iid \mathcal{N}(0,10000) \nonumber \\
 \omega_l & \iid \mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
 \phi_l & \iid \mathcal{N}(0,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
 \gamma_{l,g} & \iid \mathcal{N}(0,10000)
