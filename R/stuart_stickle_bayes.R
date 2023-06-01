@@ -227,4 +227,5 @@ for (m in 1:M){
   }
 }
 
-saveRDS(samps,"posterior_samples.RDS")
+# saveRDS(samps,"posterior_samples.RDS")
+saveRDS(samps,"posterior_samples_mav_adj.RDS")
