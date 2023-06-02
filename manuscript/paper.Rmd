@@ -77,12 +77,14 @@ The remainder of this manuscript contains a description of the data in section \
 A major challenge in this work is inferring the sex of fossil specimens. This typically cannot be done directly, except for lineages whose sexes are distinguished by the presence or absence of sex-specific characters (@Hone2017; @SaittaEtAl2020). Instead, paleobiologists resort to statistical detection of sex and sexual dimorphism, including tests for bimodality in trait distributions (e.g., @Hone2017) and divergence in growth curves (e.g., @SaittaEtAl2020). 
 
 We used a third approach to infer fossil sex and study the evolution of sexual dimorphism by taking advantage of the fact that G. doryssus is part of the extant threespine stickleback species complex (Gastersteus aculeatus).  Along with the fossil data collected for this study, we also have data from extant populations of the Threespine Stickleback, Gasterosteus aculeatus, measuring the same traits for individuals whose sex could be determined directly.
+
 We then combined these sets of data and treat the sex of the fossil specimens as missing and  used multiple imputation (@little2002statistical) to impute the sex of the fossils many times.  Imputations were performed using the MICE (@MICE) algorithm and implemented in R (@R2022language) with M = 100 imputations performed.  
 
 After imputing the sex of the fossil data, each completed data set is then used to fit a modified Ornstein–Uhlenbeck (OU) (@OUProcess) model using a Bayesian framework to look for sexual dimorphism across a variety of stickleback phenotypes 
 
 # Data {#sec:data}
 ```{r}
+library(tidyverse)
 stickle <- read_csv('stickle_revamped.csv')
 
 stick <- stickle %>% 
@@ -103,7 +105,8 @@ times_vector <- c(rep(1,43)) %>%
   append(21-times)
 
 #fossil n
-fortab <- data.frame(time = 1:18, count = as.character(as.numeric((table(times_vector)))))
+#fortab <- data.frame(time = 1:18, count = as.character(as.numeric((table(times_vector)))))
+fortab <- data.frame(time = 1:18, count = as.numeric((table(times_vector))))
 #knitr::kable(fortab)
 #print(xtable(fortab),include.rownames = FALSE)
 ```
@@ -113,8 +116,11 @@ fortab <- data.frame(time = 1:18, count = as.character(as.numeric((table(times_v
 ## Fossil Specimen Data
 We used Gasterosteus doryssus data that were previously reported by @Stuart2020, @Voje2022, and Siddiqui et al. (in review). Briefly, the data were collected from fossil Series K from Quarry D (Cerasoni et al., in review), dug from an open pit diatomite mine at 9.526° N, 119.094° W, near Fernley, Nevada, USA. Series K consisted of 18 samples taken at ~1000-year intervals, and mean sample times span ~16,363 years. Fish from series K were measured for 16 ecomorphological traits related to armor, swimming, and feeding (Table 1). Series K started at a previously documented horizon when a low armored lineage of stickleback with zero to one dorsal spines, zero pelvic spines, and highly reduced pelvises was completely replaced by a high armored lineage of stickleback with three dorsal spines, two pelvic spines, and complete (Bell et al. 2006; Bell 2009; Stuart et al. 2020). This lineage subsequently evolved reduction in armor, body size, and traits related to swimming and feeding (Bell et al. 2006; Stuart et al. 2020; Siddiqui et al. in review). The tempo and mode of armor reduction during this sequence suggests adaptive evolution by natural selection (Hunt et al. 2008), and we focus on the multivariate evolution of sexual dimorphism by this second lineage.
 
-The fossil data consists of `r sum(is.na(stick$gender))` specimens with unknown sex over 18 time periods spaced  ~1000 years apart. Table 2 shows the sample size at each of the 18 time periods.  There are at least 22 specimens at each time period with a high of 67 specimens in period 7.  
+The fossil data consists of `r sum(is.na(stick$gender))` specimens with unknown sex over 18 time periods spaced  ~1000 years apart. Figure 1 shows the sample size at each of the 18 time periods.  There are at least 22 specimens at each time period with a high of 67 specimens in period 7.  
 
+```{r fig.cap = "Fossil sampel size for each time period"}
+ggplot(aes(x = time, y = count), data = fortab) + geom_col() + xlab("Time Period")  + scale_x_continuous(breaks = 1:18, labels = 1:18)
+```
 
 
 
@@ -137,40 +143,40 @@ The fossil data consists of `r sum(is.na(stick$gender))` specimens with unknown 
 
 Table: Traits and trait descriptions. ‘sc’ denotes size correction of trait against standard length. Names of bones follow @Bowne1994 unless otherwise noted.
 
-
+<!-- I removed the table and replaced it with a figure -->
 <!-- % latex table generated in R 4.2.2 by xtable 1.8-4 package -->
 <!-- % Mon May  1 11:20:28 2023 -->
-\begin{table}[ht]
-\centering
-\caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.}
-\begin{tabular}{rl}
-  \hline
-time & count \\ 
-  \hline
-  1 & 43 \\ 
-    2 & 41 \\ 
-    3 & 51 \\ 
-    4 & 41 \\ 
-    5 & 46 \\ 
-    6 & 48 \\ 
-    7 & 67 \\ 
-    8 & 55 \\ 
-    9 & 42 \\ 
-   10 & 33 \\ 
-   11 & 37 \\ 
-   12 & 22 \\ 
-   13 & 41 \\ 
-   14 & 43 \\ 
-   15 & 46 \\ 
-   16 & 47 \\ 
-   17 & 56 \\ 
-   18 & 55 \\ 
-   \hline
-\end{tabular}
-\label{tabn}
+<!-- \begin{table}[ht] -->
+<!-- \centering -->
+<!-- \caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.} -->
+<!-- \begin{tabular}{rl} -->
+<!--   \hline -->
+<!-- time & count \\  -->
+<!--   \hline -->
+<!--   1 & 43 \\  -->
+<!--     2 & 41 \\  -->
+<!--     3 & 51 \\  -->
+<!--     4 & 41 \\  -->
+<!--     5 & 46 \\  -->
+<!--     6 & 48 \\  -->
+<!--     7 & 67 \\  -->
+<!--     8 & 55 \\  -->
+<!--     9 & 42 \\  -->
+<!--    10 & 33 \\  -->
+<!--    11 & 37 \\  -->
+<!--    12 & 22 \\  -->
+<!--    13 & 41 \\  -->
+<!--    14 & 43 \\  -->
+<!--    15 & 46 \\  -->
+<!--    16 & 47 \\  -->
+<!--    17 & 56 \\  -->
+<!--    18 & 55 \\  -->
+<!--    \hline -->
+<!-- \end{tabular} -->
+<!-- \label{tabn} -->
 
-\end{table}
- 
+<!-- \end{table} -->
+
 
 
  
