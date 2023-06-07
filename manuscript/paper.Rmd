@@ -2,8 +2,8 @@
 title: |
   |  \Large Increased sexual dimorphism evolves in a fossil stickleback following ecological release from fish piscivores
 author: | 
-  | \large Allison Ozark$^1$, Akhil Ghosh$^2$, Raheyma Siddiqui$^1$, Matthew Stuart$^{2,3}$,
-  | \large  Samantha Swank$^1$, Michael A. Bell$^4$, Gregory J. Matthews$^{2,3}$, and Yoel E. Stuart$^1$ \vspace{-1.1mm}
+  | \large Allison Ozark$^{1,*}$, Matthew Stuart$^{2,3,*}$, Raheyma Siddiqui$^1$, Akhil Ghosh$^2$, 
+  | \large  Samantha Swank$^1$, Michael A. Bell$^4$, Gregory J. Matthews$^{2,3}$, and Yoel E. Stuart${^1,+$} \vspace{-1.1mm}
   |
   | \large $^1$ Department of Biology, Loyola University Chicago, Chicago, IL, USA \vspace{-1.1mm}
   |
@@ -12,6 +12,10 @@ author: |
   | \large $^3$ Center for Data Science and Consulting, Loyola University Chicago, Chicago, IL, USA \vspace{-1.1mm}
   |  
   | \large $^4$ University of California Museum of Paleontology, Berkeley, CA, USA \vspace{-1.1mm}
+  |
+  | \large $^*$ Equal contribution \vspace{-1.1mm}
+  |
+  | \large $^+$ Corresponding: ystuart@luc.edu \vspace{-1.1mm}
   |
 abstract: |
   | Everyone loves the stickle \vspace{2mm}
