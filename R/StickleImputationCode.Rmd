@@ -1,0 +1,61 @@
+---
+title: "StickleImputationCode"
+author: "Akhil Ghosh"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(mice)
+```
+
+```{r}
+setwd('/Users/akhilghosh/Desktop/RStudioProjects2022Fall/SticklebackProject/RawData_ReadOnly')
+stickle <- read_csv("AO.sexualdimorphismPruned.sc.forAnalysis_forMICE_Modeling_20June2023.csv")
+
+summary(stickle)
+stick <- stickle %>% 
+  mutate(gender = as.factor(case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    ))
+  ) %>% 
+  select(gender, everything())
+
+```
+
+```{r}
+set.seed(0314)
+imputations = 100
+stick_whole <- stick %>% select(-c(univID))
+summary(stick_whole)
+imputed_stick_whole <- mice(stick_whole,m=imputations)
+complete_stick_list <- list()
+for(m in 1:imputations){
+  complete_stick_list[[m]] <- complete(imputed_stick_whole, m)
+}
+```
+
+
+```{r}
+univ <- stick %>% 
+  mutate(time = as.integer(sub(".*([0-9]{2})\\..*", "\\1",univID)))
+times <- univ %>% drop_na(time) %>% pull(time)
+
+times_vector <- c(rep(1,43)) %>% 
+  append(21-times)
+```
+
+
+```{r}
+csv_list <-list()
+for(i in 1:imputations){
+csv_list[[i]] <- complete_stick_list[[i]][-c(1:367),] %>% mutate(imp = rep(i, 814), time = times_vector)
+}
+
+combined_csv<- do.call(rbind,csv_list) %>% select(imp, time,gender, everything())
+```
+
+
