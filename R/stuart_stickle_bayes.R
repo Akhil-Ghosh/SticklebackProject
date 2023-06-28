@@ -3,7 +3,7 @@ library(tidyverse)
 library(rstan)
 library(ggridges)
 
-dat <- read.csv("Data/stuart_stickle_100imputations_all.csv")
+dat <- read.csv("Data/updated_stickle_imputations_100.csv")
 dat$group <- factor(paste(dat$gender,letters[dat$time]))
 
 cont_dep <- "
@@ -73,7 +73,7 @@ data{
   int<lower=0> N;
   int<lower=0> T;
   matrix[N,2*T] X;
-  int<lower=0>[N] y;
+  int<lower=0> y[N];
 }
 parameters{
   real<lower=0> theta_f;
@@ -112,7 +112,7 @@ data{
   int<lower=0> N;
   int<lower=0> T;
   matrix[N,2*T] X;
-  int<lower=0>[N] y;
+  int<lower=0> y[N];
   vector[N] stl;
 }
 parameters{
@@ -170,54 +170,69 @@ stan_disc_ind <- stan_model(model_code = disc_ind)
 stan_disc_dep <- stan_model(model_code = disc_dep)
 M <- max(dat$imp)
 
-vars <- c("stl","lps","ect","tpg",
+vars <- c("lps","ect","tpg",
           "cle","pmx","ds1","ds2",
           "ds3","lpt","mdf","mav",
           "maf","mcv","mds","mpt")
 
 for (m in 1:M){
   tmp <- dat %>% filter(imp == m)
-  stl <- tmp$stl
-  mdf <- tmp$mdf
-  maf <- tmp$maf
-  lps <- tmp$lps
-  ect <- tmp$ect
-  tpg <- tmp$tpg
-  mav <- tmp$mav
-  mcv <- tmp$mcv
-  mds <- tmp$mds
-  mpt <- tmp$mpt
-  cle <- tmp$cle
-  pmx <- tmp$pmx
-  ds1 <- tmp$ds1
-  ds2 <- tmp$ds2
-  ds3 <- tmp$ds3
-  lpt <- tmp$lpt
   X <- model.matrix(~0+group,tmp)
 
-  N <- length(stl)
+  N <- nrow(tmp)
   T <- max(tmp$time)
 
-  print(paste("Running Imputation",m))
-  fit <- sampling(sm,
-                  list(N=N,T=T,X=X,mds=mds,
-                       stl=stl,lpt=lpt,mdf=mdf,
-                       maf=maf,lps=lps,ect=ect,
-                       tpg=tpg,mav=mav,mcv=mcv,
-                       mpt=mpt,cle=cle,pmx=pmx,
-                       ds1=ds1,ds2=ds2,ds3=ds3),
-                  iter=1500,chains=1,warmup=1000,thin=5,
-                  pars = c("theta_f","theta_m","kappa","sigma","tau","beta",
-                           "mu_stl","mu_lps","mu_ect","mu_tpg",
-                           "mu_cle","mu_pmx","mu_ds1","mu_ds2",
-                           "mu_ds3","mu_lpt","mu_mdf","mu_mav",
-                           "mu_maf","mu_mcv","mu_mds","mu_mpt"))
+  for (var in vars){
+    print(paste("Running Imputation",m,"for variable",var))
+
+    y <- tmp[,var]
+    stl <- tmp$stl
+
+    if(var == "mav" | var == "mcv"){
+      fit <- sampling(disc_dep,
+                      list(N=N,T=T,X=X,y=y,stl=stl),
+                      iter=1500,chains=1,warmup=1000,thin=5,
+                      pars = c("theta_f","theta_m",
+                               "kappa","tau",
+                               "beta","mu"))
+    } else if (substr(var,1,1) == "m") {
+      fit <- sampling(disc_ind,
+                      list(N=N,T=T,X=X,y=y),
+                      iter=1500,chains=1,warmup=1000,thin=5,
+                      pars = c("theta_f","theta_m",
+                               "kappa","tau",
+                               "beta","mu"))
+    } else if (var == "lps") {
+      fit <- sampling(cont_dep,
+                      list(N=N,T=T,X=X,y=y),
+                      iter=1500,chains=1,warmup=1000,thin=5,
+                      pars = c("theta_f","theta_m",
+                               "kappa","sigma",
+                               "tau","beta","mu",
+                               "theta_f_stl","theta_m_stl",
+                               "kappa_stl","sigma_stl",
+                               "tau_stl","mu_stl"))
+    } else {
+      fit <- sampling(cont_dep,
+                      list(N=N,T=T,X=X,y=y),
+                      iter=1500,chains=1,warmup=1000,thin=5,
+                      pars = c("theta_f","theta_m",
+                               "kappa","sigma",
+                               "tau","beta","mu"))
+    }
+
+    if (var == "lps"){
+      imp_fit <- as.data.frame(fit)
+    } else {
+      imp_fit <- cbind(imp_fit,as.data.frame(fit))
+    }
+  }
+
   if (m == 1){
-    samps <- as.data.frame(fit)
+    samps <- imp_fit
   } else {
-    samps <- rbind(samps,as.data.frame(fit))
+    samps <- rbind(samps,imp_fit)
   }
 }
 
-# saveRDS(samps,"posterior_samples.RDS")
-saveRDS(samps,"posterior_samples_mav_adj.RDS")
+saveRDS(samps,"posterior_samples_new_imputations.RDS")
