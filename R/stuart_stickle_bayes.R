@@ -86,6 +86,7 @@ transformed parameters{
   vector[2*T] mu;
   mu[1:T] = theta_f + u[1:T];
   mu[(T+1):(2*T)] = theta_m + u[(T+1):(2*T)];
+  vector[2*T] lambda = exp(mu);
 }
 
 model{
@@ -136,6 +137,7 @@ transformed parameters{
   vector[2*T] mu_stl;
   mu_stl[1:T] = theta_f_stl + u_stl[1:T];
   mu_stl[(T+1):(2*T)] = theta_m_stl + u_stl[(T+1):(2*T)];
+  vector[2*T] lambda = exp(mu);
 }
 model{
   // Data Model
@@ -189,22 +191,22 @@ for (m in 1:M){
     stl <- tmp$stl
 
     if(var == "mav" | var == "mcv"){
-      fit <- sampling(disc_dep,
+      fit <- sampling(stan_disc_dep,
                       list(N=N,T=T,X=X,y=y,stl=stl),
                       iter=1500,chains=1,warmup=1000,thin=5,
                       pars = c("theta_f","theta_m",
                                "kappa","tau",
-                               "beta","mu"))
+                               "beta","lambda"))
     } else if (substr(var,1,1) == "m") {
-      fit <- sampling(disc_ind,
+      fit <- sampling(stan_disc_ind,
                       list(N=N,T=T,X=X,y=y),
                       iter=1500,chains=1,warmup=1000,thin=5,
                       pars = c("theta_f","theta_m",
                                "kappa","tau",
-                               "beta","mu"))
+                               "lambda"))
     } else if (var == "lps") {
-      fit <- sampling(cont_dep,
-                      list(N=N,T=T,X=X,y=y),
+      fit <- sampling(stan_cont_dep,
+                      list(N=N,T=T,X=X,y=y,stl=stl),
                       iter=1500,chains=1,warmup=1000,thin=5,
                       pars = c("theta_f","theta_m",
                                "kappa","sigma",
@@ -213,8 +215,8 @@ for (m in 1:M){
                                "kappa_stl","sigma_stl",
                                "tau_stl","mu_stl"))
     } else {
-      fit <- sampling(cont_dep,
-                      list(N=N,T=T,X=X,y=y),
+      fit <- sampling(stan_cont_dep,
+                      list(N=N,T=T,X=X,y=y,stl=stl),
                       iter=1500,chains=1,warmup=1000,thin=5,
                       pars = c("theta_f","theta_m",
                                "kappa","sigma",
