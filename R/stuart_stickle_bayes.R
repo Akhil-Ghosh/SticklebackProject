@@ -225,8 +225,25 @@ for (m in 1:M){
 
     if (var == "lps"){
       imp_fit <- as.data.frame(fit)
+      imp_fit <- imp_fit %>% select(!'lp__')
+      names(imp_fit)[names(imp_fit) == "theta_f"] <- paste0("theta_f_",var)
+      names(imp_fit)[names(imp_fit) == "theta_m"] <- paste0("theta_m_",var)
+      names(imp_fit)[names(imp_fit) == "kappa"] <- paste0("kappa_",var)
+      names(imp_fit)[names(imp_fit) == "sigma"] <- paste0("sigma_",var)
+      names(imp_fit)[names(imp_fit) == "tau"] <- paste0("tau_",var)
+      names(imp_fit)[names(imp_fit) == "beta"] <- paste0("beta_",var)
+      names(imp_fit)[grep("mu\\[",names(imp_fit))] <- paste0("mu_",var,"[",1:36,"]")
+      names(imp_fit)[grep("lambda\\[",names(imp_fit))] <- paste0("lambda_",var,"[",1:36,"]")
     } else {
       imp_fit <- cbind(imp_fit,as.data.frame(fit))
+      names(imp_fit)[names(imp_fit) == "theta_f"] <- paste0("theta_f_",var)
+      names(imp_fit)[names(imp_fit) == "theta_m"] <- paste0("theta_m_",var)
+      names(imp_fit)[names(imp_fit) == "kappa"] <- paste0("kappa_",var)
+      names(imp_fit)[names(imp_fit) == "sigma"] <- paste0("sigma_",var)
+      names(imp_fit)[names(imp_fit) == "tau"] <- paste0("tau_",var)
+      names(imp_fit)[names(imp_fit) == "beta"] <- paste0("beta_",var)
+      names(imp_fit)[grep("mu\\[",names(imp_fit))] <- paste0("mu_",var,"[",1:36,"]")
+      names(imp_fit)[grep("lambda\\[",names(imp_fit))] <- paste0("lambda_",var,"[",1:36,"]")
     }
   }
 
