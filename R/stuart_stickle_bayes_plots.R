@@ -6,6 +6,10 @@ vars <- c("stl","lps","ect","tpg",
           "ds3","lpt","mdf","mav",
           "maf","mcv","mds","mpt")
 
+samps <- readRDS("posterior_samples_new_imputations.RDS")
+
+samps <- samps %>% select(!contains("lp_"))
+
 for (i in 1:16){
   phenotype = vars[i]
 
@@ -16,8 +20,8 @@ for (i in 1:16){
   }
 
   samps %>%
-    rename(Female = paste0("theta_f[",i,"]")) %>%
-    rename(Male = paste0("theta_m[",i,"]")) %>%
+    rename(Female = paste0("theta_f_",phenotype)) %>%
+    rename(Male = paste0("theta_m_",phenotype)) %>%
     select(Female,Male) %>%
     gather("Gender","Value") %>%
     ggplot() +
@@ -32,10 +36,13 @@ for (i in 1:16){
     ggsave(paste0("Figures/",phenotype,"/gamma.pdf"),width=5,height=8)
   }
 
-  mu <- samps %>% select(contains(paste0("mu_",phenotype)))
-  if (i >= 11) {mu <- exp(mu)}
-  mu_f <- mu[1:T]
-  mu_m <- mu[(T+1):(2*T)]
+  if (i <= 10){
+    mu <- samps %>% select(contains(paste0("mu_",phenotype)))
+  } else {
+    mu <- samps %>% select(contains(paste0("lambda_",phenotype)))
+  }
+  mu_f <- mu[,1:T]
+  mu_m <- mu[,(T+1):(2*T)]
 
   mu_diff <- mu_m - mu_f
 
@@ -105,9 +112,10 @@ for (i in 1:16){
   } else {
     ggsave(paste0("Figures/",phenotype,"/lambda_m.pdf"),width=5,height=8)
   }
+
   if (i >=2 & i <= 10){
     samps %>%
-      rename(beta = paste0("beta[",i-1,"]"))%>%
+      rename(beta = paste0("beta_",phenotype))%>%
       select(beta) %>%
       ggplot() +
       geom_density(aes(x=beta)) +
@@ -119,7 +127,7 @@ for (i in 1:16){
   }
   if (phenotype == "mav"){
     samps %>%
-      rename(beta = paste0("beta[",10,"]"))%>%
+      rename(beta = paste0("beta_",phenotype))%>%
       select(beta) %>%
       ggplot() +
       geom_density(aes(x=beta)) +
@@ -129,10 +137,9 @@ for (i in 1:16){
       ylab(expression(paste("p(",beta[g],"|",bold(X),")")))
     ggsave(paste0("Figures/",phenotype,"/beta.pdf"),width=5,height=8)
   }
-
   if (phenotype == "mcv"){
     samps %>%
-      rename(beta = paste0("beta[",11,"]"))%>%
+      rename(beta = paste0("beta_",phenotype))%>%
       select(beta) %>%
       ggplot() +
       geom_density(aes(x=beta)) +
@@ -144,4 +151,64 @@ for (i in 1:16){
   }
 }
 
+armor <- c("ds1","ds2","ds3","lps","lpt","mpt","tpg")
+nonarmor <- vars[c(!vars %in% armor)]
+
+for (i in 1:length(armor)){
+  if (substr(armor[i],1,1) == "m"){
+    mu <- samps %>% select(contains(paste0("lambda_",armor[i])))
+  } else {
+    mu <- samps %>% select(contains(paste0("mu_",armor[i])))
+  }
+  mu_f <- mu[,1:T]
+  mu_m <- mu[,(T+1):(2*T)]
+
+  mu_diff <- mu_m - mu_f
+
+  if (i == 1){
+    probs <- apply(mu_diff,2,function(x){length(which(x > 0))/length(x)})
+  } else {
+    probs <- cbind(probs,
+             apply(mu_diff,2,function(x){length(which(x > 0))/length(x)}))
+  }
+}
+
+colnames(probs) <- armor
+as.data.frame(probs) %>%
+  gather("Phenotype","Value") %>%
+  mutate(Time = rep(1:T,length(armor))) %>%
+  ggplot() +
+  geom_line(aes(x=Time,y=Value,linetype=Phenotype)) +
+  theme_bw() +
+  ylab(expression(paste("P(",mu[mt],"-",mu[ft],"|",bold(y),")")))
+ggsave(paste0("Figures/post_probs_armor.pdf"),width=5,height=8)
+
+for (i in 1:length(nonarmor)){
+  if (substr(nonarmor[i],1,1) == "m"){
+    mu <- samps %>% select(contains(paste0("lambda_",nonarmor[i])))
+  } else {
+    mu <- samps %>% select(contains(paste0("mu_",nonarmor[i])))
+  }
+  mu_f <- mu[,1:T]
+  mu_m <- mu[,(T+1):(2*T)]
+
+  mu_diff <- mu_m - mu_f
+
+  if (i == 1){
+    probs <- apply(mu_diff,2,function(x){length(which(x > 0))/length(x)})
+  } else {
+    probs <- cbind(probs,
+                   apply(mu_diff,2,function(x){length(which(x > 0))/length(x)}))
+  }
+}
+
+colnames(probs) <- nonarmor
+as.data.frame(probs) %>%
+  gather("Phenotype","Value") %>%
+  mutate(Time = rep(1:T,length(nonarmor))) %>%
+  ggplot() +
+  geom_line(aes(x=Time,y=Value,linetype=Phenotype)) +
+  theme_bw() +
+  ylab(expression(paste("P(",mu[mt],"-",mu[ft],"|",bold(y),")")))
+ggsave(paste0("Figures/post_probs_nonarmor.pdf"),width=5,height=8)
 
