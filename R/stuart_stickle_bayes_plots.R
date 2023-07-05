@@ -178,7 +178,7 @@ as.data.frame(probs) %>%
   gather("Phenotype","Value") %>%
   mutate(Time = rep(1:T,length(armor))) %>%
   ggplot() +
-  geom_line(aes(x=Time,y=Value,linetype=Phenotype)) +
+  geom_line(aes(x=Time,y=Value,linetype=Phenotype,colour=Phenotype)) +
   theme_bw() +
   ylab(expression(paste("P(",mu[mt],"-",mu[ft],"|",bold(y),")")))
 ggsave(paste0("Figures/post_probs_armor.pdf"),width=5,height=8)
@@ -207,7 +207,7 @@ as.data.frame(probs) %>%
   gather("Phenotype","Value") %>%
   mutate(Time = rep(1:T,length(nonarmor))) %>%
   ggplot() +
-  geom_line(aes(x=Time,y=Value,linetype=Phenotype)) +
+  geom_line(aes(x=Time,y=Value,linetype=Phenotype,colour=Phenotype)) +
   theme_bw() +
   ylab(expression(paste("P(",mu[mt],"-",mu[ft],"|",bold(y),")")))
 ggsave(paste0("Figures/post_probs_nonarmor.pdf"),width=5,height=8)
