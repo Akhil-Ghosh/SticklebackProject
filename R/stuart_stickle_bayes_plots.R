@@ -8,8 +8,6 @@ vars <- c("stl","lps","ect","tpg",
 
 samps <- readRDS("posterior_samples_new_imputations.RDS")
 
-samps <- samps %>% select(!contains("lp_"))
-
 for (i in 1:16){
   phenotype = vars[i]
 
