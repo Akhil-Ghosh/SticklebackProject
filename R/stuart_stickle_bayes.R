@@ -277,7 +277,7 @@ for (model_num in 0:15){
     Delta <- diff(times$Inverted.Year)/1000
 
     for (var in vars){
-      print(paste("Running Imputation",m,"for variable",var))
+      print(paste("Running Imputation",m,"for variable",var,"Iteration",OU,trend,OU_stl,trend_stl))
 
       y <- tmp[,var]
       stl <- tmp$stl
