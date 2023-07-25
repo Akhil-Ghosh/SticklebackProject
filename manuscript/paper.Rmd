@@ -193,9 +193,9 @@ What covariates do we have in the data: length, what else,
 
 # Models  {#sec:models}
 ## Imputation Model 
-Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate gender of the stickleback fish, $\boldsymbol{X}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ continuous phenotypes of interest, and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times L$ matrix of the $L$ discrete phenotypes of interest.  Because the gender of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant gender and missing fossil gender, respectively.
+Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate gender of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the gender of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant gender and missing fossil gender, respectively.
 
-We impute the missing gender for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant}, \boldsymbol{X}, \boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching.  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2009 recommend a larger number of imputed data sets if the data users intend on performing Bayesians analysis after imputation, which in this case, we do.  Therefore, the imputation algorithm is run to obtain a total of $M = 100$ completed datasets. In addition to this, @ZhouReiter2009 suggests rather than using Rubin's combining rules to combine across imputed data sets, instead pool all of the draws from the posterior distributions across all of the imputed data sets to estimate the posterior distributions of parameters of interest.  We proceed with our Bayesian analysis in this manner.  
+We impute the missing gender for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching.  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2009 recommend a larger number of imputed data sets if the data users intend on performing Bayesians analysis after imputation, which in this case, we do.  Therefore, the imputation algorithm is run to obtain a total of $M = 100$ completed datasets. In addition to this, @ZhouReiter2009 suggests rather than using Rubin's combining rules to combine across imputed data sets, instead pool all of the draws from the posterior distributions across all of the imputed data sets to estimate the posterior distributions of parameters of interest.  We proceed with our Bayesian analysis in this manner.  
 
 \textcolor{red}{Akhil's stuff about validating the imputation model goes here.}
 
@@ -203,55 +203,61 @@ We impute the missing gender for the fossil data by sampling from the posterior 
 <!-- Bayesian Analysis after multiple imputation @ZhouReiter2009: They recommend using a large number of imputations.  5 or 10 is too small.  We are using M = 100. -->
 
 ## Completed Data Model 
-\textcolor{red}{We should note somewhere that we are only using the $W_{fossil}$ in the modeling part.  We drop the $W_{extant}$.  So just note that $W_{ti}$ is really $W_{fossil,ti}$.  Not sure how to say this, but we need to make it clear that we are only using the fossil data for the OU modeling.   }
+\textcolor{red}{We should note somewhere that we are only using the $W_{fossil}$ in the modeling part.  We drop the $W_{extant}$.  So just note that $W_{ti}$ is really $W_{fossil,ti}$.  Not sure how to say this, but we need to make it clear that we are only using the fossil data for the OU modeling.}
 
-### Continuous Phenotypes
-For a given imputed dataset, let $W_{ti}$ be the imputed gender, $\boldsymbol{X}_{ti}$ be the $K \times 1$ vector of continuous phenotypes, and $\boldsymbol{Y}_{ti}$ be the $L \times 1$ vector of discrete phenotypes for $t = 1, \ldots, T$ and  $i = 1\ldots,n_{t}$).
-
-Define the last element of $\boldsymbol{X}_{ti}$ ($X_{K,ti}$) as the length of the stickleback.  For $k = 1,\cdots,K - 1$, we will assume
+For a given imputed dataset, let $W_{ij}$ be the imputed gender and $\boldsymbol{Y}_{ij}$ be the $K \times 1$ vector of phenotypes for stickleback fish $j$ at time $t_i$ where $i = 1, \ldots, T$ and $j = 1,\ldots,n_{t}$). In addition, we denote $Y_{K,ij}$, the last variable in $\boldsymbol{Y}_{ij}$, to be the standard length of the fish. We assume that $Y_{K,ij}$ follows
 \begin{align}
-{X}_{k,ti} & \iid \left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft} & + \beta_k(X_{K,ti} - \mu_{K,ft}),&\sigma_k^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{k,mt} & + \beta_k(X_{K,ti} - \mu_{K,mt}),&\sigma_k^2), & W_{ti} = \text{Male} \end{array}\right. \\
-{X}_{K,ti} & \iid \left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft},&\sigma_{K}^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{K,mt},&\sigma_{K}^2), & W_{ti} = \text{Male} \end{array}\right.
+{Y}_{K,ij} & \iid \left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft_i},&\sigma_{K}^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{K,mt_i},&\sigma_{K}^2), & W_{ij} = \text{Male} \end{array}\right.
 \label{eq:X}
 \end{align}
-where $\mu_{k,ft}$ and $\mu_{k,mt}$ represent the time-$t$ specific mean of phenotype $k$ for female and male stickleback fish, respectively, and $\beta_k$ is an additional parameter to account for the biological phenomenon that other continuous phenotypes for a particular animal are positively correlated with their length \textbf{CITATION NEEDED}.  We further set \begin{align}
-\mu_{k,gt} = \theta_{k,g} + u_{k,gt},
-\label{eq:mu}
-\end{align}
-for $g \in \{f,m\}$ where $\theta_{k,g}$ is the overall mean of phenotype $X_k$ for each gender, and $u_{k,gt}$ measures the difference between $\mu_{k,gt}$ and $\theta_{k,g}$.  We then fit $\boldsymbol{u}_{k,g} = \{u_{k,g1},\cdots,u_{k,gT}\}$ to an Ornstein-Uhlenback (OU) process (@OUProcess) where we assume $u_{k,gT}$ have a marginal mean of 0. Because each time period is ~1000 years, we will discretize the OU process without loss of generality.  For $t = 2,\ldots,T$, we assume
-\begin{align}
-u_{k,gt} \iid \mathcal{N}(\kappa_{k} u_{k,g(t-1)} , \tau_k^2).
-\label{eq:u_ar1}
-\end{align}
 
-$\kappa_{k,g}$ represents the correlation between $\mu_{k,gt}$ and $\mu_{k,g(t+1)}$, and it also follows that $\text{cor}(u_{g,t},u_{g,t+h}) = \kappa^h$ for $h \in \mathbb{N}$.  In addition, we assume
-\begin{align}
-u_{k,g1} \iid \mathcal{N}\left(0,\frac{\tau_k^2}{1-\kappa_{k}^2}\right).
-\label{eq:u1}
-\end{align}
-This model choice is to preserve stationarity; i.e. $p(u_{k,gs}) = p(u_{k,gt})$ for $s \neq t$.
+<!-- ### Continuous Phenotypes -->
+<!-- For a given imputed dataset, let $W_{ti}$ be the imputed gender, $\boldsymbol{X}_{ti}$ be the $K \times 1$ vector of continuous phenotypes, and $\boldsymbol{Y}_{ti}$ be the $L \times 1$ vector of discrete phenotypes for $t = 1, \ldots, T$ and  $i = 1\ldots,n_{t}$). -->
 
-### Discrete Phenotypes
-For the discrete phenotypes, we will assume
-\begin{align}
-{Y}_{l,ti} & \sim \left\{\begin{array}{ll} Poisson(\lambda_{l,ft}), & W_{ti} = \text{Female} \\ Poisson(\lambda_{l,mt}), & W_{ti} = \text{Male} \end{array}\right.,
-\label{eq:Y}
-\end{align}
-for $l = 1,\cdots,L$.  Similar to the continuous phenotypes, we set
-\begin{align}
-\log(\lambda_{l,gt}) = \gamma_{l,g} + v_{l,gt}.
-\label{eq:lambda}
-\end{align}
-We use the log function to allow $v_{l,gt}$ to take all values on the real number line so we can properly fit an OU process to these effects.  We further assume
-\begin{align}
-v_{l,gt} \iid \mathcal{N}(\phi_{l} v_{l,g(t-1)} , \omega_l^2),
-\label{eq:v_ar1}
-\end{align}
-and
-\begin{align}
-v_{l,g1} \iid \mathcal{N}\left(0,\frac{\omega_l^2}{1 - \phi_{l}^2}\right)..
-\label{eq:v1}
-\end{align}
+<!-- Define the last element of $\boldsymbol{X}_{ti}$ ($X_{K,ti}$) as the length of the stickleback.  For $k = 1,\cdots,K - 1$, we will assume -->
+<!-- \begin{align} -->
+<!-- {X}_{k,ti} & \iid \left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft} & + \beta_k(X_{K,ti} - \mu_{K,ft}),&\sigma_k^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{k,mt} & + \beta_k(X_{K,ti} - \mu_{K,mt}),&\sigma_k^2), & W_{ti} = \text{Male} \end{array}\right. \\ -->
+<!-- {X}_{K,ti} & \iid \left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft},&\sigma_{K}^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{K,mt},&\sigma_{K}^2), & W_{ti} = \text{Male} \end{array}\right. -->
+<!-- \label{eq:X} -->
+<!-- \end{align} -->
+<!-- where $\mu_{k,ft}$ and $\mu_{k,mt}$ represent the time-$t$ specific mean of phenotype $k$ for female and male stickleback fish, respectively, and $\beta_k$ is an additional parameter to account for the biological phenomenon that other continuous phenotypes for a particular animal are positively correlated with their length \textbf{CITATION NEEDED}.  We further set \begin{align} -->
+<!-- \mu_{k,gt} = \theta_{k,g} + u_{k,gt}, -->
+<!-- \label{eq:mu} -->
+<!-- \end{align} -->
+<!-- for $g \in \{f,m\}$ where $\theta_{k,g}$ is the overall mean of phenotype $X_k$ for each gender, and $u_{k,gt}$ measures the difference between $\mu_{k,gt}$ and $\theta_{k,g}$.  We then fit $\boldsymbol{u}_{k,g} = \{u_{k,g1},\cdots,u_{k,gT}\}$ to an Ornstein-Uhlenback (OU) process (@OUProcess) where we assume $u_{k,gT}$ have a marginal mean of 0. Because each time period is ~1000 years, we will discretize the OU process without loss of generality.  For $t = 2,\ldots,T$, we assume -->
+<!-- \begin{align} -->
+<!-- u_{k,gt} \iid \mathcal{N}(\kappa_{k} u_{k,g(t-1)} , \tau_k^2). -->
+<!-- \label{eq:u_ar1} -->
+<!-- \end{align} -->
+
+<!-- $\kappa_{k,g}$ represents the correlation between $\mu_{k,gt}$ and $\mu_{k,g(t+1)}$, and it also follows that $\text{cor}(u_{g,t},u_{g,t+h}) = \kappa^h$ for $h \in \mathbb{N}$.  In addition, we assume -->
+<!-- \begin{align} -->
+<!-- u_{k,g1} \iid \mathcal{N}\left(0,\frac{\tau_k^2}{1-\kappa_{k}^2}\right). -->
+<!-- \label{eq:u1} -->
+<!-- \end{align} -->
+<!-- This model choice is to preserve stationarity; i.e. $p(u_{k,gs}) = p(u_{k,gt})$ for $s \neq t$. -->
+
+<!-- ### Discrete Phenotypes -->
+<!-- For the discrete phenotypes, we will assume -->
+<!-- \begin{align} -->
+<!-- {Y}_{l,ti} & \sim \left\{\begin{array}{ll} Poisson(\lambda_{l,ft}), & W_{ti} = \text{Female} \\ Poisson(\lambda_{l,mt}), & W_{ti} = \text{Male} \end{array}\right., -->
+<!-- \label{eq:Y} -->
+<!-- \end{align} -->
+<!-- for $l = 1,\cdots,L$.  Similar to the continuous phenotypes, we set -->
+<!-- \begin{align} -->
+<!-- \log(\lambda_{l,gt}) = \gamma_{l,g} + v_{l,gt}. -->
+<!-- \label{eq:lambda} -->
+<!-- \end{align} -->
+<!-- We use the log function to allow $v_{l,gt}$ to take all values on the real number line so we can properly fit an OU process to these effects.  We further assume -->
+<!-- \begin{align} -->
+<!-- v_{l,gt} \iid \mathcal{N}(\phi_{l} v_{l,g(t-1)} , \omega_l^2), -->
+<!-- \label{eq:v_ar1} -->
+<!-- \end{align} -->
+<!-- and -->
+<!-- \begin{align} -->
+<!-- v_{l,g1} \iid \mathcal{N}\left(0,\frac{\omega_l^2}{1 - \phi_{l}^2}\right).. -->
+<!-- \label{eq:v1} -->
+<!-- \end{align} -->
 
 Because we are fitting a dataset with a stochastic structure on the means of the phenotypes, we analyze the data via a Bayesian analysis.  Bayesian data analysis is also more naturally used when we have to impute data (\textbf{CITATION}).
 
