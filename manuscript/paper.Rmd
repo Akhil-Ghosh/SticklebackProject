@@ -2,21 +2,15 @@
 title: |
   |  \Large Increased sexual dimorphism evolves in a fossil stickleback following ecological release from fish piscivores
 author: | 
-  | \large Allison Ozark$^{1,*}$, Matthew Stuart$^{2,3,*}$, Raheyma Siddiqui$^1$, Akhil Ghosh$^2$, 
-  | \large  Samantha Swank$^1$, Michael A. Bell$^4$, Gregory J. Matthews$^{2,3}$, and Yoel E. Stuart${^1,+$} \vspace{-1.1mm}
-  |
+  | \large Allison Ozark$^{1,*}$, Matthew Stuart$^{2,3,*}$, Raheyma Siddiqui$^1$, Akhil Ghosh$^2$
+  | \large Samantha Swank$^1$, Michael A. Bell$^4$, Gregory J. Matthews$^{2,3}$, and Yoel E. Stuart$^{1,+}$ 
+  | \vspace{-1.1mm}
   | \large $^1$ Department of Biology, Loyola University Chicago, Chicago, IL, USA \vspace{-1.1mm}
-  |
   | \large $^2$ Department of Mathematics and Statistics, Loyola University Chicago, Chicago, IL, USA \vspace{-1.1mm}
-  |  
   | \large $^3$ Center for Data Science and Consulting, Loyola University Chicago, Chicago, IL, USA \vspace{-1.1mm}
-  |  
   | \large $^4$ University of California Museum of Paleontology, Berkeley, CA, USA \vspace{-1.1mm}
-  |
   | \large $^*$ Equal contribution \vspace{-1.1mm}
-  |
   | \large $^+$ Corresponding: ystuart@luc.edu \vspace{-1.1mm}
-  |
 abstract: |
   | Everyone loves the stickle \vspace{2mm}
   | *Keywords*: Stickle
@@ -63,7 +57,7 @@ library(Lahman)
 
 Ecological release theory suggests that a prey population’s niche should expand when predation is relaxed or removed, as prey take advantage of new enemy free space (reviewed in @Herrmann2021). Niche expansion could manifest through a combination of increasing within- and between-individual niche widths (@Bolnick2010; @Herrmann2021), including divergence between the sexes (@Bolnick2003; @Cooper2011). Theory and empirical data suggest that a population presented with ecological opportunity following ecological release might experience disruptive selection on males and females stemming from intraspecific competition over newly accessible resources, resulting in intersexual divergence in habitat use (@Schoener1968; @Shine1989; @Bolnick2003; @Butler2007; @Bolnick2008; @Cooper2011; but see @Stuart2021; @Blain2022). Accordingly, sexes should also diverge in morphological traits associated with habitat use; such ecologically-driven "character displacement between the sexes" is therefore one explanation for phenotypic sexual dimorphism (@deLisleRowe2015; @deLisleNco2018).
 
-We tested this link between release from predators and the evolution of sexual dimorphism in a well-preserved, finely-resolved, ~16,000 year-long sequence of the fossil stickleback fish (<i>Gasterosteus doryssus</i>). The fossil lineage appeared in the depositional environment as a fully armored form, with complete pelvic girdles, two pelvic spines, and three dorsal spines, on average (@Bell2006; @Stuart2020). However, this habitat appears to have been missing fish piscivores (e.g., trout and other salmonids known to prey on modern stickleback; @Bell2009), relaxing putative selection for armor (@Reichen1980, @Reimchen1994, @BellEtAl1993; @Bowne1994; @Roestietal2023). The lineage adaptively evolved armor loss but also reduction in the means of several other traits  (@Hunt2008; @Stuart2020; Siddiqui et al. in prep). In particular, tooth wear data suggest that the population shifted to eat more planktonic prey through time, indicative of increased open water habitat use (Purnell et al. 2007). If this divergence in habitat use is partitioned between sexes (@ReimchenNosil2004; @SpoljaricReimchen2008;@Reimchen2016), then we should expect sexual dimorphism to evolve for traits related to habitat use in <i>G. doryssus</i>.
+We tested this link between release from predators and the evolution of sexual dimorphism in a well-preserved, finely-resolved, ~16,000 year-long sequence of the fossil stickleback fish (<i>Gasterosteus doryssus</i>). The fossil lineage appeared in the depositional environment as a fully armored form, with complete pelvic girdles, two pelvic spines, and three dorsal spines, on average (@Bell2006; @Stuart2020). However, this habitat appears to have been missing fish piscivores (e.g., trout and other salmonids known to prey on modern stickleback; @Bell2009), relaxing putative selection for armor (@Reimchen1980, @Reimchen1994, @BellEtAl1993; @Bowne1994; @Roestietal2023). The lineage adaptively evolved armor loss but also reduction in the means of several other traits  (@Hunt2008; @Stuart2020; Siddiqui et al. in prep). In particular, tooth wear data suggest that the population shifted to eat more planktonic prey through time, indicative of increased open water habitat use (Purnell et al. 2007). If this divergence in habitat use is partitioned between sexes (@ReimchenNosil2004; @SpoljaricReimchen2008;@Reimchen2016), then we should expect sexual dimorphism to evolve for traits related to habitat use in <i>G. doryssus</i>.
 
 To test this prediction, we imputed the sex of individual fossils, which is unobserved in practice, with Multiple Imputation by Chained Equations (MICE) (@MICE), using observed data from extant stickleback of known sex to train the imputation model.  Then we tracked the multivariate evolution of sexual dimorphism over ~16,000 years for 16 traits related to swimming, feeding and defense.  
 
