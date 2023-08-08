@@ -103,16 +103,23 @@
 
 \title{~\Large Increased sexual dimorphism evolves in a fossil
 stickleback following ecological release from fish piscivores}
-\author{\large Allison Ozark\(^1\), Akhil Ghosh\(^1\), Raheyma
-Siddiqui\(^1\), Matthew Stuart\(^1\),\\
-\large  Samantha Swank\(^1\), Michael A. Bell\(^2\), Gregory J.
-Matthews\(^1\), and Yoel E. Stuart\(^1\) \vspace{-1.1mm}\\
-\strut \\
-\large \(^1\) Loyola University Chicago, Chicago, IL, USA
+\author{\large Allison Ozark\(^{1,*}\), Matthew Stuart\(^{2,3,*}\),
+Raheyma Siddiqui\(^1\), Akhil Ghosh\(^2\)\\
+\large Samantha Swank\(^1\), Michael A. Bell\(^4\), Gregory J.
+Matthews\(^{2,3}\), and Yoel E. Stuart\(^{1,+}\)\\
 \vspace{-1.1mm}\\
-\strut \\
-\large \(^2\) University of California Museum of Paleontology, Berkeley,
-CA, USA \vspace{-1.1mm}\\}
+\large \(^1\) Department of Biology, Loyola University Chicago, Chicago,
+IL, USA \vspace{-1.1mm}\\
+\large \(^2\) Department of Mathematics and Statistics, Loyola
+University Chicago, Chicago, IL, USA \vspace{-1.1mm}\\
+\large \(^3\) Center for Data Science and Consulting, Loyola University
+Chicago, Chicago, IL, USA \vspace{-1.1mm}\\
+\large \(^4\) University of California Museum of Paleontology, Berkeley,
+CA, USA \vspace{-1.1mm}\\
+\large \(^*\) Equal contribution \vspace{-1.1mm}\\
+\large \(^+\) Corresponding:
+\href{mailto:ystuart@luc.edu}{\nolinkurl{ystuart@luc.edu}}
+\vspace{-1.1mm}}
 \date{}
 
 \begin{document}
@@ -130,113 +137,103 @@ Everyone loves the stickle \vspace{2mm}\\
 \section{Introduction}\label{sec:intro}}
 
 Ecological release theory suggests that a prey population's niche should
-expand when predation is relaxed or removed (reviewed in Herrmann,
-Stroud, and Losos (\protect\hyperlink{ref-Herrmann2021}{2021})). Niche
-changes in habitat and resource use should then drive phenotypic
-evolution as the population adapts to new conditions (Herrmann, Stroud,
-and Losos (\protect\hyperlink{ref-Herrmann2021}{2021})). For example,
-resource use expansion should result in trophic trait evolution (cite;
-e.g.,). Habitat expansion should result in locomotor change (cite;
-e.g.,). And release from enemies should result in reduction of costly
-defense traits (cite; e.g.,).
-
-Niche expansion could manifest through a combination of increasing
-within- and between-individual niche widths (Bolnick et al.
+expand when predation is relaxed or removed, as prey take advantage of
+new enemy free space (reviewed in Herrmann, Stroud, and Losos
+(\protect\hyperlink{ref-Herrmann2021}{2021})). Niche expansion could
+manifest through a combination of increasing within- and
+between-individual niche widths (Bolnick et al.
 (\protect\hyperlink{ref-Bolnick2010}{2010}); Herrmann, Stroud, and Losos
 (\protect\hyperlink{ref-Herrmann2021}{2021})), including divergence
 between the sexes (Bolnick and Doebeli
 (\protect\hyperlink{ref-Bolnick2003}{2003}); Cooper, Gilman, and
 Boughman (\protect\hyperlink{ref-Cooper2011}{2011})). Theory and
-empirical data suggest that a population presented with novel ecological
-opportunity might experience disruptive selection on males and females
-stemming from intraspecific competition over newly accessible resources,
-resulting in intersexual divergence in habitat use and associated
-phenotypes (Schoener 1968; Shine
+empirical data suggest that a population presented with ecological
+opportunity following ecological release might experience disruptive
+selection on males and females stemming from intraspecific competition
+over newly accessible resources, resulting in intersexual divergence in
+habitat use (W. (\protect\hyperlink{ref-Schoener1968}{1968}); Shine
 (\protect\hyperlink{ref-Shine1989}{1989}); Bolnick and Doebeli
 (\protect\hyperlink{ref-Bolnick2003}{2003}); Butler, Sawyer, and Losos
 (\protect\hyperlink{ref-Butler2007}{2007}); Bolnick and Lau
 (\protect\hyperlink{ref-Bolnick2008}{2008}); Cooper, Gilman, and
 Boughman (\protect\hyperlink{ref-Cooper2011}{2011}); but see Stuart et
 al. (\protect\hyperlink{ref-Stuart2021}{2021}); Blain
-(\protect\hyperlink{ref-Blain2022}{2022})). Such character displacement
-between the sexes is therefore one explanation for sexual dimorphism (de
-Lisle papers).
+(\protect\hyperlink{ref-Blain2022}{2022})). Accordingly, sexes should
+also diverge in morphological traits associated with habitat use; such
+ecologically-driven ``character displacement between the sexes'' is
+therefore one explanation for phenotypic sexual dimorphism (S. P. De
+Lisle and Rowe (\protect\hyperlink{ref-deLisleRowe2015}{2015}); S. Paiva
+De Lisle S. P. and Rowe (\protect\hyperlink{ref-deLisleNco2018}{2018})).
 
 We tested this link between release from predators and the evolution of
-sexual dimorphism in a well-preserved, high resolution lineage of the
-fossil stickleback fish (Gasterosteus doryssus). The sex of the
-individual fossils, which is unobserved in practice, was imputed using
-multiple imputation by chained equations (MICE) (Buuren and
-Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011})) with observed
-data used to train the imputation model based on extant stickleback with
-known sex. Then we tracked the multivariate evolution of sexual
-dimorphism over \textasciitilde16,000 years for traits related to
-swimming, feeding and defense. The fossil sequence captures a bout of
-adaptive evolution following ecological release from predators, as
-follows. The fossil lineage appeared in the depositional environment as
-a fully armored form, with complete pelvic girdles, two pelvic spines,
-and three dorsal spines, on average (Michael A. Bell, Travis, and Blouw
-(\protect\hyperlink{ref-Bell2006}{2006}); Stuart, Travis, and Bell
-(\protect\hyperlink{ref-Stuart2020}{2020})). However, this habitat
-appears to have been missing fish piscivores (e.g., trout and other
-salmonids known to prey on modern stickleback; M. A. Bell
+sexual dimorphism in a well-preserved, finely-resolved,
+\textasciitilde16,000 year-long sequence of the fossil stickleback fish
+(Gasterosteus doryssus). The fossil lineage appeared in the depositional
+environment as a fully armored form, with complete pelvic girdles, two
+pelvic spines, and three dorsal spines, on average (Michael A. Bell,
+Travis, and Blouw (\protect\hyperlink{ref-Bell2006}{2006}); Stuart,
+Travis, and Bell (\protect\hyperlink{ref-Stuart2020}{2020})). However,
+this habitat appears to have been missing fish piscivores (e.g., trout
+and other salmonids known to prey on modern stickleback; M. A. Bell
 (\protect\hyperlink{ref-Bell2009}{2009})), relaxing putative selection
-for armor (Reimchen papers, Bell papers, Bowne
-(\protect\hyperlink{ref-Bowne1994}{1994}); Roesti et al.~2023). The
-lineage thus adaptively evolved armor loss and reduction in several
-other traits as well (Hunt, Bell, and Travis
-(\protect\hyperlink{ref-Hunt2008}{2008}); Stuart, Travis, and Bell
-(\protect\hyperlink{ref-Stuart2020}{2020}); Siddiqui et al.~in prep),
-and tooth wear data suggest that the population also began eating more
-planktonic prey, expanding to an open water lifestyle (Purnell et
-al.~2007).
+for armor (T. E. Reimchen (\protect\hyperlink{ref-Reimchen1980}{1980}),
+T. E. Reimchen (\protect\hyperlink{ref-Reimchen1994}{1994}), O. Bell M.
+A. and Koenings (\protect\hyperlink{ref-BellEtAl1993}{1993}); Bowne
+(\protect\hyperlink{ref-Bowne1994}{1994}); Roesti and Schluter
+(\protect\hyperlink{ref-Roestietal2023}{2023})). The lineage adaptively
+evolved armor loss but also reduction in the means of several other
+traits (Hunt, Bell, and Travis (\protect\hyperlink{ref-Hunt2008}{2008});
+Stuart, Travis, and Bell (\protect\hyperlink{ref-Stuart2020}{2020});
+Siddiqui et al.~in prep). In particular, tooth wear data suggest that
+the population shifted to eat more planktonic prey through time,
+indicative of increased open water habitat use (Purnell et al.~2007). If
+this divergence in habitat use is partitioned between sexes (Reimchen T.
+E. and Nosil (\protect\hyperlink{ref-ReimchenNosil2004}{2004});
+Spoljaric and Reimchen
+(\protect\hyperlink{ref-SpoljaricReimchen2008}{2008});D. S. Reimchen T.
+E. (\protect\hyperlink{ref-Reimchen2016}{2016})), then we should expect
+sexual dimorphism to evolve for traits related to habitat use in G.
+doryssus.
 
-Sexual Dimorphism is interesting because\ldots\ldots{}
-
-Sexual Dimoprhism lit review: Saitta et al.
-(\protect\hyperlink{ref-SaittaEtAl2020}{2020})
-
-The remainder of this manuscript contains a description of the data in
-section \ref{sec:data} and a description of our models in
-\ref{sec:models}. Section \ref{sec:results} presents a summary of our
-results, and we end with our conclusion and future work in section
-\ref{sec:conclusions}.
+To test this prediction, we imputed the sex of individual fossils, which
+is unobserved in practice, with Multiple Imputation by Chained Equations
+(MICE) (Buuren and Groothuis-Oudshoorn
+(\protect\hyperlink{ref-MICE}{2011})), using observed data from extant
+stickleback of known sex to train the imputation model. Then we tracked
+the multivariate evolution of sexual dimorphism over
+\textasciitilde16,000 years for 16 traits related to swimming, feeding
+and defense.
 
 \hypertarget{methods-and-materials}{%
 \section{Methods and Materials}\label{methods-and-materials}}
 
-A major challenge in this work is inferring the sex of fossil specimens.
-This typically cannot be done directly, except for lineages whose sexes
-are distinguished by the presence or absence of sex-specific characters
-(Hone and Mallon (\protect\hyperlink{ref-Hone2017}{2017}); Saitta et al.
+A major challenge in this work is inferring the sex of fossil
+stickleback specimens. Indeed, for most species, sex cannot be detected
+directly, except for lineages whose sexes are distinguished by the
+presence or absence of sex-specific characters (Hone and Mallon
+(\protect\hyperlink{ref-Hone2017}{2017}); Saitta et al.
 (\protect\hyperlink{ref-SaittaEtAl2020}{2020})). Instead,
 paleobiologists resort to statistical detection of sex and sexual
 dimorphism, including tests for bimodality in trait distributions (e.g.,
 Hone and Mallon (\protect\hyperlink{ref-Hone2017}{2017})) and divergence
 in growth curves (e.g., Saitta et al.
-(\protect\hyperlink{ref-SaittaEtAl2020}{2020})).
-
-We used a third approach to infer fossil sex and study the evolution of
-sexual dimorphism by taking advantage of the fact that G. doryssus is
-part of the extant threespine stickleback species complex (Gastersteus
-aculeatus). Along with the fossil data collected for this study, we also
-have data from extant populations of the Threespine Stickleback,
-Gasterosteus aculeatus, measuring the same traits for individuals whose
-sex could be determined directly. We then combined these sets of data
-and treat the sex of the fossil specimens as missing and used multiple
-imputation (Little and Rubin
-(\protect\hyperlink{ref-little2002statistical}{2002})) to impute the sex
-of the fossils many times. Imputations were performed using the MICE
-(Buuren and Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011}))
-algorithm and implemented in R (R Core Team
-(\protect\hyperlink{ref-R2022language}{2022})) with M = 100 imputations
-performed.
-
-After imputing the sex of the fossil data, each completed data set is
-then used to fit a modified Ornstein--Uhlenbeck (OU) (Uhlenbeck and
-Ornstein (\protect\hyperlink{ref-OUProcess}{1930})) model using a
-Bayesian framework to look for sexual dimorphism across a variety of
-stickleback phenotypes
+(\protect\hyperlink{ref-SaittaEtAl2020}{2020})). We used a third
+approach to infer fossil sex and study the evolution of sexual
+dimorphism by taking advantage of the fact that G. doryssus is part of
+the extant threespine stickleback species complex, Gasterosteus
+aculeatus. We measured the same trait set from a phenotypically diverse
+set of extant G. aculeatus populations, for whom individual sex was
+known. We then combined fossil and extant data sets, treated fossil sex
+as missing data, and used the MICE (Buuren and Groothuis-Oudshoorn
+(\protect\hyperlink{ref-MICE}{2011})) multiple imputation (Little and
+Rubin (\protect\hyperlink{ref-little2002statistical}{2002})) algorithm,
+and implemented in R (Team
+(\protect\hyperlink{ref-R2022language}{2022})), to impute individual sex
+of the fossil data set 100 times. We then fit a modified
+Ornstein--Uhlenbeck (OU) (Uhlenbeck and Ornstein
+(\protect\hyperlink{ref-OUProcess}{1930})) model using a Bayesian
+framework to the data to test for the evolution of sexual dimorphism in
+each trait.
 
 \hypertarget{sec:data}{%
 \section{Data}\label{sec:data}}
@@ -267,9 +264,18 @@ we focus on the multivariate evolution of sexual dimorphism by this
 second lineage.
 
 The fossil data consists of 814 specimens with unknown sex over 18 time
-periods spaced \textasciitilde1000 years apart. Table 2 shows the sample
-size at each of the 18 time periods. There are at least 22 specimens at
-each time period with a high of 67 specimens in period 7.
+periods spaced \textasciitilde1000 years apart. Figure 1 shows the
+sample size at each of the 18 time periods. There are at least 22
+specimens at each time period with a high of 67 specimens in period 7.
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-latex/unnamed-chunk-2-1} 
+
+}
+
+\caption{Fossil sampel size for each time period}\label{fig:unnamed-chunk-2}
+\end{figure}
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3492}}
@@ -299,7 +305,7 @@ Trait Description
 \end{minipage} \\
 \midrule()
 \endhead
-Standard Length & sl & Distance from anterior tip of premaxilla to
+Standard Length & stl & Distance from anterior tip of premaxilla to
 posterior end of last vertebra (hypural plate) \\
 Dorsal Spine & mds & Number of dorsal spines from 0 to 3 \\
 Dorsal Fin Ray & mdf & Number of bones in the dorsal fin posterior to
@@ -334,37 +340,6 @@ of the pterygiophore immediately preceding the 3rd dorsal spine (when
 present) \\
 \bottomrule()
 \end{longtable}
-
-\begin{table}[ht]
-\centering
-\caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.}
-\begin{tabular}{rl}
-  \hline
-time & count \\ 
-  \hline
-  1 & 43 \\ 
-    2 & 41 \\ 
-    3 & 51 \\ 
-    4 & 41 \\ 
-    5 & 46 \\ 
-    6 & 48 \\ 
-    7 & 67 \\ 
-    8 & 55 \\ 
-    9 & 42 \\ 
-   10 & 33 \\ 
-   11 & 37 \\ 
-   12 & 22 \\ 
-   13 & 41 \\ 
-   14 & 43 \\ 
-   15 & 46 \\ 
-   16 & 47 \\ 
-   17 & 56 \\ 
-   18 & 55 \\ 
-   \hline
-\end{tabular}
-\label{tabn}
-
-\end{table}
 
 \hypertarget{extant-specimen-data}{%
 \subsection{Extant Specimen data}\label{extant-specimen-data}}
@@ -451,12 +426,10 @@ What covariates do we have in the data: length, what else,
 \subsection{Imputation Model}\label{imputation-model}}
 
 Let \(\boldsymbol{W}\) be an \((n_{extant} + n_{fossil}) \times 1\)
-vector of the covariate gender of the stickleback fish,
-\(\boldsymbol{X}\) be an \((n_{extant} + n_{fossil}) \times K\) matrix
-of the \(K\) continuous phenotypes of interest, and \(\boldsymbol{Y}\)
-be an \((n_{extant} + n_{fossil}) \times L\) matrix of the \(L\)
-discrete phenotypes of interest. Because the gender of the fossilized
-stickleback fish is unobservable, we further define
+vector of the covariate gender of the stickleback fish and
+\(\boldsymbol{Y}\) be an \((n_{extant} + n_{fossil}) \times K\) matrix
+of the \(K\) phenotypes of interest. Because the gender of the
+fossilized stickleback fish is unobservable, we further define
 \(\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T\)
 where \(\boldsymbol{W}_{extant}\) and \(\boldsymbol{W}_{fossil}\) are
 the \(n_{extant} \times 1\) and \(n_{fossil} \times 1\) vectors of the
@@ -464,7 +437,7 @@ observed extant gender and missing fossil gender, respectively.
 
 We impute the missing gender for the fossil data by sampling from the
 posterior predictive distribution
-\(P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant}, \boldsymbol{X}, \boldsymbol{Y})\)
+\(P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})\)
 using the multiple imputation by chained equations (MICE) algorithm
 (Buuren and Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011}))
 with predictive mean matching. Traditionally, the choice for the number
@@ -487,93 +460,111 @@ manner.
 \hypertarget{completed-data-model}{%
 \subsection{Completed Data Model}\label{completed-data-model}}
 
-\textcolor{red}{We should note somewhere that we are only using the $W_{fossil}$ in the modeling part.  We drop the $W_{extant}$.  So just note that $W_{ti}$ is really $W_{fossil,ti}$.  Not sure how to say this, but we need to make it clear that we are only using the fossil data for the OU modeling.   }
+\textcolor{red}{We should note somewhere that we are only using the $W_{fossil}$ in the modeling part.  We drop the $W_{extant}$.  So just note that $W_{ti}$ is really $W_{fossil,ti}$.  Not sure how to say this, but we need to make it clear that we are only using the fossil data for the OU modeling.  Greg, check and see if this makes sense.}
 
-\hypertarget{continuous-phenotypes}{%
-\subsubsection{Continuous Phenotypes}\label{continuous-phenotypes}}
+For a given imputed dataset, let \(W_{ij}\) be the imputed gender and
+\(\boldsymbol{Y}_{ij}\) be the \(K \times 1\) vector of phenotypes for
+stickleback fossil \(j\) at time \(t_i\) where \(i = 1, \ldots, T\) and
+\(j = 1,\ldots,n_{t}\). Note, we are inputting only the fossil data into
+our model; connecting to the previous section, \(W_{ij}\) and
+\(\boldsymbol{Y}_{ij}\) can be interpretted as \(W_{fossil,ij}\) and
+\(\boldsymbol{Y}_{fossil,ij}\). In addition, we denote \(Y_{K,ij}\), the
+last variable in \(\boldsymbol{Y}_{ij}\), to be the standard length of
+the fish, \begin{align}
+{Y}_{K,ij} & \overset{iid}{\sim}\left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft_i},&\sigma_{K}^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{K,mt_i},&\sigma_{K}^2), & W_{ij} = \text{Male} \end{array}\right..
+\label{eq:stl}
+\end{align}
 
-For a given imputed dataset, let \(W_{ti}\) be the imputed gender,
-\(\boldsymbol{X}_{ti}\) be the \(K \times 1\) vector of continuous
-phenotypes, and \(\boldsymbol{Y}_{ti}\) be the \(L \times 1\) vector of
-discrete phenotypes for \(t = 1, \ldots, T\) and \(i = 1\ldots,n_{t}\)).
+It is reasonable to assume that the other continuous traits of
+stickleback fish will have some correlation with its standard length
+\textbf{(CITATION)}. We account for this by adding an additional
+parameter, \(\gamma_k\), into our model. More specifically, if
+\(Y_{k,ij}\) is a continuous trait, then \begin{align}
+{Y}_{k,ij} & \overset{iid}{\sim}\left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{k,mt_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Male} \end{array}\right..
+\label{eq:cont}
+\end{align}
 
-Define the last element of \(\boldsymbol{X}_{ti}\) (\(X_{K,ti}\)) as the
-length of the stickleback. For \(k = 1,\cdots,K - 1\), we will assume
+In addition, we assume that the discrete traits abdominal vertebrae
+(mav) and caudal vertebrae (mcv) also have correlation with the standard
+length of the fish (\textbf{CITATION}). If \(Y_{k,ij}\) is one of the
+above traits, then \begin{align}
+{Y}_{k,ij} & \sim \left\{\begin{array}{ll} Poisson(\exp\{\mu_{k,ft_i} + \gamma_kY_{K,ij}\}), & W_{ij} = \text{Female} \\ Poisson(\exp\{\mu_{k,mt_i} + \gamma_kY_{K,ij}\}), & W_{ij} = \text{Male} \end{array}\right..
+\label{eq:disc_corr}
+\end{align}
+
+For the other discrete traits, we also assume the above model except we
+set \(\gamma_k = 0\) because of the assumption of no correlation between
+the standard length and these traits. More specifically, we assume
 \begin{align}
-{X}_{k,ti} & \overset{iid}{\sim}\left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft} & + \beta_k(X_{K,ti} - \mu_{K,ft}),&\sigma_k^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{k,mt} & + \beta_k(X_{K,ti} - \mu_{K,mt}),&\sigma_k^2), & W_{ti} = \text{Male} \end{array}\right. \\
-{X}_{K,ti} & \overset{iid}{\sim}\left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft},&\sigma_{K}^2), & W_{ti} = \text{Female} \\ \mathcal{N}(\mu_{K,mt},&\sigma_{K}^2), & W_{ti} = \text{Male} \end{array}\right.
-\label{eq:X}
-\end{align} where \(\mu_{k,ft}\) and \(\mu_{k,mt}\) represent the
-time-\(t\) specific mean of phenotype \(k\) for female and male
-stickleback fish, respectively, and \(\beta_k\) is an additional
-parameter to account for the biological phenomenon that other continuous
-phenotypes for a particular animal are positively correlated with their
-length \textbf{CITATION NEEDED}. We further set \begin{align}
-\mu_{k,gt} = \theta_{k,g} + u_{k,gt},
+{Y}_{k,ij} & \sim \left\{\begin{array}{ll} Poisson(\exp\{\mu_{k,ft_i}\}), & W_{ij} = \text{Female} \\ Poisson(\exp\{\mu_{k,mt_i}\}), & W_{ij} = \text{Male} \end{array}\right..
+\label{eq:disc_ind}
+\end{align}
+
+In the above model descriptions, \(\mu_{k,ft_i}\) and \(\mu_{k,mt_i}\)
+model the time-\(t_i\) specific mean of phenotype \(k\) for female and
+male stickleback fish, respectively. We point out that, for the discrete
+traits, the means are represented by \(\exp\{\mu_{k,ft_i}\}\) and
+\(\exp\{\mu_{k,mt_i}\}\) for ease of use in our modeling technique. We
+further set \begin{align}
+\mu_{k,gt_i} = \beta_{0,kg} + \beta_{1,kg}t_i + u_{k,gt_i},
 \label{eq:mu}
-\end{align} for \(g \in \{f,m\}\) where \(\theta_{k,g}\) is the overall
-mean of phenotype \(X_k\) for each gender, and \(u_{k,gt}\) measures the
-difference between \(\mu_{k,gt}\) and \(\theta_{k,g}\). We then fit
-\(\boldsymbol{u}_{k,g} = \{u_{k,g1},\cdots,u_{k,gT}\}\) to an
-Ornstein-Uhlenback (OU) process (Uhlenbeck and Ornstein
-(\protect\hyperlink{ref-OUProcess}{1930})) where we assume \(u_{k,gT}\)
-have a marginal mean of 0. Because each time period is
-\textasciitilde1000 years, we will discretize the OU process without
-loss of generality. For \(t = 2,\ldots,T\), we assume \begin{align}
-u_{k,gt} \overset{iid}{\sim}\mathcal{N}(\kappa_{k} u_{k,g(t-1)} , \tau_k^2).
-\label{eq:u_ar1}
-\end{align}
+\end{align} for \(g \in \{f,m\}\) where \(\beta_{0,kg}\) and
+\(\beta_{1,kg}\) are regression parameters of phenotype \(Y_k\) for each
+gender, accounting for the possibility of a time-dependent trend in the
+mean structure, and \(u_{k,gt_i}\) is the corresponding residual. To
+account for potential correlations between the residuals for a given
+trait \(k\) and gender \(g\), we fit an Ornstein-Uhlenback (OU) process
+(Uhlenbeck and Ornstein (\protect\hyperlink{ref-OUProcess}{1930})). More
+specifically, define \(du_{k,gt} = u_{k,g(t + dt)} - u_{k,gt}\), the
+change in \(u_k,gt\) for a given trait \(k\) and gender \(g\) over a
+miniscule time period \(dt\). The OU process is defined as \begin{align}
+du_{k,gt} = -\kappa_k u_{k,gt} dt + \tau_k dW_t,
+\label{eq:OU_cont}
+\end{align} where \(\kappa_k\) is a parameter associated with the
+correlation between \(u_{k,gt}\) and \(u_{k,g(t+dt)}\), \(\tau_k\) is
+the standard deviation of the OU process, and \(W_t\) is a standard
+Brownian motion. As shown in (Uhlenbeck and Ornstein
+(\protect\hyperlink{ref-OUProcess}{1930})), the closed form solution for
+the SDE in (\ref{eq:OU_cont}) is \begin{align}
+u_{k,gt_i} \overset{iid}{\sim}\mathcal{N}\left(u_{k,gt_{i-1}}\exp\{-\kappa_k(t_{i} - t_{i-1})\} , \frac{\tau_k^2(1 - \exp\{-2\kappa_k(t_{i} - t_{i-1}))\}}{2\kappa_k}\right)
+\label{eq:OU_sol}
+\end{align} for \(i = 2,\cdots,T\). In a traditional OU process, the
+initial value \(u_{k,gt_1}\) is assumed to be a (potentially unknown)
+constant, and we discuss the procedure for estimating this value below.
 
-\(\kappa_{k,g}\) represents the correlation between \(\mu_{k,gt}\) and
-\(\mu_{k,g(t+1)}\), and it also follows that
-\(\text{cor}(u_{g,t},u_{g,t+h}) = \kappa^h\) for \(h \in \mathbb{N}\).
-In addition, we assume \begin{align}
-u_{k,g1} \overset{iid}{\sim}\mathcal{N}\left(0,\frac{\tau_k^2}{1-\kappa_{k}^2}\right).
-\label{eq:u1}
-\end{align} This model choice is to preserve stationarity;
-i.e.~\(p(u_{k,gs}) = p(u_{k,gt})\) for \(s \neq t\).
+In our empirical study, we analyze the following four nested models for
+the mean process outlined in (\ref{eq:mu}):
 
-\hypertarget{discrete-phenotypes}{%
-\subsubsection{Discrete Phenotypes}\label{discrete-phenotypes}}
-
-For the discrete phenotypes, we will assume \begin{align}
-{Y}_{l,ti} & \sim \left\{\begin{array}{ll} Poisson(\lambda_{l,ft}), & W_{ti} = \text{Female} \\ Poisson(\lambda_{l,mt}), & W_{ti} = \text{Male} \end{array}\right.,
-\label{eq:Y}
-\end{align} for \(l = 1,\cdots,L\). Similar to the continuous
-phenotypes, we set \begin{align}
-\log(\lambda_{l,gt}) = \gamma_{l,g} + v_{l,gt}.
-\label{eq:lambda}
-\end{align} We use the log function to allow \(v_{l,gt}\) to take all
-values on the real number line so we can properly fit an OU process to
-these effects. We further assume \begin{align}
-v_{l,gt} \overset{iid}{\sim}\mathcal{N}(\phi_{l} v_{l,g(t-1)} , \omega_l^2),
-\label{eq:v_ar1}
-\end{align} and \begin{align}
-v_{l,g1} \overset{iid}{\sim}\mathcal{N}\left(0,\frac{\omega_l^2}{1 - \phi_{l}^2}\right)..
-\label{eq:v1}
-\end{align}
+\begin{itemize}
+\item OU with Trend: The mean process for each phenotype $k=1,\cdots,K$ and $g \in \{f,m\}$ as previously defined.
+\item OU with No Trend: No linear trend on the mean processes and the overall mean of the phenotype is constant for each gender. This is achieved by setting $\beta_{1,kg} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$ and $g \in \{f,m\}$
+\item No OU with Trend: No random fluctuations on the mean processes, i.e. the OU process assumption is not needed. This is achieved by setting $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$.
+\item No OU with No Trend: The mean for a specific trait and specific gender at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$.
+\end{itemize}
 
 Because we are fitting a dataset with a stochastic structure on the
 means of the phenotypes, we analyze the data via a Bayesian analysis.
 Bayesian data analysis is also more naturally used when we have to
 impute data (\textbf{CITATION}).
 
-Priors: For \(k = 1,\cdots,K\) and \(l = 1,\cdots,L\),
+Priors: For \(k = 1,\cdots,K\),
 
 \begin{align}
-\sigma_k & \overset{iid}{\sim}\mathcal{N}(0,100)I_{\{\sigma > 0\}} \nonumber \\
-\tau_k & \overset{iid}{\sim}\mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
-\kappa_k & \overset{iid}{\sim}\mathcal{N}(0,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
-\beta_k & \overset{iid}{\sim}\mathcal{N}(0,5) \nonumber \\
-\theta_{k,g} & \overset{iid}{\sim}\mathcal{N}(0,10000) \nonumber \\
-\omega_l & \overset{iid}{\sim}\mathcal{N}(0,100)I_{\{\tau > 0\}} \nonumber \\
-\phi_l & \overset{iid}{\sim}\mathcal{N}(0,1)I_{\{-1 < \kappa_g < 1\}} \nonumber \\
-\gamma_{l,g} & \overset{iid}{\sim}\mathcal{N}(0,10000)
+u_{k,gt_1} & \overset{iid}{\sim}\mathcal{N}(0,\tau_{0,k}) \nonumber \\
+\sigma_k & \overset{iid}{\sim}\mathcal{N}(0,10)I_{\{\sigma > 0\}} \nonumber \\
+\tau_k & \overset{iid}{\sim}\mathcal{N}(0,10)I_{\{\tau > 0\}} \nonumber \\
+\tau_{0,k} & \overset{iid}{\sim}\mathcal{N}(0,20)I_{\{\tau > 0\}} \nonumber \\
+\kappa_k & \overset{iid}{\sim}\mathcal{N}(0,1)I_{\{\kappa_g > 0\}} \nonumber \\
+\gamma_{k} & \overset{iid}{\sim}\mathcal{N}(0,5) \nonumber \\
+\beta_{0,kg} & \overset{iid}{\sim}\mathcal{N}(0,100) \nonumber \\
+\beta_{1,kg} & \overset{iid}{\sim}\mathcal{N}(0,3) \nonumber \\
 \label{eq:priors}
-\end{align}
+\end{align} We also note that, for the discrete phenotypes in equations
+(\ref{eq:disc_corr}) and (\ref{eq:disc_ind}), there is no \(\sigma_k\),
+and thus is not sampled for those phenotypes.
 
-All models were built using R Core Team
-(\protect\hyperlink{ref-R2022language}{2022})
+All models were built using Team
+(\protect\hyperlink{ref-R2022language}{2022}) and (\textbf STAN)
 
 Cornuault (\protect\hyperlink{ref-Cornault2022}{2022}) Bayesian OU
 model.
@@ -640,6 +631,11 @@ Bell, Michael A, Matthew P Travis, and D Max Blouw. 2006. {``Inferring
 Natural Selection in a Fossil Threespine Stickleback.''}
 \emph{Paleobiology} 32 (4): 562--77.
 
+\leavevmode\vadjust pre{\hypertarget{ref-BellEtAl1993}{}}%
+Bell, Orti, M. A., and J. P. Koenings. 1993. {``Evolution of Pelvic
+Reduction in Threespine Sticklebacks: A Test of Competing Hypotheses.''}
+\emph{Evolution} 47: 906--14.
+
 \leavevmode\vadjust pre{\hypertarget{ref-Blain2022}{}}%
 Blain, S A. 2022. \emph{Evolutionary Outcomes of Interactions Among
 Phenotypes in Post-Glacial Lakes}. University of British Columbia,
@@ -689,10 +685,18 @@ from Nature and Theoretical Predictions.''} \emph{Evolution} 65 (9):
 2553--71.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Cornault2022}{}}%
-Cornuault, Josselin. 2022. {``{Bayesian Analyses of Comparative Data
-with the Ornstein--Uhlenbeck Model: Potential Pitfalls}.''}
-\emph{Systematic Biology} 71 (6): 1524--40.
-\url{https://doi.org/10.1093/sysbio/syac036}.
+Cornuault, Josselin. 2022. {``Bayesian Analyses of Comparative Data with
+the Ornstein--Uhlenbeck Model: Potential Pitfalls.''} \emph{Systematic
+Biology} 71 (6): 1524--40. \url{https://doi.org/10.1093/sysbio/syac036}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-deLisleNco2018}{}}%
+De Lisle, S. Paiva, S. P., and L. Rowe. 2018. {``Habitat Partitioning
+During Character Displacement Between the Sexes.''} \emph{Biology
+Letters} 14: 20180124.
+
+\leavevmode\vadjust pre{\hypertarget{ref-deLisleRowe2015}{}}%
+De Lisle, S. P., and L. Rowe. 2015. {``Ecological Character Displacement
+Between the Sexes.''} \emph{The American Naturalist} 186: 693--707.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Hendry2009}{}}%
 Hendry, A P, D I Bolnick, D Berner, and C L Peichel. 2009. {``Along the
@@ -720,16 +724,37 @@ Missing Data}. Wiley Series in Probability and Mathematical Statistics.
 Probability and Mathematical Statistics. Wiley.
 \url{http://books.google.com/books?id=aYPwAAAAMAAJ}.
 
-\leavevmode\vadjust pre{\hypertarget{ref-R2022language}{}}%
-R Core Team. 2022. \emph{R: A Language and Environment for Statistical
-Computing}. Vienna, Austria: R Foundation for Statistical Computing.
-\url{https://www.R-project.org/}.
+\leavevmode\vadjust pre{\hypertarget{ref-Reimchen2016}{}}%
+Reimchen, D. Steeves, T. E. 2016. {``Sex Matters for Defence and Trophic
+Traits of Threespine Stickleback.''} \emph{Evolutionary Ecology
+Research} 17: 459-485-.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Reimchen1980}{}}%
+Reimchen, T. E. 1980. {``Spine Deficiency and Polymorphism in a
+Poulation of Gasterosteus Aculeatus: An Adaptation to Predators?''}
+\emph{Canadian Journal of Zoology} 58: 1232--44.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Reimchen1994}{}}%
+---------. 1994. {``Predators and Morphological Evolution in Threespine
+Stickleback.''} In \emph{The Evolutionary Biology of the Threespine
+Stickleback}, edited by M A Bell and S A Foster. Oxford, UK: Oxford
+University Press.
+
+\leavevmode\vadjust pre{\hypertarget{ref-ReimchenNosil2004}{}}%
+Reimchen, T. E., and P. Nosil. 2004. {``Variable Predation Regimes
+Predict the Evolution of Sexual Dimorphism in a Population of Threespine
+Stickleback.''} \emph{Evolution} 58 (6): 1274--81.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Roestietal2023}{}}%
+Roesti, J. S. Groh, M, and D. Schluter. 2023. {``Species Divergence
+Under Competition and Shared Predation.''} \emph{Ecology Letters} 26:
+111--23.
 
 \leavevmode\vadjust pre{\hypertarget{ref-SaittaEtAl2020}{}}%
 Saitta, Evan T, Maximilian T Stockdale, Nicholas R Longrich, Vincent
 Bonhomme, Michael J Benton, Innes C Cuthill, and Peter J Makovicky.
-2020. {``{An effect size statistical framework for investigating sexual
-dimorphism in non-avian dinosaurs and other extinct taxa}.''}
+2020. {``An Effect Size Statistical Framework for Investigating Sexual
+Dimorphism in Non-Avian Dinosaurs and Other Extinct Taxa.''}
 \emph{Biological Journal of the Linnean Society} 131 (2): 231--73.
 \url{https://doi.org/10.1093/biolinnean/blaa105}.
 
@@ -741,6 +766,12 @@ and Speciation in Sticklebacks.''} \emph{Am. Nat.} 140 (1): 85--108.
 Shine, R. 1989. {``Ecological Causes for the Evolution of Sexual
 Dimorphism: A Review of the Evidence.''} \emph{Q. Rev. Biol.} 64 (4):
 419--61.
+
+\leavevmode\vadjust pre{\hypertarget{ref-SpoljaricReimchen2008}{}}%
+Spoljaric, M. A., and T. E. Reimchen. 2008. {``Habitat-Dependent
+Reduction of Sexual Dimorphism in Geometric Body Shape of Haida Gwaii
+Threespine Stickleback.''} \emph{Biological Journal of the Linnean
+Society} 95: 505--16.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Stuart2021}{}}%
 Stuart, Yoel E, J William Sherwin, Ambika Kamath, and Thor Veen. 2021.
@@ -759,6 +790,11 @@ Brian K Lohman, Cole J Thompson, et al. 2017. {``Contrasting Effects of
 Environment and Genetics Generate a Continuum of Parallel Evolution.''}
 \emph{Nat. Ecol. Evol.} 1 (6): 158.
 
+\leavevmode\vadjust pre{\hypertarget{ref-R2022language}{}}%
+Team, R Core. 2022. \emph{R: A Language and Environment for Statistical
+Computing}. Vienna, Austria: R Foundation for Statistical Computing.
+\url{https://www.R-project.org/}.
+
 \leavevmode\vadjust pre{\hypertarget{ref-OUProcess}{}}%
 Uhlenbeck, G. E., and L. S. Ornstein. 1930. {``On the Theory of the
 Brownian Motion.''} \emph{Phys. Rev.} 36 (September): 823--41.
@@ -768,6 +804,10 @@ Brownian Motion.''} \emph{Phys. Rev.} 36 (September): 823--41.
 Voje, Kjetil L, Michael A Bell, and Yoel E Stuart. 2022. {``Evolution of
 Static Allometry and Constraint on Evolutionary Allometry in a Fossil
 Stickleback.''} \emph{J. Evol. Biol.} 35 (3): 423--38.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Schoener1968}{}}%
+W., Schoener T. 1968. {``The Anolis Lizards of Bimini: Resource
+Partitioning in a Complex Fauna.''} \emph{Ecology} 49: 704--26.
 
 \leavevmode\vadjust pre{\hypertarget{ref-ZhouReiter2009}{}}%
 Zhou, X., and J. Reiter. 2010. {``A Note on Bayesian Inference After
