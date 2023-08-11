@@ -2,6 +2,7 @@ rm(list = ls())
 library(tidyverse)
 library(rstan)
 library(ggridges)
+library(bayesplot)
 
 dat <- read.csv("Data/updated_stickle_imputations_100.csv")
 times <- read.csv("RawData_ReadOnly/KSampleMeanTimes.csv")

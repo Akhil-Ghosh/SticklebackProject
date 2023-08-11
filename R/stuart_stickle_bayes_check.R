@@ -2,6 +2,7 @@ rm(list = ls())
 library(tidyverse)
 library(rstan)
 library(ggridges)
+library(bayesplot)
 
 DIC_cont_ind <- function(y,X,mu,sigma){
   (dnorm(y,as.vector(X %*% mu),sigma,log=TRUE) %>% sum)*-2
@@ -69,23 +70,34 @@ for (var in vars){
 }
 
 DICList <- as.data.frame(matrix(DICs,nrow=16,byrow=TRUE))
-rownames(DICList) <- vars
 colnames(DICList) <- c("OU-Trend","No OU-Trend","OU-No Trend","No OU-No Trend")
+DICList$var <- vars
+DICList <- DICList %>% pivot_longer(cols=-var,names_to="model",values_to="DIC")
 
 num_dens <- 100
 
-for (var in vars){
+for (j in 1:length(vars)){
+  var <- vars[j]
   y <- matrix(dat[,var],ncol=M)
-  specific_x_values <- seq(min(density(y)$x),max(density(y)$x),length.out=100)
-
-  dens <- rep(0,100)
-  for (m in 1:M){
-    kde <- density(y[,m])
-    dens <- dens + 1/M*approx(kde$x,kde$y,xout = specific_x_values,method = "linear")$y
+  if (substr(var,1,1) == "m"){
+    specific_x_values <- as.vector(y) %>% unique() %>% sort()
+  } else {
+    specific_x_values <- seq(min(density(y)$x),max(density(y)$x),length.out=100)
   }
-  tmp <- data.frame(x=specific_x_values,y=dens)
+
+  dens <- rep(0,length(specific_x_values))
+  for (m in 1:M){
+    if(substr(var,1,1) == "m"){
+      dens <- dens + 1/M*sapply(specific_x_values,function(x){length(which(y[,1] == x))})/N
+    } else {
+      kde <- density(y[,m])
+      dens <- dens + 1/M*approx(kde$x,kde$y,xout = specific_x_values,method = "linear")$y
+    }
+  }
+  dens <- data.frame(x=specific_x_values,y=dens)
 
   for (mod in 0:3){
+    tmp <- data.frame(x=specific_x_values)
     samps <- readRDS(paste0("Figures/",var,"/posterior_samples_",var,"_",mod,".RDS"))
 
     n_samps <- nrow(samps)
@@ -98,33 +110,87 @@ for (var in vars){
 
     for (i in 1:num_dens){
       idx <- sample(1:n_samps,1)
-      m <- idx %/% M + 1
+      m <- (idx - 1) %/% M + 1
       X <- model.matrix(~0+group,dat %>% filter(imp==m))
       #for (j in 1:N){
       if(var == "mav" | var == "mcv"){
-        y_sim <- c(y_sim,rpois(N,exp(X %*% t(mu[idx,]) + gamma[idx,1] * stl[,m])))
+        y_sim <- rpois(N,exp(X %*% t(mu[idx,]) + gamma[idx,1] * stl[,m]))
       } else if (substr(var,1,1) == "m") {
-        y_sim <- c(y_sim,rpois(N,exp(X %*% t(mu[idx,]))))
+        y_sim <- rpois(N,exp(X %*% t(mu[idx,])))
       } else if (var=="stl") {
-        y_sim <- c(y_sim,rnorm(N,X %*% t(mu[idx,]),sigma[idx,1]))
+        y_sim <- rnorm(N,X %*% t(mu[idx,]),sigma[idx,1])
       } else {
-        y_sim <- c(y_sim,rnorm(N,X %*% t(mu[idx,]) + gamma[idx,1] * stl[,m],sigma[idx,1]))
+        y_sim <- rnorm(N,X %*% t(mu[idx,]) + gamma[idx,1] * stl[,m],sigma[idx,1])
       }
-      #}
-      kde <- density(y_sim)
-      tmp <- cbind(tmp,dens=approx(kde$x,kde$y,xout = specific_x_values,method = "linear")$y)
+      if(substr(var,1,1) == "m"){
+        tmp <- cbind(tmp,sapply(specific_x_values,function(x){length(which(y_sim == x))})/N)
+      } else {
+        kde <- density(y_sim)
+        tmp <- cbind(tmp,dens=approx(kde$x,kde$y,xout = specific_x_values,method = "linear")$y)
+      }
     }
-    names(tmp) <- c("x","y",paste0("dens",c(1:num_dens)))
+    names(tmp) <- c("x",paste0("dens",c(1:num_dens)))
+    tmp <- tmp %>%
+      pivot_longer(cols=-c("x"),
+                   names_to="Simulation",
+                   values_to="Value") %>%
+      mutate(model=case_when(mod==0 ~ "OU-Trend",
+                             mod==1 ~ "No OU-Trend",
+                             mod==2 ~ "OU-No Trend",
+                             mod==3 ~ "No OU-No Trend"))
+    assign(paste0("tmp",mod),tmp)
   }
-  tmp %>% pivot_longer(cols=-c("x","y"),
-                       names_to="Simulation",
-                       values_to="Value") %>%
-    ggplot() +
-    geom_line(aes(x=x,y=Value,group=Simulation),colour="grey",alpha=0.4) +
-    geom_line(aes(x=x,y=y),color="red") +
-    theme_bw() +
-    xlab(var) +
-    ylab(expression(paste("p(",tilde(y),"|",y,")")))
+  plot_dat <- dens %>%
+    left_join(rbind(tmp0,tmp1,tmp2,tmp3)) %>%
+    left_join(DICList %>% filter(var==vars[j])) %>%
+    mutate(DIC = paste("DIC =",round(DIC,2)))
+  if (var == "mav" | var == "mds"){
+    plot_dat %>%
+      ggplot() +
+      geom_segment(aes(x=x,xend=x,y=0,yend=Value,group=Simulation),colour="grey",alpha=0.4,lineend = "round") +
+      geom_segment(aes(x=x,xend=x,y=0,yend=y),color="red",lineend = "round") +
+      geom_point(aes(x=x,y=Value,group=Simulation)) +
+      geom_point(aes(x=x,y=y),color="red") +
+      facet_wrap(model ~ .) +
+      geom_text(aes(
+        x=quantile(x,0.7),
+        y=max(quantile(Value,0.975,na.rm=TRUE),
+              quantile(y,0.975,na.rm=TRUE)),
+        label=DIC)) +
+      theme_bw() +
+      xlab(var) +
+      ylab(expression(paste("p(",tilde(y),"|",y,")")))
+  } else if (substr(var,1,1) == "m"){
+    plot_dat %>%
+      ggplot() +
+      geom_segment(aes(x=x,xend=x,y=0,yend=Value,group=Simulation),colour="grey",alpha=0.4,lineend = "round") +
+      geom_segment(aes(x=x,xend=x,y=0,yend=y),color="red",lineend = "round") +
+      geom_point(aes(x=x,y=Value,group=Simulation)) +
+      geom_point(aes(x=x,y=y),color="red") +
+      facet_wrap(model ~ .) +
+      geom_text(aes(
+        x=quantile(x,0.7),
+        y=max(quantile(Value,0.975,na.rm=TRUE),
+              quantile(y,0.975,na.rm=TRUE)),
+        label=DIC)) +
+      theme_bw() +
+      xlab(var) +
+      ylab(expression(paste("p(",tilde(y),"|",y,")")))
+  } else {
+    plot_dat %>%
+      ggplot() +
+      geom_line(aes(x=x,y=Value,group=Simulation),colour="grey",alpha=0.4) +
+      geom_line(aes(x=x,y=y),color="red") +
+      facet_wrap(model ~ .) +
+      geom_text(aes(
+        x=quantile(x,0.8),
+        y=max(quantile(Value,0.975,na.rm=TRUE),
+              quantile(y,0.975,na.rm=TRUE)),
+        label=DIC)) +theme_bw() +
+      xlab(var) +
+      ylab(expression(paste("p(",tilde(y),"|",y,")")))
+  }
+  ggsave(paste0("Figures/",var,"/post_pred_check.pdf"),width=7,height=10)
 }
 
 
