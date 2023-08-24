@@ -157,6 +157,7 @@ model{
   beta1_f ~ normal(0,3);
   beta1_m ~ normal(0,3);
   kappa ~ normal(0,1);
+  sigma ~ normal(0,10);
   tau ~ normal(0,10);
   tau_0 ~ normal(0,20);
   gamma ~ normal(0,5);
@@ -198,7 +199,7 @@ for (mod in 0:3){
                         iter=1500,chains=1,warmup=1000,thin=5,
                         pars = c("beta0_f","beta0_m",
                                  "beta1_f","beta1_m",
-                                 "kappa",
+                                 "kappa","sigma",
                                  "tau","tau_0",
                                  "gamma","mu"))
         samps <- rbind(samps,as.data.frame(fit))
@@ -211,7 +212,7 @@ for (mod in 0:3){
                         iter=1500,chains=1,warmup=1000,thin=5,
                         pars = c("beta0_f","beta0_m",
                                  "beta1_f","beta1_m",
-                                 "kappa",
+                                 "kappa","sigma",
                                  "tau","tau_0",
                                  "gamma","mu"))
         samps <- rbind(samps,as.data.frame(fit))
