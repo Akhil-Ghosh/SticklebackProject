@@ -32,13 +32,30 @@ vars <- c("stl","lps","ect","tpg",
           "cle","pmx","ds1","ds2",
           "ds3","lpt","mdf","mav",
           "maf","mcv","mds","mpt")
+cont_w_zeros <- c("lps","tpg","ds1","ds2","ds3")
 stl <- matrix(dat$stl,ncol=M)
 N <- nrow(stl)
-
-DICs <- NULL
+invlogit <- function(x){exp(x)/(1 + exp(x))}
 
 for (var in vars){
   y <- matrix(dat[,var],ncol=M)
+  if (substr(var,1,1) == "m"){
+    specific_x_values <- as.vector(y) %>% unique() %>% sort()
+  } else {
+    specific_x_values <- seq(min(density(y)$x),max(density(y)$x),length.out=100)
+  }
+  num_dens <- 100
+  dens <- rep(0,length(specific_x_values))
+  for (m in 1:M){
+    if(substr(var,1,1) == "m"){
+      dens <- dens + 1/M*sapply(specific_x_values,function(x){length(which(y[,1] == x))})/N
+    } else {
+      kde <- density(y[,m])
+      dens <- dens + 1/M*approx(kde$x,kde$y,xout = specific_x_values,method = "linear")$y
+    }
+  }
+  dens <- data.frame(x=specific_x_values,y=dens)
+
   for (mod in 0:3){
     probs <- NULL
     samps <- readRDS(paste0("Figures/",var,"/posterior_samples_",var,"_",mod,".RDS"))
@@ -65,36 +82,13 @@ for (var in vars){
         }
       }
     }
-    DICs <- c(DICs,mean(probs) + 0.5*var(probs))
-  }
-}
-
-DICList <- as.data.frame(matrix(DICs,nrow=16,byrow=TRUE))
-colnames(DICList) <- c("OU-Trend","No OU-Trend","OU-No Trend","No OU-No Trend")
-DICList$var <- vars
-DICList <- DICList %>% pivot_longer(cols=-var,names_to="model",values_to="DIC")
-
-num_dens <- 100
-
-for (j in 1:length(vars)){
-  var <- vars[j]
-  y <- matrix(dat[,var],ncol=M)
-  if (substr(var,1,1) == "m"){
-    specific_x_values <- as.vector(y) %>% unique() %>% sort()
-  } else {
-    specific_x_values <- seq(min(density(y)$x),max(density(y)$x),length.out=100)
+    DIC <- mean(probs) + 0.5*var(probs)
   }
 
-  dens <- rep(0,length(specific_x_values))
-  for (m in 1:M){
-    if(substr(var,1,1) == "m"){
-      dens <- dens + 1/M*sapply(specific_x_values,function(x){length(which(y[,1] == x))})/N
-    } else {
-      kde <- density(y[,m])
-      dens <- dens + 1/M*approx(kde$x,kde$y,xout = specific_x_values,method = "linear")$y
-    }
-  }
-  dens <- data.frame(x=specific_x_values,y=dens)
+  DICList <- as.data.frame(matrix(DICs,nrow=1,byrow=TRUE))
+  colnames(DICList) <- c("OU-Trend","No OU-Trend","OU-No Trend","No OU-No Trend")
+  DICList$var <- vars
+  DICList <- DICList %>% pivot_longer(cols=-var,names_to="model",values_to="DIC")
 
   for (mod in 0:3){
     tmp <- data.frame(x=specific_x_values)

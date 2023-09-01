@@ -155,18 +155,6 @@ model{
 "
 
 disc <- "
-functions {
-    real genpoiss_lupmf(int y, real mu, real alpha) {
-      if (y > -1/alpha){
-        return log(0);
-      } else {
-        return y * log(mu / (1 + alpha * mu)) +
-               (y - 1) * log(1 + alpha * y) -
-               lgamma(y + 1) -
-               (mu * (1 + alpha * y))/(1 + alpha * mu);
-      }
-    }
-}
 data{
   int<lower=0> N;
   int<lower=0> T;
@@ -186,7 +174,7 @@ parameters{
   real beta1_f_stl;
   real beta1_m_stl;
   real<lower=0> kappa;
-  real alpha;
+  real<upper=1> alpha;
   real<lower=0> tau;
   real<lower=0> tau_0;
   real gamma;
@@ -215,7 +203,7 @@ transformed parameters{
   OU_mean = exp(-kappa*Delta);
   OU_var = pow(tau,2)*(1 - exp(-2*kappa*Delta))/(2*kappa);
 
-  vector lambda;
+  vector[N] lambda;
   if (ind == 1){
     lambda = exp(X * mu);
   } else {
@@ -224,15 +212,14 @@ transformed parameters{
 }
 
 model{
-  // Data Model
+// Data Model
   for (i in 1:N){
-    if (y > -1/alpha){
-      target += log(0);
+    if (alpha == 0){
+      target += poisson_lpmf(y[i] | lambda[i]);
     } else {
-      target += y[i] * log(lambda[i] / (1 + alpha * lambda[i])) +
-                (y[i] - 1) * log(1 + alpha * y[i]) -
-                lgamma(y[i] + 1) -
-                (lambda[i] * (1 + alpha * y[i]))/(1 + alpha * lambda[i]);
+      target += log(lambda[i]) +
+                (y[i] - 1) * log(lambda[i] + alpha * y[i]) -
+                (lambda[i] + alpha * y[i]);
     }
   }
 
@@ -278,8 +265,9 @@ time <- times$Inverted.Year/1000
 Delta <- diff(times$Inverted.Year)/1000
 
 for (mod in 0:3){
-#  for (var in vars){
-  for (var in cont_w_zeros){
+  #for (var in vars){
+  for (var in vars[substr(vars,1,1) == "m"]){
+
     samps <- NULL
     samps_prob <- NULL
     y <- matrix(dat[,var],ncol=M)
@@ -300,7 +288,7 @@ for (mod in 0:3){
                         iter=1500,chains=1,warmup=1000,thin=5,
                         pars = c("beta0_f","beta0_m",
                                  "beta1_f","beta1_m",
-                                 "kappa",
+                                 "kappa","alpha",
                                  "tau","tau_0",
                                  "gamma","mu"))
         samps <- rbind(samps,as.data.frame(fit))
@@ -313,7 +301,7 @@ for (mod in 0:3){
                         iter=1500,chains=1,warmup=1000,thin=5,
                         pars = c("beta0_f","beta0_m",
                                  "beta1_f","beta1_m",
-                                 "kappa",
+                                 "kappa","alpha",
                                  "tau","tau_0",
                                  "gamma","mu"))
         samps <- rbind(samps,as.data.frame(fit))

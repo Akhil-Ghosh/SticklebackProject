@@ -90,7 +90,7 @@ cont_zeros <- "
 data{
   int<lower=0> N;
   int<lower=0> T;
-  int<lower=0,upper=1> y;
+  int<lower=0,upper=1> y[N];
   vector[N] stl;
   matrix[N,2*T] X;
   vector[T] time;
@@ -230,6 +230,7 @@ model{
 }
 "
 stan_cont <- stan_model(model_code = cont)
+stan_cont_zeros <- stan_model(model_code = cont_zeros)
 stan_disc <- stan_model(model_code = disc)
 M <- max(dat$imp)
 
@@ -251,7 +252,8 @@ time <- times$Inverted.Year/1000
 Delta <- diff(times$Inverted.Year)/1000
 
 for (mod in 0:3){
-  for (var in vars){
+#  for (var in vars){
+  for (var in cont_w_zeros){
     samps <- NULL
     samps_prob <- NULL
     y <- matrix(dat[,var],ncol=M)
@@ -304,7 +306,7 @@ for (mod in 0:3){
         samps <- rbind(samps,as.data.frame(fit))
       } else if (var %in% cont_w_zeros){
         fit <- sampling(stan_cont,
-                        list(N=N,T=T,X=X[y[,m] != 0,],
+                        list(N=length(which(y[,m] != 0)),T=T,X=X[y[,m] != 0,],
                              y=y[y[,m] != 0,m],stl=stl[y[,m] != 0,m],
                              time=time,Delta=Delta,
                              ind=1,mod=mod),
@@ -315,11 +317,11 @@ for (mod in 0:3){
                                  "tau","tau_0",
                                  "gamma","mu"))
         samps <- rbind(samps,as.data.frame(fit))
-        fit_prob <- sampling(stan_cont,
+        fit_prob <- sampling(stan_cont_zeros,
                             list(N=N,T=T,X=X,
-                                 y=delta,
+                                 y=delta[,m],stl=stl[,m],
                                  time=time,Delta=Delta,
-                                 ind=1,mod=mod),
+                                 mod=mod),
                             iter=1500,chains=1,warmup=1000,thin=5,
                             pars = c("beta0_f","beta0_m",
                                      "beta1_f","beta1_m",
