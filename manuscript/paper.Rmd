@@ -211,15 +211,22 @@ It is reasonable to assume that the other continuous traits of stickleback fish 
 \label{eq:cont}
 \end{align}
 
-In addition, we assume that the discrete traits abdominal vertebrae (mav) and caudal vertebrae (mcv) also have correlation with the standard length of the fish (\textbf{CITATION}). If $Y_{k,ij}$ is one of the above traits, then
+If $Y_{k,ij}$ is a discrete trait, the conventional method of modelling this data is by fitting a Poisson distribution. However, the Poisson distribution assumes that the mean and variance of $Y_{k,ij}$ are equal ($E(Y_{k,ij}) = \text{Var}(Y_{k,ij})$), while the empirical fossil data may have variances that are smaller than their respective means. To combat this issue, we propose to fit the discrete traits to a generalized Poisson model as defined in @GeneralizedPoisson. Specifically, if $X \sim GP(\lambda,\alpha)$, then 
 \begin{align}
-{Y}_{k,ij} & \sim \left\{\begin{array}{ll} Poisson(\exp\{\mu_{k,ft_i} + \gamma_kY_{K,ij}\}), & W_{ij} = \text{Female} \\ Poisson(\exp\{\mu_{k,mt_i} + \gamma_kY_{K,ij}\}), & W_{ij} = \text{Male} \end{array}\right..
+P(X = x) = \left\{\begin{array}{cc} \frac{(1 - \alpha)\lambda[(1 - \alpha)\lambda + \alpha x]^{x - 1} \exp\left\{-((1 - \alpha)\lambda  + \alpha x)\right\}}{x!} & (1 - \alpha)\lambda  + \alpha x \geq 0  \\ 0 & (1 - \alpha)\lambda  + \alpha x < 0 \end{array}\right.,
+\label{eq:GP_pmf}
+\end{align}
+where $E(Y_{k,ij}) = \lambda$ and $Var(Y_{k,ij}) = \frac{\lambda}{(1 - \alpha)^2}$.  If $\alpha > 0$, then the variance is greater than the mean, called overdispersion; if $\alpha < 0$, then the variance is greater than the mean, called underdispersion; if $\alpha = 0$, then the model degenerates to a Poisson distribution.
+
+We will use the generalized Poisson to model all of the discrete traits in our dataset. In addition, we assume that the discrete traits abdominal vertebrae (mav) and caudal vertebrae (mcv) also have correlation with the standard length of the fish (\textbf{CITATION}). If $Y_{k,ij}$ is one of the above traits, then
+\begin{align}
+{Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_corr}
 \end{align}
 
 For the other discrete traits, we also assume the above model except we set $\gamma_k = 0$ because of the assumption of no correlation between the standard length and these traits. More specifically, we assume
 \begin{align}
-{Y}_{k,ij} & \sim \left\{\begin{array}{ll} Poisson(\exp\{\mu_{k,ft_i}\}), & W_{ij} = \text{Female} \\ Poisson(\exp\{\mu_{k,mt_i}\}), & W_{ij} = \text{Male} \end{array}\right..
+{Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_ind}
 \end{align}
 
@@ -248,13 +255,16 @@ In our empirical study, we analyze the following four nested models for the mean
 \item No OU with No Trend: The mean for a specific trait and specific gender at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$.
 \end{itemize}
 
-Because we are fitting a dataset with a stochastic structure on the means of the phenotypes, we analyze the data via a Bayesian analysis.  Bayesian data analysis is also more naturally used when we have to impute data (\textbf{CITATION}).
+Because we are fitting a dataset with a stochastic structure on the means of the phenotypes, we analyze the data via a Bayesian analysis.  Bayesian data analysis is also more naturally used when we have to impute data (\textbf{CITATION}). To aid in the sampling procedure for the discrete phenotypes, we declare
 
-Priors: For $k = 1,\cdots,K$, 
+Priors: To aid in the sampling procedure for the discrete phenotypes, we declare $\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)$ where $\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.$. This transformation is performed to ensure our algorithm can properly sample from the posterior distribution of interest.
+
+For $k = 1,\cdots,K$, 
 
 \begin{align}
 u_{k,gt_1} & \iid \mathcal{N}(0,\tau_{0,k}) \nonumber \\
 \sigma_k & \iid \mathcal{N}(0,10)I_{\{\sigma > 0\}} \nonumber \\
+\sigma_k & \iid \mathcal{N}(0,10) \nonumber \\
 \tau_k & \iid \mathcal{N}(0,10)I_{\{\tau > 0\}} \nonumber \\
 \tau_{0,k} & \iid \mathcal{N}(0,20)I_{\{\tau > 0\}} \nonumber \\
 \kappa_k & \iid \mathcal{N}(0,1)I_{\{\kappa_g > 0\}} \nonumber \\
@@ -263,7 +273,7 @@ u_{k,gt_1} & \iid \mathcal{N}(0,\tau_{0,k}) \nonumber \\
 \beta_{1,kg} & \iid \mathcal{N}(0,3) \nonumber \\
 \label{eq:priors}
 \end{align}
-We also note that, for the discrete phenotypes in equations (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}), there is no $\sigma_k$, and thus is not sampled for those phenotypes.
+We also note that, for the discrete phenotypes in equations (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}), there is no $\sigma_k$, and is not sampled, and for the continuous phenotypes in equation (\ref{eq:cont}), there is no $\phi_k$ and is not sampled.
 
 All models were built using @R2022language and (\textbf STAN)
 

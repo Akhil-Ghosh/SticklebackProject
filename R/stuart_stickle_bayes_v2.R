@@ -155,10 +155,15 @@ model{
 "
 
 disc <- "
+function{
+  real genpoiss_lpmf(int y, real lambda_1, real lambda_2){
+
+  }
+}
 data{
   int<lower=0> N;
   int<lower=0> T;
-  int y[N];
+  vector[N] y;
   vector[N] stl;
   matrix[N,2*T] X;
   vector[T] time;
@@ -174,7 +179,7 @@ parameters{
   real beta1_f_stl;
   real beta1_m_stl;
   real<lower=0> kappa;
-  real<upper=1> alpha;
+  real phi;
   real<lower=0> tau;
   real<lower=0> tau_0;
   real gamma;
@@ -209,18 +214,16 @@ transformed parameters{
   } else {
     lambda = exp(X * mu + gamma * stl);
   }
+
+  real alpha = -(exp(phi) + max(-lambda ./ y)) / (1 + exp(phi));
 }
 
 model{
 // Data Model
   for (i in 1:N){
-    if (alpha == 0){
-      target += poisson_lpmf(y[i] | lambda[i]);
-    } else {
-      target += log(lambda[i]) +
-                (y[i] - 1) * log(lambda[i] + alpha * y[i]) -
-                (lambda[i] + alpha * y[i]);
-    }
+    target += log(lambda[i]) +
+              (y[i] - 1) * log(lambda[i] + alpha * y[i]) -
+              (lambda[i] + alpha * y[i]);
   }
 
   // OU Process for Gender and Time Specific Means
@@ -236,7 +239,7 @@ model{
   beta1_f ~ normal(0,3);
   beta1_m ~ normal(0,3);
   kappa ~ normal(0,1);
-  alpha ~ normal(0,10);
+  phi ~ normal(0,10);
   tau ~ normal(0,10);
   tau_0 ~ normal(0,20);
   gamma ~ normal(0,5);
