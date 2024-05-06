@@ -2,7 +2,7 @@
 title: |
   |  \Large Increased sexual dimorphism evolves in a fossil stickleback following ecological release from fish piscivores
 author: | 
-  | \large Allison Ozark$^{1,*}$, Matthew Stuart$^{2,3,*}$, Raheyma Siddiqui$^1$, Akhil Ghosh$^2$
+  | \large Allison Ozark$^{1,*}$, Matthew Stuart$^{2,3,*}$, Raheyma Siddiqui$^1$, Akhil Ghosh$^{2,3}$
   | \large Samantha Swank$^1$, Michael A. Bell$^4$, Gregory J. Matthews$^{2,3}$, and Yoel E. Stuart$^{1,+}$ 
   | \vspace{-1.1mm}
   | \large $^1$ Department of Biology, Loyola University Chicago, Chicago, IL, USA \vspace{-1.1mm}
@@ -111,10 +111,10 @@ ggplot(aes(x = time, y = count), data = fortab) + geom_col() + xlab("Time Period
 
 | Trait Name           | Trait Code | Trait Description           |
 |----------------------|------------|-----------------------------|
-|Standard Length|	stl|	Distance from anterior tip of premaxilla to posterior end of last vertebra (hypural plate)|
-|Dorsal Spine | mds |	Number of dorsal spines from 0 to 3|
-|Dorsal Fin Ray|mdf|	Number of bones in the dorsal fin posterior to the third dorsal spine (i.e., soft dorsal fin rays)
-|Anal Fin Ray |maf|	Number of bones in the anal fin posterior to the anal spine (i.e., soft dorsal fin rays)|
+|Standard Length|	`stl` |	Distance from anterior tip of premaxilla to posterior end of last vertebra (hypural plate)|
+|Dorsal Spine | `mds` |	Number of dorsal spines from 0 to 3|
+|Dorsal Fin Ray|`mdf`|	Number of bones in the dorsal fin posterior to the third dorsal spine (i.e., soft dorsal fin rays)
+|Anal Fin Ray |`maf`|	Number of bones in the anal fin posterior to the anal spine (i.e., soft dorsal fin rays)|
 |Abdominal Vertebra|mav|	Number of vertebrae anterior to the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
 |Caudal Vertebra|mcv	| Number of vertebrae posterior to and including the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
 |Pterygiophore number|mpt|	Number of pterygiophores anterior to but excluding the pterygiophore under the third dorsal spine, which is immediately anterior to and contiguous with the dorsal fin|
@@ -189,15 +189,16 @@ What covariates do we have in the data: length, what else,
 ## Imputation Model 
 Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate gender of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the gender of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant gender and missing fossil gender, respectively.
 
-We impute the missing gender for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching.  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2009 recommend a larger number of imputed data sets if the data users intend on performing Bayesians analysis after imputation, which in this case, we do.  Therefore, the imputation algorithm is run to obtain a total of $M = 100$ completed datasets. In addition to this, @ZhouReiter2009 suggests rather than using Rubin's combining rules to combine across imputed data sets, instead pool all of the draws from the posterior distributions across all of the imputed data sets to estimate the posterior distributions of parameters of interest.  We proceed with our Bayesian analysis in this manner.  
+We impute the missing gender for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching.  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if the data users intend on performing Bayesians analysis after imputation, which in this case, we do.  Therefore, the imputation algorithm is run to obtain a total of $M = 100$ completed datasets. In addition to this, @ZhouReiter2010 suggests rather than using Rubin's combining rules to combine across imputed data sets, instead pool all of the draws from the posterior distributions across all of the imputed data sets to estimate the posterior distributions of parameters of interest.  We proceed with our Bayesian analysis in this manner.  
 
 \textcolor{red}{Akhil's stuff about validating the imputation model goes here.}
 
-
-<!-- Bayesian Analysis after multiple imputation @ZhouReiter2009: They recommend using a large number of imputations.  5 or 10 is too small.  We are using M = 100. -->
+<!-- Bayesian Analysis after multiple imputation @ZhouReiter2010: They recommend using a large number of imputations.  5 or 10 is too small.  We are using M = 100. -->
 
 ## Completed Data Model 
 \textcolor{red}{We should note somewhere that we are only using the $W_{fossil}$ in the modeling part.  We drop the $W_{extant}$.  So just note that $W_{ti}$ is really $W_{fossil,ti}$.  Not sure how to say this, but we need to make it clear that we are only using the fossil data for the OU modeling.  Greg, check and see if this makes sense.}
+
+\textcolor{red}{I think we need to move a lot of these details to the appendix.  }
 
 For a given imputed dataset, let $W_{ij}$ be the imputed gender and $\boldsymbol{Y}_{ij}$ be the $K \times 1$ vector of phenotypes for stickleback fossil $j$ at time $t_i$ where $i = 1, \ldots, T$ and $j = 1,\ldots,n_{t}$. Note, we are inputting only the fossil data into our model; connecting to the previous section, $W_{ij}$ and $\boldsymbol{Y}_{ij}$ can be interpretted as $W_{fossil,ij}$ and $\boldsymbol{Y}_{fossil,ij}$. In addition, we denote $Y_{K,ij}$, the last variable in $\boldsymbol{Y}_{ij}$, to be the standard length of the fish,
 \begin{align}
@@ -216,7 +217,7 @@ If $Y_{k,ij}$ is a discrete trait, the conventional method of modelling this dat
 P(X = x) = \left\{\begin{array}{cc} \frac{(1 - \alpha)\lambda[(1 - \alpha)\lambda + \alpha x]^{x - 1} \exp\left\{-((1 - \alpha)\lambda  + \alpha x)\right\}}{x!} & (1 - \alpha)\lambda  + \alpha x \geq 0  \\ 0 & (1 - \alpha)\lambda  + \alpha x < 0 \end{array}\right.,
 \label{eq:GP_pmf}
 \end{align}
-where $E(Y_{k,ij}) = \lambda$ and $Var(Y_{k,ij}) = \frac{\lambda}{(1 - \alpha)^2}$.  If $\alpha > 0$, then the variance is greater than the mean, called overdispersion; if $\alpha < 0$, then the variance is greater than the mean, called underdispersion; if $\alpha = 0$, then the model degenerates to a Poisson distribution.
+where $E(X) = \lambda$ and $Var(X) = \frac{\lambda}{(1 - \alpha)^2}$.  If $\alpha > 0$, then the variance is greater than the mean, called overdispersion; if $\alpha < 0$, then the variance is greater than the mean, called underdispersion; if $\alpha = 0$, then the model degenerates to a Poisson distribution.
 
 We will use the generalized Poisson to model all of the discrete traits in our dataset. In addition, we assume that the discrete traits abdominal vertebrae (mav) and caudal vertebrae (mcv) also have correlation with the standard length of the fish (\textbf{CITATION}). If $Y_{k,ij}$ is one of the above traits, then
 \begin{align}
@@ -279,9 +280,18 @@ All models were built using @R2022language and (\textbf STAN)
 
 @Cornault2022 Bayesian OU model.  
 
-Bayesian Analysis after multiple imputation @ZhouReiter2009: They recommend using a large number of imputations.  5 or 10 is too small.  We are using M = 100.  
+
 
 # Results {#sec:results}
+Greg notes: 
+- mdf and maf have interesting trends.  
+- ds3 flips over time.  Females have larger values to start and over the course of the time frame wer are looking at males end up with larger mean values.  
+- Most of the other traits have mean differences that are relatively constant over time.  
+
+
+
+
+
 
 # Discsusson, Future work and conclusions {#sec:conclusions}
 We predicted that release from predators would result in niche expansion and increased sexual dimorphism, based on several studies of modern stickleback. For example, in lakes where sculpin competitors are absent and stickleback (Roesti et al. 2023)
