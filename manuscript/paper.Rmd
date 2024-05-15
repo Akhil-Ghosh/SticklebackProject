@@ -116,15 +116,15 @@ ggplot(aes(x = time, y = count), data = fortab) + geom_col() + xlab("Time Period
 |Dorsal Fin Ray|`mdf`|	Number of bones in the dorsal fin posterior to the third dorsal spine (i.e., soft dorsal fin rays)
 |Anal Fin Ray |`maf`|	Number of bones in the anal fin posterior to the anal spine (i.e., soft dorsal fin rays)|
 |Abdominal Vertebra|mav|	Number of vertebrae anterior to the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
-|Caudal Vertebra|mcv	| Number of vertebrae posterior to and including the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
-|Pterygiophore number|mpt|	Number of pterygiophores anterior to but excluding the pterygiophore under the third dorsal spine, which is immediately anterior to and contiguous with the dorsal fin|
-|Pelvic Spine length|lps.sc	|Length from the base of one pelvic spine above its articulation with the pelvic girdle to its distal tip|
-|Ectocoracoid|ect.sc|	Length between the anterior and posterior tips of the shoulder girdle base (i.e., ectocoracoid)|
-|Pelvic Girdle|tpg.sc|	Length between the anterior to posterior tips along midline. If vestigial, the sum of longest anterior-posterior axis for the vestiges|
-|Cleithrum length|cle.sc|	Length from free dorsal tip to ventral tip of the cleithrum on the anterior margin of the shoulder girdle (i.e., cleithrum)|
-|Premaxilla|pmx.sc|	Length from the anterior tip of the premaxilla to the distal tip of the ascending process of the premaxilla |
-|Dorsal Spine|Ds#.sc# = 1,2,or 3|	Length from the base of a dorsal spine above the pterygiophore to its distal tip along the anterior edge|
-|Pterygiophore|lpt.sc|	Distance between the anterior to posterior tips of the pterygiophore immediately preceding the 3rd dorsal spine (when present)|
+|Caudal Vertebra|`mcv`	| Number of vertebrae posterior to and including the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
+|Pterygiophore number|`mpt`|	Number of pterygiophores anterior to but excluding the pterygiophore under the third dorsal spine, which is immediately anterior to and contiguous with the dorsal fin|
+|Pelvic Spine length|`lps.sc`	|Length from the base of one pelvic spine above its articulation with the pelvic girdle to its distal tip|
+|Ectocoracoid|`ect.sc`|	Length between the anterior and posterior tips of the shoulder girdle base (i.e., ectocoracoid)|
+|Pelvic Girdle|`tpg.sc`|	Length between the anterior to posterior tips along midline. If vestigial, the sum of longest anterior-posterior axis for the vestiges|
+|Cleithrum length|`cle.sc`|	Length from free dorsal tip to ventral tip of the cleithrum on the anterior margin of the shoulder girdle (i.e., cleithrum)|
+|Premaxilla|`pmx.sc`|	Length from the anterior tip of the premaxilla to the distal tip of the ascending process of the premaxilla |
+|Dorsal Spine|`Ds#.sc# = 1,2,or 3`|	Length from the base of a dorsal spine above the pterygiophore to its distal tip along the anterior edge|
+|Pterygiophore|`lpt.sc`|	Distance between the anterior to posterior tips of the pterygiophore immediately preceding the 3rd dorsal spine (when present)|
 
 Table: Traits and trait descriptions. ‘sc’ denotes size correction of trait against standard length. Names of bones follow @Bowne1994 unless otherwise noted.
 
@@ -283,18 +283,307 @@ All models were built using @R2022language and (\textbf STAN)
 
 
 # Results {#sec:results}
-Greg notes: 
-- mdf and maf have interesting trends.  
-- ds3 flips over time.  Females have larger values to start and over the course of the time frame wer are looking at males end up with larger mean values.  
-- Most of the other traits have mean differences that are relatively constant over time.  
+As previously described, four models for the mean process were considered for each trait.  Within each trait, the model with the lowest DIC was chosen for that train.  All subsequent results presented here use the model with the lowest DIC individually by trait.  Table \ref{whichmodel} shows the model that was selected for each trait.  About half of the traits had models with a trend, and most models did not include an OU component.  The traits that did include an OU component were caudal vertebra (mcv), pelvic spine lentgh (lpt), abdominal vertebra (mav), and standard length (stl) with caudal vertebra (mcv) being the onyl model with both a trend and an OU component.  NOTE FOR MATT: You should mention something about MCV being the only one with a trend and an OU.  Explain why this might be and what it means. 
+
+## Best fitting models 
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c||c|c|}
+  \hline
+ & OU & No OU  \\ 
+  \hline
+  \hline
+Trend  &  mcv  & ds2, ds3, ect, maf, mdf \\ 
+  \hline
+  No Trend & lpt, mav, stl  &  cle, ds1, lps, pmx\\
+   \hline
+\end{tabular}
+\label{whichmodel}
+\end{table}
 
 
-- FINAL SUMMARY TABLES 
- 1. posterior probabilities of mu diff greter than 0. (sexual dimorphism)
- 2. Posterior probabilities of the difference in the distribution at time 0 and time 19.  (trends)
+<!-- Trends terms included in were observed in ds2, ds3, ect, maf, mdf, mcv,  -->
+<!-- OU term included in model: mcv, lpt, stl -->
+<!-- model_list[["cle"]] <- 3 -->
+<!-- model_list[["ds1"]] <- 3 -->
+<!-- model_list[["ds2"]] <- 1 -->
+<!-- model_list[["ds3"]] <- 1 -->
+<!-- model_list[["ect"]] <- 1 -->
+<!-- model_list[["lps"]] <- 3 -->
+<!-- model_list[["lpt"]] <- 2 -->
+<!-- model_list[["maf"]] <- 1 -->
+<!-- model_list[["mav"]] <- 2 -->
+<!-- model_list[["mcv"]] <- 0 -->
+<!-- model_list[["mdf"]] <- 1 -->
+<!-- #model_list[["mds"]] <- 3 -->
+<!-- #model_list[["mpt"]] <- 0 -->
+<!-- model_list[["pmx"]] <- 3 -->
+<!-- model_list[["stl"]] <- 2 -->
+<!-- #model_list[["tpg"]] <- 1 -->
+<!-- Greg notes:  -->
+<!-- - mdf and maf have interesting trends.   -->
+<!-- - ds3 flips over time.  Females have larger values to start and over the course of the time frame wer are looking at males end up with larger mean values.   -->
+<!-- - Most of the other traits have mean differences that are relatively constant over time.   -->
+
+## Sexual Dimorphism 
+Table \ref{prob0-table} shows the posterior probability of the differences in the means between male and female specimens at each time point.  Probabilities near 0.5 indicate very little difference in the means whereas probabilities far from 0.5 indicate sexual dimorphism with values of 0 and 1 indicating larger mean values for females and males, respectively.  These results are shown graphically in figure \ref{fig:prob0-plot}. 
+
+Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray (mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant sexual dimorphism with all but the last having learger mean values in male sepcimen. Other traits such as abdominal vertebra (mav), caudal vertebra (mcv), and pelvic spine length (lps) don't appear to have any discernable sexual dimorphism in the means.  Dorsal spine 3 (ds3) exhibits sexual dimorphism that changes over time.  The mean number of dorsal spine 3 begins larger for females for the earliest observed time periods.  Over time, however, this switches and the male specimens exhibit larger mean values for the latest observed time periods.  
+
+## Changes over time
+Table \ref{auc-table} shows the probability that the posterior distribution of the differences in the mean is greater than the posterior distribution of the differences at the first time point.  Values near 0.5 indicate very little difference between the distributions whereas values closer to 0 and 1 indicate changes in the distributions with values of 1 meaning the difference in means has shifted towards males having a larger mean and values of 0 indicating the difference in means has shifted towards larger means in females.  These results are shown graphically in figure \ref{fig:AUC-plot}.
+
+The amount of sexual dimporphism over time does not change substantially for a majority of the trait observed here (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl).  Traits that trend away from the mean difference at the first observed time point include dorsal spine 3 (ds3), anal fin ray (maf), and dorsal fin ray (mdf).  
+
+<!-- #ds3 -->
+<!-- apply(mu_m,2,mean)[1] #2.291846 -->
+<!-- apply(mu_f,2,mean)[1] #2.448115  -->
+<!-- apply(mu_m,2,mean)[18] #1.264728  -->
+<!--   apply(mu_f,2,mean)[18] #1.184534  -->
+<!-- apply(mu_m,2,mean)[18] - apply(mu_m,2,mean)[1] #-1.027118  -->
+<!-- apply(mu_f,2,mean)[18] - apply(mu_f,2,mean)[1] #-1.263581  -->
+The posterior mean of the mean number of dorsal spine rays at the first observed time point is 2.29 for males and for females it is 2.45.  At the last observed time point, the average number for males and female both dropped to 1.265 and 1.185 for males and females, respectively.  This resulted in a mean number of dorsal spine 3 lost by males of 1.027 and for females it was 1.264.  This resulted in a change of the mean difference from time point 1 to time point 18 of 0.236.  Basically, males and females both lowered the mean number of dorsal spine 3, but females lowered their mean more than the males.  
+
+<!-- #maf -->
+  <!-- apply(mu_m,2,mean)[1] #8.517534 -->
+  <!-- apply(mu_f,2,mean)[1] #8.290749  -->
+  <!-- apply(mu_m,2,mean)[18] #8.549155  -->
+  <!-- apply(mu_f,2,mean)[18] #8.170195  -->
+  <!-- apply(mu_m,2,mean)[18] - apply(mu_m,2,mean)[1] #0.03162047  -->
+  <!-- apply(mu_f,2,mean)[18] - apply(mu_f,2,mean)[1] #-0.1205537 -->
+  <!-- (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.1521742  -->
+<!-- MAF: Number of bones in the anal fin posterior to the anal spine (i.e., softdorsal fin rays) -->
+
+We also observed a change in the differences between males and females for the number of bones int he anal fin ray (maf) and the number of bones in the dorsal fin ray.  The difference in the means of males versus females for anal fin ray bones changed by 0.152 over the course of the observed time periods.  This change was driven mostly by the change in females.  At the first observed time period the had on average 8.291 bones dropping to 8.170 over the 18 times periods observed. Whereas for males the change in means rose only from  8.518 to 8.549, about 0.0316 bones on average.  
+
+A similar change in the difference of the means over time was observed for the number of bones in the dorsal fin (mdf).  However, unlike maf, this change in sexual dimporhism was driven entirely by the males.  The mean change for females over the 18 observed time periods was only 0.0055 with the average number of dorsal fin bones for females starting at 9.287 and the final observed mean of 9.281 resulting in almost no change in the mean.  For males, the average number of dorsal fin bones at the first time point was about 9.568 dropping to 9.734 over the course of the observed time periods for a gain of 0.166 bones on average.  
+
+<!-- #mdf -->
+<!--   apply(mu_m,2,mean)[1] #9.567811  -->
+<!--   apply(mu_f,2,mean)[1] #9.286521 -->
+<!--   apply(mu_m,2,mean)[18] #9.733923 -->
+<!--   apply(mu_f,2,mean)[18] #9.281005 -->
+<!--   apply(mu_m,2,mean)[18] - apply(mu_m,2,mean)[1] #0.1661123  -->
+<!--   apply(mu_f,2,mean)[18] - apply(mu_f,2,mean)[1] #-0.005516126  -->
+<!--   (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.1716284 -->
+<!-- MDF: Dorsal fin ray: Number of bones in the dorsal finposterior to the third dorsal spine (i.e.,soft dorsal fin rays. -->
+ 
+
+
+
+
+```{r echo = FALSE}
+library(tidyverse)
+library(ROCR)
+model_list <- list()
+#Indicate which model was used for each trai
+model_list[["cle"]] <- 3
+model_list[["ds1"]] <- 3
+model_list[["ds2"]] <- 1
+model_list[["ds3"]] <- 1
+model_list[["ect"]] <- 1
+model_list[["lps"]] <- 3
+model_list[["lpt"]] <- 2
+model_list[["maf"]] <- 1
+model_list[["mav"]] <- 2
+model_list[["mcv"]] <- 0
+model_list[["mdf"]] <- 1
+#model_list[["mds"]] <- 3
+#model_list[["mpt"]] <- 0
+model_list[["pmx"]] <- 3
+model_list[["stl"]] <- 2
+#model_list[["tpg"]] <- 1
+library(here)
+samps_stl <- readRDS(here("Figures/stl","posterior_samples_stl_2.RDS"))
+mu_stl <- samps_stl %>% select(contains("mu"))
+ maxtime <- 18
+ results_prob_mu_diff_gt_mu_diff0 <- results_prob_mu_diff_gt_0 <- results_auc_mu_diff <-  data.frame()
+phenotype <- "ds3"
+  samps <- readRDS(here(paste0("Figures/",phenotype),paste0("posterior_samples_",phenotype,"_",model_list[[phenotype]],".RDS")))
+  gamma <- samps %>% select(gamma)
+  mu <- samps %>% select(contains("mu"))
+  if (phenotype == "stl") {
+    mu_f <-
+      mu[, 1:maxtime]
+    mu_m <-
+      mu[, (maxtime + 1):(2 * maxtime)]
+  } else {
+
+    if (phenotype %in% c("mdf","maf","mav","mcv")){
+      mu_f <-exp(mu[, 1:maxtime])
+      mu_m <- exp(mu[, (maxtime + 1):(2 * maxtime)])
+
+    } else {
+      mu_f <-
+        mu[, 1:maxtime] + as.data.frame(rep(gamma, 18)) * mu_stl[, 1:maxtime]
+      mu_m <-
+        mu[, (maxtime + 1):(2 * maxtime)] + as.data.frame(rep(gamma, 18)) * mu_stl[, (maxtime +
+                                                                                        1):(2 * maxtime)]
+    }
+
+
+
+  }
+  
+  #ds3 
+  # apply(mu_m,2,mean)[1] #2.291846
+  # apply(mu_f,2,mean)[1] #2.448115 
+  # 
+  # apply(mu_m,2,mean)[18] #1.264728 
+  # apply(mu_f,2,mean)[18] #1.184534 
+  # 
+  # apply(mu_m,2,mean)[18] - apply(mu_m,2,mean)[1] #-1.027118 
+  # apply(mu_f,2,mean)[18] - apply(mu_f,2,mean)[1] #-1.263581 
+  # 
+  # (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.2364628
+```
+
+```{r echo = FALSE}
+library(tidyverse)
+library(ROCR)
+model_list <- list()
+#Indicate which model was used for each trai
+model_list[["cle"]] <- 3
+model_list[["ds1"]] <- 3
+model_list[["ds2"]] <- 1
+model_list[["ds3"]] <- 1
+model_list[["ect"]] <- 1
+model_list[["lps"]] <- 3
+model_list[["lpt"]] <- 2
+model_list[["maf"]] <- 1
+model_list[["mav"]] <- 2
+model_list[["mcv"]] <- 0
+model_list[["mdf"]] <- 1
+#model_list[["mds"]] <- 3
+#model_list[["mpt"]] <- 0
+model_list[["pmx"]] <- 3
+model_list[["stl"]] <- 2
+#model_list[["tpg"]] <- 1
+library(here)
+samps_stl <- readRDS(here("Figures/stl","posterior_samples_stl_2.RDS"))
+mu_stl <- samps_stl %>% select(contains("mu"))
+ maxtime <- 18
+ results_prob_mu_diff_gt_mu_diff0 <- results_prob_mu_diff_gt_0 <- results_auc_mu_diff <-  data.frame()
+phenotype <- "maf"
+  samps <- readRDS(here(paste0("Figures/",phenotype),paste0("posterior_samples_",phenotype,"_",model_list[[phenotype]],".RDS")))
+  gamma <- samps %>% select(gamma)
+  mu <- samps %>% select(contains("mu"))
+  if (phenotype == "stl") {
+    mu_f <-
+      mu[, 1:maxtime]
+    mu_m <-
+      mu[, (maxtime + 1):(2 * maxtime)]
+  } else {
+
+    if (phenotype %in% c("mdf","maf","mav","mcv")){
+      mu_f <-exp(mu[, 1:maxtime])
+      mu_m <- exp(mu[, (maxtime + 1):(2 * maxtime)])
+
+    } else {
+      mu_f <-
+        mu[, 1:maxtime] + as.data.frame(rep(gamma, 18)) * mu_stl[, 1:maxtime]
+      mu_m <-
+        mu[, (maxtime + 1):(2 * maxtime)] + as.data.frame(rep(gamma, 18)) * mu_stl[, (maxtime +
+                                                                                        1):(2 * maxtime)]
+    }
+
+
+
+  }
+  
+  # #maf
+  # apply(mu_m,2,mean)[1] #8.517534
+  # apply(mu_f,2,mean)[1] #8.290749 
+  # 
+  # apply(mu_m,2,mean)[18] #8.549155 
+  # apply(mu_f,2,mean)[18] #8.170195 
+  # 
+  # apply(mu_m,2,mean)[18] - apply(mu_m,2,mean)[1] #0.03162047 
+  # apply(mu_f,2,mean)[18] - apply(mu_f,2,mean)[1] #-0.1205537
+  # 
+  # (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.1521742 
+```
+
+
+```{r echo = FALSE}
+library(tidyverse)
+library(ROCR)
+model_list <- list()
+#Indicate which model was used for each trai
+model_list[["cle"]] <- 3
+model_list[["ds1"]] <- 3
+model_list[["ds2"]] <- 1
+model_list[["ds3"]] <- 1
+model_list[["ect"]] <- 1
+model_list[["lps"]] <- 3
+model_list[["lpt"]] <- 2
+model_list[["maf"]] <- 1
+model_list[["mav"]] <- 2
+model_list[["mcv"]] <- 0
+model_list[["mdf"]] <- 1
+#model_list[["mds"]] <- 3
+#model_list[["mpt"]] <- 0
+model_list[["pmx"]] <- 3
+model_list[["stl"]] <- 2
+#model_list[["tpg"]] <- 1
+library(here)
+samps_stl <- readRDS(here("Figures/stl","posterior_samples_stl_2.RDS"))
+mu_stl <- samps_stl %>% select(contains("mu"))
+ maxtime <- 18
+ results_prob_mu_diff_gt_mu_diff0 <- results_prob_mu_diff_gt_0 <- results_auc_mu_diff <-  data.frame()
+phenotype <- "mdf"
+  samps <- readRDS(here(paste0("Figures/",phenotype),paste0("posterior_samples_",phenotype,"_",model_list[[phenotype]],".RDS")))
+  gamma <- samps %>% select(gamma)
+  mu <- samps %>% select(contains("mu"))
+  if (phenotype == "stl") {
+    mu_f <-
+      mu[, 1:maxtime]
+    mu_m <-
+      mu[, (maxtime + 1):(2 * maxtime)]
+  } else {
+
+    if (phenotype %in% c("mdf","maf","mav","mcv")){
+      mu_f <-exp(mu[, 1:maxtime])
+      mu_m <- exp(mu[, (maxtime + 1):(2 * maxtime)])
+
+    } else {
+      mu_f <-
+        mu[, 1:maxtime] + as.data.frame(rep(gamma, 18)) * mu_stl[, 1:maxtime]
+      mu_m <-
+        mu[, (maxtime + 1):(2 * maxtime)] + as.data.frame(rep(gamma, 18)) * mu_stl[, (maxtime +
+                                                                                        1):(2 * maxtime)]
+    }
+
+
+
+  }
+  
+  #mdf
+  # apply(mu_m,2,mean)[1] #9.567811 
+  # apply(mu_f,2,mean)[1] #9.286521
+  # 
+  # apply(mu_m,2,mean)[18] #9.733923
+  # apply(mu_f,2,mean)[18] #9.281005
+  # 
+  # apply(mu_m,2,mean)[18] - apply(mu_m,2,mean)[1] #0.1661123 
+  # apply(mu_f,2,mean)[18] - apply(mu_f,2,mean)[1] #-0.005516126 
+  # 
+  # (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.1716284
+```
+
+
+
+
+
+
+
+
+<!-- %- FINAL SUMMARY TABLES  -->
+<!--  1. posterior probabilities of mu diff greter than 0. (sexual dimorphism) -->
+<!--  2. Posterior probabilities of the difference in the distribution at time 0 and time 19.  (trends) -->
  
 ```{r echo = FALSE}
- library(tidyverse)
+library(tidyverse)
 library(ROCR)
 model_list <- list()
 #Indicate which model was used for each trai
@@ -413,7 +702,7 @@ for (phenotype in names(model_list)){
 
 ```
 
-```{r echo = FALSE, tab.cap= "Posterior probability that the mean for male sis larger than the mean for females"}
+```{r prob0-table, echo = FALSE, tab.cap= "Posterior probability that the mean for males is larger than the mean for females. \\label{prob0-table}"}
 #Which model was used
 mod_df <- data.frame(phenotype = names(unlist(model_list)), mod = unlist(model_list))
 mod_code <- data.frame(mod = 0:3, mod_name = c("OU-Trend","No OU-Trend",
@@ -423,21 +712,27 @@ library(xtable)
 xtable(results_prob_mu_diff_gt_0_table)
 ```
 
-```{r echo = FALSE, tab.cap= "AUC comparing time x versus time 0."}
+
+```{r auc-table, echo = FALSE, tab.cap= "AUC comparing time x versus time 0. \\label{auc-table}"}
 results_auc_mu_diff_table <- results_auc_mu_diff %>%  mutate(auc_mu_diff = round(auc_mu_diff,3)) %>% pivot_wider(names_from = "phenotype", values_from = "auc_mu_diff")
-library(xtable)
-xtable(results_auc_mu_diff_table)
+#library(xtable)
+xtable(results_auc_mu_diff_table[1,])
+#knitr::kable(results_auc_mu_diff_table, caption = "The mtcars data.")
 ```
 
 
 
-```{r echo = FALSE, fig.cap = "Posterior probabilities that mean for males is greater than mean for females"}
+
+
+```{r prob0-plot, echo = FALSE, fig.cap = "Posterior probabilities that mean for males is greater than mean for females"}
 ggplot(aes(x = time, y = prob_mu_diff_gt_0), data = results_prob_mu_diff_gt_0) + facet_wrap(~phenotype) + geom_path() + geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
 
-```{r, echo = FALSE, fig.cap= "AUC comparing time x versus time 0."}
+```{r AUC-plot, echo = FALSE, fig.cap= "AUC comparing time x versus time 0."}
 ggplot(aes(x = time, y = auc_mu_diff), data = results_auc_mu_diff) + facet_wrap(~phenotype) + geom_path() +  geom_path() + geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
+
+
 
 
 
@@ -454,5 +749,56 @@ We thank O. Abughoush, S. Blaine, A. Chaudhary, M. Islam, F. Joaquin, C. Lawson-
 # Supplementary Material {-}
 
 All code for reproducing the analyses in this paper is publicly available at https://github.com/Akhil-Ghosh/SticklebackProject
+
+DIC results here. 
+
+
+## Figures
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("cle"), echo=FALSE}
+knitr::include_graphics(here("Figures/cle","mu_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds1"), echo=FALSE}
+knitr::include_graphics(here("Figures/ds1","mu_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds2"), echo=FALSE}
+knitr::include_graphics(here("Figures/ds2","mu_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds3"), echo=FALSE}
+knitr::include_graphics(here("Figures/ds3","mu_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ect"), echo=FALSE}
+knitr::include_graphics(here("Figures/ect","mu_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("lps"), echo=FALSE}
+knitr::include_graphics(here("Figures/lps","mu_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("lpt"), echo=FALSE}
+knitr::include_graphics(here("Figures/lpt","mu_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("maf"), echo=FALSE}
+knitr::include_graphics(here("Figures/maf","lambda_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mav"), echo=FALSE}
+knitr::include_graphics(here("Figures/mav","lambda_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mcv"), echo=FALSE}
+knitr::include_graphics(here("Figures/mcv","lambda_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mdf"), echo=FALSE}
+knitr::include_graphics(here("Figures/mdf","lambda_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mds"), echo=FALSE}
+knitr::include_graphics(here("Figures/mds","lambda_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mpt"), echo=FALSE}
+knitr::include_graphics(here("Figures/mpt","lambda_diff.pdf"))
+```
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("pmx"), echo=FALSE}
+knitr::include_graphics(here("Figures/pmx","mu_diff.pdf"))
+```
+
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("stl"), echo=FALSE}
+knitr::include_graphics(here("Figures/stl","mu_diff.pdf"))
+```
 
 # References
