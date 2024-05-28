@@ -328,6 +328,8 @@ Trend  &  mcv  & ds2, ds3, ect, maf, mdf \\
 ## Sexual Dimorphism 
 Table \ref{prob0-table} shows the posterior probability of the differences in the means between male and female specimens at each time point.  Probabilities near 0.5 indicate very little difference in the means whereas probabilities far from 0.5 indicate sexual dimorphism with values of 0 and 1 indicating larger mean values for females and males, respectively.  These results are shown graphically in figure \ref{fig:prob0-plot}. 
 
+Figure \ref{fig:mu-diff-plot} shows the posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females).  The full poosterior distributions over time for all traits are shown in the appendix.  
+
 Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray (mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant sexual dimorphism with all but the last having learger mean values in male sepcimen. Other traits such as abdominal vertebra (mav), caudal vertebra (mcv), and pelvic spine length (lps) don't appear to have any discernable sexual dimorphism in the means.  Dorsal spine 3 (ds3) exhibits sexual dimorphism that changes over time.  The mean number of dorsal spine 3 begins larger for females for the earliest observed time periods.  Over time, however, this switches and the male specimens exhibit larger mean values for the latest observed time periods.  
 
 ## Changes over time
@@ -607,7 +609,8 @@ library(here)
 samps_stl <- readRDS(here("Figures/stl","posterior_samples_stl_2.RDS"))
 mu_stl <- samps_stl %>% select(contains("mu"))
  maxtime <- 18
- results_prob_mu_diff_gt_mu_diff0 <- results_prob_mu_diff_gt_0 <- results_auc_mu_diff <-  data.frame()
+ results_posterior_mean_diff <- results_prob_mu_diff_gt_mu_diff0 <- results_prob_mu_diff_gt_0 <- results_auc_mu_diff <-  data.frame()
+ 
 for (phenotype in names(model_list)){
   samps <- readRDS(here(paste0("Figures/",phenotype),paste0("posterior_samples_",phenotype,"_",model_list[[phenotype]],".RDS")))
   gamma <- samps %>% select(gamma)
@@ -636,6 +639,8 @@ for (phenotype in names(model_list)){
     }
 
   mu_diff <- mu_m - mu_f
+  
+  
 
   #Probability males are greater than females
   results_prob_mu_diff_gt_0 <- rbind(results_prob_mu_diff_gt_0,data.frame(
@@ -673,6 +678,13 @@ for (phenotype in names(model_list)){
     phenotype = phenotype,
     time = 1:18,
     prob_mu_diff_gt_mu_diff0 = prob_mu_diff_gt_mu_diff0
+  ))
+  
+  
+  results_posterior_mean_diff <- rbind( results_posterior_mean_diff,data.frame(
+    phenotype = phenotype,
+    time = 1:18,
+    mu_diff = apply(mu_diff,2,mean)
   ))
 
   # plot(perf,
@@ -716,7 +728,7 @@ xtable(results_prob_mu_diff_gt_0_table)
 ```{r auc-table, echo = FALSE, tab.cap= "AUC comparing time x versus time 0. \\label{auc-table}"}
 results_auc_mu_diff_table <- results_auc_mu_diff %>%  mutate(auc_mu_diff = round(auc_mu_diff,3)) %>% pivot_wider(names_from = "phenotype", values_from = "auc_mu_diff")
 #library(xtable)
-xtable(results_auc_mu_diff_table[1,])
+xtable(results_auc_mu_diff_table)
 #knitr::kable(results_auc_mu_diff_table, caption = "The mtcars data.")
 ```
 
@@ -724,8 +736,15 @@ xtable(results_auc_mu_diff_table[1,])
 
 
 
+
+
+
+```{r mu-diff-plot, echo = FALSE, fig.cap = "Posterior mean difference between males and females"}
+ggplot(aes(x = time, y = mu_diff), data = results_posterior_mean_diff) + facet_wrap(~phenotype, scale = "free_y") + geom_path() + geom_hline(yintercept = 0, lty = 3) + ylab("Posterior Mean")
+```
+
 ```{r prob0-plot, echo = FALSE, fig.cap = "Posterior probabilities that mean for males is greater than mean for females"}
-ggplot(aes(x = time, y = prob_mu_diff_gt_0), data = results_prob_mu_diff_gt_0) + facet_wrap(~phenotype) + geom_path() + geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
+ggplot(aes(x = time, y = prob_mu_diff_gt_0), data = results_prob_mu_diff_gt_0) + facet_wrap(~phenotype) + geom_path() + geom_hline(yintercept = 0, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
 
 ```{r AUC-plot, echo = FALSE, fig.cap= "AUC comparing time x versus time 0."}
