@@ -49,6 +49,7 @@ gjm <- function(x, color = "red") {
 library(tidyverse)
 theme_set(theme_minimal())
 library(Lahman)
+library(bookdown)
 ```
 
 \newpage
@@ -241,7 +242,7 @@ for $g \in \{f,m\}$ where $\beta_{0,kg}$ and $\beta_{1,kg}$ are regression param
 du_{k,gt} = -\kappa_k u_{k,gt} dt + \tau_k dW_t,
 \label{eq:OU_cont}
 \end{align}
-where $\kappa_k$ is a parameter associated with the correlation between $u_{k,gt}$ and $u_{k,g(t+dt)}$, $\tau_k$ is the standard deviation of the OU process, and $W_t$ is a standard Brownian motion. As shown in (@OUProcess), the closed form solution for the SDE in (\ref{eq:OU_cont}) is
+where $\kappa_k$ is a parameter associated with the correlation between $u_{k,gt}$ and $u_{k,g(t+dt)}$, $\tau_k$ is the standard deviation of the OU process, and $W_t$ is a standard Brownian motion. As shown in @OUProcess, the closed form solution for the SDE in (\ref{eq:OU_cont}) is
 \begin{align}
 u_{k,gt_i} \iid \mathcal{N}\left(u_{k,gt_{i-1}}\exp\{-\kappa_k(t_{i} - t_{i-1})\} , \frac{\tau_k^2(1 - \exp\{-2\kappa_k(t_{i} - t_{i-1}))\}}{2\kappa_k}\right)
 \label{eq:OU_sol}
@@ -256,7 +257,7 @@ In our empirical study, we analyze the following four nested models for the mean
 \item No OU with No Trend: The mean for a specific trait and specific gender at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$.
 \end{itemize}
 
-Because we are fitting a dataset with a stochastic structure on the means of the phenotypes, we analyze the data via a Bayesian analysis.  Bayesian data analysis is also more naturally used when we have to impute data (\textbf{CITATION}). To aid in the sampling procedure for the discrete phenotypes, we declare
+Because we are fitting a dataset with a stochastic structure on the means of the phenotypes, and we are interested in the distribution of the overall structure of these means, we analyze the data via a Bayesian analysis.  Bayesian data analysis is also more naturally used when we have to impute data (\textbf{CITATION}). To aid in the sampling procedure for the discrete phenotypes, we declare
 
 Priors: To aid in the sampling procedure for the discrete phenotypes, we declare $\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)$ where $\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.$. This transformation is performed to ensure our algorithm can properly sample from the posterior distribution of interest.
 
@@ -283,7 +284,7 @@ All models were built using @R2022language and (\textbf STAN)
 
 
 # Results {#sec:results}
-As previously described, four models for the mean process were considered for each trait.  Within each trait, the model with the lowest DIC was chosen for that train.  All subsequent results presented here use the model with the lowest DIC individually by trait.  Table \ref{whichmodel} shows the model that was selected for each trait.  About half of the traits had models with a trend, and most models did not include an OU component.  The traits that did include an OU component were caudal vertebra (mcv), pelvic spine lentgh (lpt), abdominal vertebra (mav), and standard length (stl) with caudal vertebra (mcv) being the onyl model with both a trend and an OU component.  NOTE FOR MATT: You should mention something about MCV being the only one with a trend and an OU.  Explain why this might be and what it means. 
+As previously described, four models for the mean process were considered for each trait.  Within each trait, the model with the lowest DIC was chosen for that train.  All subsequent results presented here use the model with the lowest DIC individually by trait.  Table \ref{whichmodel} shows the model that was selected for each trait.  About half of the traits had models with a trend, and most models did not include an OU component.  The traits that did include an OU component were caudal vertebra (mcv), pelvic spine lentgh (lpt), abdominal vertebra (mav), and standard length (stl) with caudal vertebra (mcv) being the only model with both a trend and an OU component.  This implies that not only does caudal vertebra size have a linear trend across gender, but the average size at one time period is highly correlated with the average size at the next time period.<!-- NOTE FOR MATT: You should mention something about MCV being the only one with a trend and an OU.  Explain why this might be and what it means.  -->
 
 ## Best fitting models 
 \begin{table}[ht]
@@ -326,14 +327,14 @@ Trend  &  mcv  & ds2, ds3, ect, maf, mdf \\
 <!-- - Most of the other traits have mean differences that are relatively constant over time.   -->
 
 ## Sexual Dimorphism 
-Table \ref{prob0-table} shows the posterior probability of the differences in the means between male and female specimens at each time point.  Probabilities near 0.5 indicate very little difference in the means whereas probabilities far from 0.5 indicate sexual dimorphism with values of 0 and 1 indicating larger mean values for females and males, respectively.  These results are shown graphically in figure \ref{fig:prob0-plot}. 
+Table \ref{tab:prob0-table} shows the posterior probability of the differences in the means between male and female specimens at each time point.  Probabilities near 0.5 indicate very little difference in the means whereas probabilities far from 0.5 indicate sexual dimorphism with values of 0 and 1 indicating larger mean values for females and males, respectively.  These results are shown graphically in figure \ref{fig:prob0-plot}. 
 
 Figure \ref{fig:mu-diff-plot} shows the posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females).  The full poosterior distributions over time for all traits are shown in the appendix.  
 
 Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray (mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant sexual dimorphism with all but the last having learger mean values in male sepcimen. Other traits such as abdominal vertebra (mav), caudal vertebra (mcv), and pelvic spine length (lps) don't appear to have any discernable sexual dimorphism in the means.  Dorsal spine 3 (ds3) exhibits sexual dimorphism that changes over time.  The mean number of dorsal spine 3 begins larger for females for the earliest observed time periods.  Over time, however, this switches and the male specimens exhibit larger mean values for the latest observed time periods.  
 
 ## Changes over time
-Table \ref{auc-table} shows the probability that the posterior distribution of the differences in the mean is greater than the posterior distribution of the differences at the first time point.  Values near 0.5 indicate very little difference between the distributions whereas values closer to 0 and 1 indicate changes in the distributions with values of 1 meaning the difference in means has shifted towards males having a larger mean and values of 0 indicating the difference in means has shifted towards larger means in females.  These results are shown graphically in figure \ref{fig:AUC-plot}.
+Table \ref{tab:auc-table} shows the probability that the posterior distribution of the differences in the mean is greater than the posterior distribution of the differences at the first time point.  Values near 0.5 indicate very little difference between the distributions whereas values closer to 0 and 1 indicate changes in the distributions with values of 1 meaning the difference in means has shifted towards males having a larger mean and values of 0 indicating the difference in means has shifted towards larger means in females.  These results are shown graphically in figure \ref{fig:AUC-plot}.
 
 The amount of sexual dimporphism over time does not change substantially for a majority of the trait observed here (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl).  Traits that trend away from the mean difference at the first observed time point include dorsal spine 3 (ds3), anal fin ray (maf), and dorsal fin ray (mdf).  
 
@@ -714,7 +715,7 @@ for (phenotype in names(model_list)){
 
 ```
 
-```{r prob0-table, echo = FALSE, tab.cap= "Posterior probability that the mean for males is larger than the mean for females. \\label{prob0-table}"}
+```{r prob0-table, echo = FALSE, tab.cap= "Posterior probability that the mean for males is larger than the mean for females"}
 #Which model was used
 mod_df <- data.frame(phenotype = names(unlist(model_list)), mod = unlist(model_list))
 mod_code <- data.frame(mod = 0:3, mod_name = c("OU-Trend","No OU-Trend",
@@ -725,7 +726,7 @@ xtable(results_prob_mu_diff_gt_0_table)
 ```
 
 
-```{r auc-table, echo = FALSE, tab.cap= "AUC comparing time x versus time 0. \\label{auc-table}"}
+```{r auc-table, echo = FALSE, tab.cap= "AUC comparing time x versus time 0."}
 results_auc_mu_diff_table <- results_auc_mu_diff %>%  mutate(auc_mu_diff = round(auc_mu_diff,3)) %>% pivot_wider(names_from = "phenotype", values_from = "auc_mu_diff")
 #library(xtable)
 xtable(results_auc_mu_diff_table)
@@ -744,7 +745,8 @@ ggplot(aes(x = time, y = mu_diff), data = results_posterior_mean_diff) + facet_w
 ```
 
 ```{r prob0-plot, echo = FALSE, fig.cap = "Posterior probabilities that mean for males is greater than mean for females"}
-ggplot(aes(x = time, y = prob_mu_diff_gt_0), data = results_prob_mu_diff_gt_0) + facet_wrap(~phenotype) + geom_path() + geom_hline(yintercept = 0, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
+ggplot(aes(x = time, y = prob_mu_diff_gt_0), data = results_prob_mu_diff_gt_0) + facet_wrap(~phenotype) + geom_path() + #geom_hline(yintercept = 0, lty = 3) + ylim(0,1) + ylab("Posterior Probability") Why yintercept in 0 and not 0.5?
+geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
 
 ```{r AUC-plot, echo = FALSE, fig.cap= "AUC comparing time x versus time 0."}
