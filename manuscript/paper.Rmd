@@ -57,7 +57,7 @@ library(bookdown)
 # Introduction {#sec:intro}
 
 Ecological release theory suggests that a population’s niche should change when important species interactions (e.g., resource competition) are relaxed or removed (reviewed in @Herrmannetal2021). Removal is posited to create ecological opportunities—i.e., aspects of the niche become newly accessible, and the focal population shifts and/or expands its resource use to the new opportunity (@ParentandCrespi2009; @Herrmannetal2021). Ecological release may then be followed by adaptive morphological evolution (@ParentandCrespi2009; @Herrmannetal2021). 
-For example, a population undergoing ecological release can experience disruptive selection on males and females stemming from intraspecific competition over newly accessible resources (@BolnickandDoebeli2003; @BolnickandLau2008; @Cooperetal2011). This is predicted to result in intersexual divergence in habitat use and associated phenotypes (@Schoener1968; @Shine1989; @BolnickandDoebeli2003; @Butleretal2007; @BolnickandLau2008; @Cooperetal2011; but see @Stuartetal2021; @Blain2022). Such competition-driven “intraspecific character displacement” between the sexes is therefore one explanation for the evolution of sexual dimorphism (@PfennigandPfennig2012; @DeLisleandRowe2015; @DeLisleandRowe2017, @De Lisleetal2018). 
+For example, a population undergoing ecological release can experience disruptive selection on males and females stemming from intraspecific competition over newly accessible resources (@BolnickandDoebeli2003; @BolnickandLau2008; @Cooperetal2011). This is predicted to result in intersexual divergence in habitat use and associated phenotypes (@Schoener1968; @Shine1989; @BolnickandDoebeli2003; @Butleretal2007; @BolnickandLau2008; @Cooperetal2011; but see @Stuartetal2021; @Blain2022). Such competition-driven “intraspecific character displacement” between the sexes is therefore one explanation for the evolution of sexual dimorphism (@PfennigandPfennig2012; @DeLisleandRowe2015; @DeLisleandRowe2017, @DeLisleetal2018). 
 
 Much of the theory and empirical data for character displacement between the sexes is based on release from resource competition specifically (e.g., @BolnickandDoebeli2003; @Cooperetal2011; @PfennigandPfennig2012; @DeLisleandRowe2015; @DeLisleetal2018). However, release from predation should also result in ecological release followed by the evolution of increased sexual dimorphism because the absence of predators should generate ecological opportunity (@ReimchenandNosil2004; @ParentandCrespi2009; @Herrmannetal2021). 
 
@@ -66,12 +66,7 @@ The observation of 93,000 years of low-armor stasis in lineage I (@Belletal1985)
 
 A major challenge in the study of fossilized sexual dimorphism is assigning sex to individual specimens in the first place (@HoneandMallon2017; @Mallon2017; @Saittaetal2020). This typically cannot be done directly, except for taxa whose sexes are distinguished by the presence or absence of sex-specific characters that preserve well. Instead, paleobiologists often resort to statistical detection of sex and sexual dimorphism, including tests for normality and bimodality in trait distributions (e.g., @Mallon2017), mixture modeling (e.g., @Mallon2017), divergence in growth curves (e.g., @Saittaetal2020), and emphasis on effect size statistics rather than significance testing (e.g., @Saittaetal2020). However, dimorphic signal can be masked by noise introduced by factors both biological and artifactual, including extended growth during ontogeny, age-based bias in survivorship, small sample sizes, time averaging, and taphonomic bias (@Godfreyetal1993; @KoscinskiandPietraszewski2004; @HoneandMallon2017; reviewed in @Mallon2017; reviewed in @Saittaetal2020). Thus, the best approach to sex classification is likely one of total evidence (@Saittaetal2020), including comparison to closely-related, extant species of known sex (e.g., @HoneandMallon2017; @Saittaetal2020).
 
-For our study, we inferred sex in G. doryssus fossils by comparing multivariate morphological trait data from lineage II samples to the same multivariate trait set collected from multiple populations in the closely-related, extant Threespine Stickleback species complex (Gasterosteus aculeatus). Crucially, we determined G. aculeatus sex directly via dissection and/or PCR genotyping. This enabled us to use Multiple Imputation by Chained Equations (MICE; @MICE) to build a predictive imputation model based on the multivariate morphology of G. aculeatus individuals of known sex. We applied this model to the fossil data to impute individual sex based on morphology, treating fossil sex as a missing variable. With sex assigned to fossil specimens (and accounting for uncertainty in those assignments), we tracked the multivariate evolution of sexual dimorphism over ~16,000 years of lineage II. We hypothesized that sexual dimorphism should increase following ecological release from predators.
-
-# Methods and Materials 
-<!-- Studying sexual dimorphism of phenotypes in modern species is a straightforward endeavor: measure a phenotype of interest and statistically test for differences between the sexes.  However, examining sexual dimorphism in fossils is complicated substantially by the issue that sex may not be able to be directly observed from fossil specimens.  For this study, we have two sources of data: 1) Modern stickleback specimens with observed sex and 2) fossil specimens with sex unobserved.   -->
-
-A major challenge in this work is inferring the sex of fossil stickleback specimens. Indeed, for most species, sex cannot be detected directly, except for lineages whose sexes are distinguished by the presence or absence of sex-specific characters (@Hone2017; @SaittaEtAl2020). Instead, paleobiologists resort to statistical detection of sex and sexual dimorphism, including tests for bimodality in trait distributions (e.g., @Hone2017) and divergence in growth curves (e.g., @SaittaEtAl2020). We used a third approach to infer fossil sex and study the evolution of sexual dimorphism by taking advantage of the fact that G. doryssus is part of the extant threespine stickleback species complex, Gasterosteus aculeatus. We measured the same trait set from a phenotypically diverse set of extant G. aculeatus populations, for whom individual sex was known. We then combined fossil and extant data sets, treated fossil sex as missing data, and used the MICE (@MICE) multiple imputation (@little2002statistical) algorithm, and implemented in R (@R2022language), to impute individual sex of the fossil data set 100 times. We then fit a modified Ornstein–Uhlenbeck (OU) (@OUProcess) model using a Bayesian framework to the data to test for the evolution of sexual dimorphism in each trait. 
+For our study, we inferred sex in G. doryssus fossils by comparing multivariate morphological trait data from lineage II samples to the same multivariate trait set collected from multiple populations in the closely-related, extant Threespine Stickleback species complex (Gasterosteus aculeatus). Crucially, we determined G. aculeatus sex directly via dissection and/or PCR genotyping. This enabled us to use Multiple Imputation by Chained Equations (MICE; @MICE) to build a predictive multiple imputation algorithm (@little2002statistical) based on the multivariate morphology of G. aculeatus individuals of known sex. We applied this algorithm to the fossil data to impute individual sex based on morphology, treating fossil sex as a missing variable. With sex assigned to fossil specimens (and accounting for uncertainty in those assignments), we fit a modified Ornstein-Uhlenbeck (OU) (@OUProcess) model using a Bayesian framework to test for evolution of sexual dimorphism in each trait over ~16,000 years of lineage II. We hypothesized that sexual dimorphism should increase following ecological release from predators.
 
 # Data {#sec:data}
 ```{r}
@@ -105,7 +100,7 @@ fortab <- data.frame(time = 1:18, count = as.numeric((table(times_vector))))
 
 
 ## Fossil Specimen Data
-We used Gasterosteus doryssus data that were previously reported by @Stuartet al2020, @Voje etal2022, and @Siddiquietal2024. Briefly, the data were collected from fossil Series K from Quarry D (@Cerasonietal2024), dug from an open pit diatomite mine at 9.526° N, 119.094° W, near Fernley, Nevada, USA. Series K consisted of 18 samples taken at ~1000-year intervals, and mean sample times span ~16,363 years. Fish from series K were measured for 16 ecomorphological traits related to armor, swimming, and feeding (Table 1). Series K started at a previously documented horizon when a low armored lineage of stickleback with zero to one dorsal spines, zero pelvic spines, and highly reduced pelvises (i.e., lineage I described above) was completely replaced by a high armored lineage of stickleback with three dorsal spines, two pelvic spines, and complete pelvises (i.e., lineage II described above) (@Belletal2006; @Bell2009; @Stuartetal2020). Lineage II subsequently evolved reduction in armor, body size, and traits related to swimming and feeding (@Belletal2006; @Stuartetal2020; @Siddiquietal2024). The tempo and mode of armor reduction during this sequence suggests adaptive evolution by natural selection (@Huntetal2008), and we focus on the multivariate evolution of sexual dimorphism by this second lineage.
+We used Gasterosteus doryssus data that were previously reported by @Stuartetal2020, @Vojeetal2022, and @Siddiquietal2024. Briefly, the data were collected from fossil Series K from Quarry D (@Cerasonietal2024), dug from an open pit diatomite mine at 9.526° N, 119.094° W, near Fernley, Nevada, USA. Series K consisted of 18 samples taken at ~1000-year intervals, and mean sample times span ~16,363 years. Fish from series K were measured for 16 ecomorphological traits related to armor, swimming, and feeding (Table 1). Series K started at a previously documented horizon when a low armored lineage of stickleback with zero to one dorsal spines, zero pelvic spines, and highly reduced pelvises (i.e., lineage I described above) was completely replaced by a high armored lineage of stickleback with three dorsal spines, two pelvic spines, and complete pelvises (i.e., lineage II described above) (@Belletal2006; @Bell2009; @Stuartetal2020). Lineage II subsequently evolved reduction in armor, body size, and traits related to swimming and feeding (@Belletal2006; @Stuartetal2020; @Siddiquietal2024). The tempo and mode of armor reduction during this sequence suggests adaptive evolution by natural selection (@Huntetal2008), and we focus on the multivariate evolution of sexual dimorphism by this second lineage.
 
 The lineage II fossil data consist of `r sum(is.na(stick$gender))` specimens of unknown sex sampled across 18 time periods spaced  ~1000 years apart. Figure 1 shows the sample size for each of the 18 samples.  There are at least 22 specimens in each sample with a high of 67 specimens in sample 7.  
 
@@ -188,9 +183,9 @@ We used multiple imputation (@little2002statistical) to impute the sex of the fo
 
 # Models  {#sec:models}
 ## Imputation Model 
-Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate gender of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the gender of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant gender and missing fossil gender, respectively.
+Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate sex of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the sex of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant sex and missing fossil sex, respectively.
 
-We impute the missing gender for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching.  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if the data users intend on performing Bayesians analysis after imputation, which in this case, we do.  Therefore, the imputation algorithm is run to obtain a total of $M = 100$ completed datasets. In addition to this, @ZhouReiter2010 suggests rather than using Rubin's combining rules to combine across imputed data sets, instead pool all of the draws from the posterior distributions across all of the imputed data sets to estimate the posterior distributions of parameters of interest.  We proceed with our Bayesian analysis in this manner.  
+We impute the missing sex for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching.  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if the data users intend on performing Bayesians analysis after imputation, which in this case, we do.  Therefore, the imputation algorithm is run to obtain a total of $M = 100$ completed datasets. In addition to this, @ZhouReiter2010 suggests rather than using Rubin's combining rules to combine across imputed data sets, instead pool all of the draws from the posterior distributions across all of the imputed data sets to estimate the posterior distributions of parameters of interest.  We proceed with our Bayesian analysis in this manner.  
 
 \textcolor{red}{Akhil's stuff about validating the imputation model goes here.}
 
@@ -201,7 +196,7 @@ We impute the missing gender for the fossil data by sampling from the posterior 
 
 \textcolor{red}{I think we need to move a lot of these details to the appendix.  }
 
-For a given imputed dataset, let $W_{ij}$ be the imputed gender and $\boldsymbol{Y}_{ij}$ be the $K \times 1$ vector of phenotypes for stickleback fossil $j$ at time $t_i$ where $i = 1, \ldots, T$ and $j = 1,\ldots,n_{t}$. Note, we are inputting only the fossil data into our model; connecting to the previous section, $W_{ij}$ and $\boldsymbol{Y}_{ij}$ can be interpretted as $W_{fossil,ij}$ and $\boldsymbol{Y}_{fossil,ij}$. In addition, we denote $Y_{K,ij}$, the last variable in $\boldsymbol{Y}_{ij}$, to be the standard length of the fish,
+For a given imputed dataset, let $W_{ij}$ be the imputed sex and $\boldsymbol{Y}_{ij}$ be the $K \times 1$ vector of phenotypes for stickleback fossil $j$ at time $t_i$ where $i = 1, \ldots, T$ and $j = 1,\ldots,n_{t}$. Note, we are inputting only the fossil data into our model; connecting to the previous section, $W_{ij}$ and $\boldsymbol{Y}_{ij}$ can be interpretted as $W_{fossil,ij}$ and $\boldsymbol{Y}_{fossil,ij}$. In addition, we denote $Y_{K,ij}$, the last variable in $\boldsymbol{Y}_{ij}$, to be the standard length of the fish,
 \begin{align}
 {Y}_{K,ij} & \iid \left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft_i},&\sigma_{K}^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{K,mt_i},&\sigma_{K}^2), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:stl}
@@ -237,7 +232,7 @@ In the above model descriptions, $\mu_{k,ft_i}$ and $\mu_{k,mt_i}$ model the tim
 \mu_{k,gt_i} = \beta_{0,kg} + \beta_{1,kg}t_i + u_{k,gt_i},
 \label{eq:mu}
 \end{align}
-for $g \in \{f,m\}$ where $\beta_{0,kg}$ and $\beta_{1,kg}$ are regression parameters of phenotype $Y_k$ for each gender, accounting for the possibility of a time-dependent trend in the mean structure, and $u_{k,gt_i}$ is the corresponding residual. To account for potential correlations between the residuals for a given trait $k$ and gender $g$, we fit an Ornstein-Uhlenback (OU) process (@OUProcess). More specifically, define $du_{k,gt} = u_{k,g(t + dt)} - u_{k,gt}$, the change in $u_k,gt$ for a given trait $k$ and gender $g$ over a miniscule time period $dt$. The OU process is defined as 
+for $g \in \{f,m\}$ where $\beta_{0,kg}$ and $\beta_{1,kg}$ are regression parameters of phenotype $Y_k$ for each sex, accounting for the possibility of a time-dependent trend in the mean structure, and $u_{k,gt_i}$ is the corresponding residual. To account for potential correlations between the residuals for a given trait $k$ and sex $g$, we fit an Ornstein-Uhlenback (OU) process (@OUProcess). More specifically, define $du_{k,gt} = u_{k,g(t + dt)} - u_{k,gt}$, the change in $u_k,gt$ for a given trait $k$ and sex $g$ over a miniscule time period $dt$. The OU process is defined as 
 \begin{align}
 du_{k,gt} = -\kappa_k u_{k,gt} dt + \tau_k dW_t,
 \label{eq:OU_cont}
@@ -252,9 +247,9 @@ for $i = 2,\cdots,T$. In a traditional OU process, the initial value $u_{k,gt_1}
 In our empirical study, we analyze the following four nested models for the mean process outlined in (\ref{eq:mu}):
 \begin{itemize}
 \item OU with Trend: The mean process for each phenotype $k=1,\cdots,K$ and $g \in \{f,m\}$ as previously defined.
-\item OU with No Trend: No linear trend on the mean processes and the overall mean of the phenotype is constant for each gender. This is achieved by setting $\beta_{1,kg} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$ and $g \in \{f,m\}$
+\item OU with No Trend: No linear trend on the mean processes and the overall mean of the phenotype is constant for each sex. This is achieved by setting $\beta_{1,kg} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$ and $g \in \{f,m\}$
 \item No OU with Trend: No random fluctuations on the mean processes, i.e. the OU process assumption is not needed. This is achieved by setting $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$.
-\item No OU with No Trend: The mean for a specific trait and specific gender at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$.
+\item No OU with No Trend: The mean for a specific trait and specific sex at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$.
 \end{itemize}
 
 Because we are fitting a dataset with a stochastic structure on the means of the phenotypes, and we are interested in the distribution of the overall structure of these means, we analyze the data via a Bayesian analysis.  Bayesian data analysis is also more naturally used when we have to impute data (\textbf{CITATION}). To aid in the sampling procedure for the discrete phenotypes, we declare
@@ -284,7 +279,17 @@ All models were built using @R2022language and (\textbf STAN)
 
 
 # Results {#sec:results}
-As previously described, four models for the mean process were considered for each trait.  Within each trait, the model with the lowest DIC was chosen for that train.  All subsequent results presented here use the model with the lowest DIC individually by trait.  Table \ref{whichmodel} shows the model that was selected for each trait.  About half of the traits had models with a trend, and most models did not include an OU component.  The traits that did include an OU component were caudal vertebra (mcv), pelvic spine lentgh (lpt), abdominal vertebra (mav), and standard length (stl) with caudal vertebra (mcv) being the only model with both a trend and an OU component.  This implies that not only does caudal vertebra size have a linear trend across gender, but the average size at one time period is highly correlated with the average size at the next time period.<!-- NOTE FOR MATT: You should mention something about MCV being the only one with a trend and an OU.  Explain why this might be and what it means.  -->
+As previously described, four models for the mean process were considered for each trait.  Within each trait, the model with the lowest DIC was chosen for that train.  All subsequent results presented here use the model with the lowest DIC individually by trait.  Table \ref{whichmodel} shows the model that was selected for each trait.  About half of the traits had models with a trend, and most models did not include an OU component.  The traits that did include an OU component were caudal vertebra (mcv), pelvic spine lentgh (lpt), abdominal vertebra (mav), and standard length (stl) with caudal vertebra (mcv) being the only model with both a trend and an OU component.  This implies that not only does caudal vertebra size have a linear trend across sex, but the average size at one time period is highly correlated with the average size at the next time period.<!-- NOTE FOR MATT: You should mention something about MCV being the only one with a trend and an OU.  Explain why this might be and what it means.  -->
+
+\textcolor{red} {
+Yoel's interpretation of the above paragraph. Taking the model with the lowest DIC score as the best model for each trait, we found that cle, ds1, lps, and pmx did not fit either the trend model or the OU model for male-female trait mean differences. In contrast, we found a trend through time in male-female trait mean differences (i.e., sexual dimorphism) for mcv, ds2, ds3, ect, maf, and mdf. This suggests that these traits changed their dimorphism from one time period to the next, with an overall tendency toward ???GREATER/LESS??? dimorphism.
+}
+\textcolor{red} {
+We found evidence for an OU process but no trend for lpt, mav, and stl, suggesting that these traits varied through time, about a fixed value for dimorphism. Finally, we found evidence that change in mcv fitted both a trend an an OU process, meaning ??? WHAT BIOLOGICALLY ???.
+}
+
+\textcolor{red} {HOW DO WE RECONCILE THE PRESENCE OF TRENDS IN THESE MODELS WITH AN ABSENCE OF VISIBLE TRENDS IN FIGURES 2 THROUGH 4? I WONDER IF THIS RESULT PARAGRAPH BELONGS BEST AT THE END OF THE RESULTS, RATHER THAN THE BEGINNING. CONSIDER THE STATISTICAL EVIDENCE FOR TRENDS AND OU AFTER WE'VE WALKED THE READERS THROUGH VISUAL EVIDENCE FOR CHANGE.
+}
 
 ## Best fitting models 
 \begin{table}[ht]
@@ -329,9 +334,15 @@ Trend  &  mcv  & ds2, ds3, ect, maf, mdf \\
 ## Sexual Dimorphism 
 Table \ref{tab:prob0-table} shows the posterior probability of the differences in the means between male and female specimens at each time point.  Probabilities near 0.5 indicate very little difference in the means whereas probabilities far from 0.5 indicate sexual dimorphism with values of 0 and 1 indicating larger mean values for females and males, respectively.  These results are shown graphically in figure \ref{fig:prob0-plot}. 
 
-Figure \ref{fig:mu-diff-plot} shows the posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females).  The full poosterior distributions over time for all traits are shown in the appendix.  
+Figure \ref{fig:mu-diff-plot} shows the posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females).  The full posterior distributions over time for all traits are shown in the appendix.  
 
-Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray (mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant sexual dimorphism with all but the last having learger mean values in male sepcimen. Other traits such as abdominal vertebra (mav), caudal vertebra (mcv), and pelvic spine length (lps) don't appear to have any discernable sexual dimorphism in the means.  Dorsal spine 3 (ds3) exhibits sexual dimorphism that changes over time.  The mean number of dorsal spine 3 begins larger for females for the earliest observed time periods.  Over time, however, this switches and the male specimens exhibit larger mean values for the latest observed time periods.  
+Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray (mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant sexual dimorphism with all but the last having learger mean values in male sepcimen. Other traits such as abdominal vertebra (mav), caudal vertebra (mcv), and pelvic spine length (lps) don't appear to have any discernable sexual dimorphism in the means.  Dorsal spine 3 (ds3) exhibits sexual dimorphism that changes over time.  The mean number of dorsal spine 3 begins larger for females for the earliest observed time periods.  Over time, however, this switches and the male specimens exhibit larger mean values for the latest observed time periods. 
+
+\textcolor{red} {
+Yoel's interpretation of the three paragraphs above. Male and female G. doryssus differ for some traits, indicating detectable sexual dimorphism. This is evidenced by traits with substantial differences in male and female posterior means (i.e., deviation from 0 in Figure \ref{fig:mu-diff-plot}), supported by posterior probabilities that deviate from 0.5 (Figure \ref{fig:prob0-plot}). For example, males are larger than females by 3-8mm on average through time (stl panel in Figure \ref{fig:mu-diff-plot}), with a posterior probability for that mean difference above 70 percent through time (Figure \ref{fig:prob0-plot}). In contrast, the number of abdominal vertebrae (mav) fluctuates about 0 (Figure \ref{fig:mu-diff-plot}), with posterior probabilities fluctuating about 50 percent through time (Figure \ref{fig:prob0-plot}). Table \ref{tab:prob0-table} in the Supplementary Material summarizes the posterior probabilities that male means differ from female means by trait and sample.
+}
+
+\textcolor{red}{can we move mu-diff-plot and prob0-plot here?}
 
 ## Changes over time
 Table \ref{tab:auc-table} shows the probability that the posterior distribution of the differences in the mean is greater than the posterior distribution of the differences at the first time point.  Values near 0.5 indicate very little difference between the distributions whereas values closer to 0 and 1 indicate changes in the distributions with values of 1 meaning the difference in means has shifted towards males having a larger mean and values of 0 indicating the difference in means has shifted towards larger means in females.  These results are shown graphically in figure \ref{fig:AUC-plot}.
@@ -371,7 +382,13 @@ A similar change in the difference of the means over time was observed for the n
 <!--   (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.1716284 -->
 <!-- MDF: Dorsal fin ray: Number of bones in the dorsal finposterior to the third dorsal spine (i.e.,soft dorsal fin rays. -->
  
+\textcolor{red} {
+Yoel's interpretation of the five paragraphs above. 
+Figure \ref{fig:AUC-plot} shows the posterior probability that the mean male-female difference at time t is different from the male-female difference at time zero. In other words, Figure \ref{fig:AUC-plot} plots whether the sexual dimorphism changes in subsequent samples, always relative to the first sample. The amount of sexual dimporphism over time does not change substantially for a majority of the traits (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl; Figure \ref{fig:AUC-plot}). Traits that change in dimorphism are anal fin ray (maf), and dorsal fin ray (mdf), and dorsal spine 3 (ds3).}
 
+\textcolor{red} {
+For example, females at time zero averaged 8.29 rays in the anal fin, dropping to 8.17 rays in the final sample. Males averaged 8.52 anal fin rays in the first sample and 8.55 in the last sample. Thus, the difference between males and females started at 0.23 and ended at 0.38, an increase in sexual dimorphism. In contrast, the sign on dimorphism flipped for ds3. The posterior mean length of the third dorsal spine is 2.29mm for males and 2.45mm for females. By the end of the sequence, mean ds3 for males was 1.27 for males and 1.19 for females. Both sexes evolved reduction of ds3, but females lowered their mean more than the males. This resulted in a flip in dimorphism, from larger females to larger males, though both sexes evolved trait reduction. BUT DIMORPHISM SHRUNK THEN, AS THE DIFFERENCE BETWEEN MALES AND FEMALES IS NOW SMALLER??
+}
 
 
 
@@ -735,21 +752,21 @@ xtable(results_auc_mu_diff_table)
 
 
 
+posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females)
 
 
 
 
-
-```{r mu-diff-plot, echo = FALSE, fig.cap = "Posterior mean difference between males and females"}
-ggplot(aes(x = time, y = mu_diff), data = results_posterior_mean_diff) + facet_wrap(~phenotype, scale = "free_y") + geom_path() + geom_hline(yintercept = 0, lty = 3) + ylab("Posterior Mean")
+```{r mu-diff-plot, echo = FALSE, fig.cap = "Posterior mean difference between males and females, in UNITS?. Values above 0 indicate larger male means"}
+ggplot(aes(x = time, y = mu_diff), data = results_posterior_mean_diff) + facet_wrap(~phenotype, scale = "free_y") + geom_path() + geom_hline(yintercept = 0, lty = 3) + ylab("Posterior Mean Difference")
 ```
 
-```{r prob0-plot, echo = FALSE, fig.cap = "Posterior probabilities that mean for males is greater than mean for females"}
+```{r prob0-plot, echo = FALSE, fig.cap = "Posterior probabilities that the male posterior mean is larger than the female posterior mean"}
 ggplot(aes(x = time, y = prob_mu_diff_gt_0), data = results_prob_mu_diff_gt_0) + facet_wrap(~phenotype) + geom_path() + #geom_hline(yintercept = 0, lty = 3) + ylim(0,1) + ylab("Posterior Probability") Why yintercept in 0 and not 0.5?
 geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
 
-```{r AUC-plot, echo = FALSE, fig.cap= "AUC comparing time x versus time 0."}
+```{r AUC-plot, echo = FALSE, fig.cap= "The Posterior Probability that male-female differences in subsequent samples are different from male-female differenceds in the initial sample. Values near 0.5 indicate little difference between the distributions. Values closer to 0 indicate that the difference in means has shifted towards larger means in females. Values closer to 1 indicate that the difference in means has shifted toward larger means in males."}
 ggplot(aes(x = time, y = auc_mu_diff), data = results_auc_mu_diff) + facet_wrap(~phenotype) + geom_path() +  geom_path() + geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
 
@@ -757,7 +774,7 @@ ggplot(aes(x = time, y = auc_mu_diff), data = results_auc_mu_diff) + facet_wrap(
 
 
 
-# Discsusson, Future work and conclusions {#sec:conclusions}
+# Discussion, Future work and conclusions {#sec:conclusions}
 We predicted that release from predators would result in niche expansion and increased sexual dimorphism, based on several studies of modern stickleback. For example, in lakes where sculpin competitors are absent and stickleback (Roesti et al. 2023)
 See Spoljaric and Reimchen 2008, page 512 right column for references and discussion of differences between benthic males and limnetic females. Male stickleback are benthic and littoral (Wootton 1976)…. Reimchen papers in general good for this section.
 
@@ -765,7 +782,7 @@ See Spoljaric and Reimchen 2008, page 512 right column for references and discus
 
 # Acknowledgements {-}
 
-We thank O. Abughoush, S. Blaine, A. Chaudhary, M. Islam, F. Joaquin, C. Lawson-Weinert, R. Sullivan, J. Tien, M.P. Travis, and W. Shim for help with data collection. We thank D. Schluter and S. Blain for loaning specimens and sharing data. We thank K. Swagel and C. McMahan of the Field Museum for assistance with specimen x-rays. This research was supported by NSF grants BSR-8111013, EAR-9870337, and DEB-0322818, the Center for Field Research (Earthwatch), and the National Geographic Society (2869-84) to MAB. It was also supported by NSF grants DEB-1456462 and EAR-2145830 to YES.  And NSF DMS-2015374 (GJM)
+We thank O. Abughoush, S. Blain, A. Chaudhary, M. Islam, F. Joaquin, C. Lawson-Weinert, R. Sullivan, J. Tien, M.P. Travis, and W. Shim for help with data collection. We thank D. Schluter and S. Blain for loaning specimens and sharing data. We thank K. Swagel and C. McMahan of the Field Museum for assistance with specimen x-rays. This research was supported by NSF grants BSR-8111013, EAR-9870337, and DEB-0322818, the Center for Field Research (Earthwatch), and the National Geographic Society (2869-84) to MAB. It was also supported by NSF grants DEB-1456462 and EAR-2145830 to YES.  And NSF DMS-2015374 (GJM)
 
 # Supplementary Material {-}
 
