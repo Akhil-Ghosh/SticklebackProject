@@ -103,8 +103,9 @@ fortab <- data.frame(time = 1:18, count = as.numeric((table(times_vector))))
 ## Fossil Specimen Data
 We used Gasterosteus doryssus data that were previously reported by @Stuartetal2020, @Vojeetal2022, and @Siddiquietal2024. Briefly, the data were collected from fossil Series K from Quarry D (@Cerasonietal2024), dug from an open pit diatomite mine at 9.526° N, 119.094° W, near Hazen, Nevada, USA. Series K consisted of 18 samples taken at ~1000-year intervals, and mean sample times span ~16,363 years. Fish from series K were measured for 16 ecomorphological traits related to armor, swimming, and feeding (Table 1). Series K started at the previously documented horizon when lineage I was replaced by lineage II. The tempo and mode of lineage II armor reduction during this sequence suggests adaptive evolution by natural selection (@Huntetal2008), and we focus on the multivariate evolution of sexual dimorphism by this second lineage.
 
-The lineage II fossil data consist of `r sum(is.na(stick$gender))` specimens of unknown sex sampled across 18 time periods spaced  ~1000 years apart. Figure 1 shows the sample size for each of the 18 samples.  There are at least 22 specimens in each sample with a high of 67 specimens in sample 7.  
+The lineage II fossil data consist of `r sum(is.na(stick$gender))` specimens of unknown sex sampled across the 18 K series samples. Figure 1 shows the sample size for each of the 18 samples.  There are at least 22 specimens in each sample with a high of 67 specimens in sample 7.  
 
+THIS FIGURE DOESN'T SHOW MUCH. LET'S CUT FOR SPACE. 
 ```{r fig.cap = "Fossil sample size for each time period"}
 ggplot(aes(x = time, y = count), data = fortab) + geom_col() + xlab("Sample")  + scale_x_continuous(breaks = 1:18, labels = 1:18)
 ```
@@ -180,65 +181,55 @@ The extant data used here consists of a total of `r sum(!is.na(stick$gender))` s
 To check for outliers, we calculated within-group means and standard deviations for each trait separately for K series fossil specimens (pooled across samples) and for extant specimens (within generalist, benthic, or limnetic categories). We noted trait values greater than 3.0 standard deviations from the mean as potential outliers. We deemed 3.0 s.d. to be a reasonable threshold for detecting errors without excluding biologically relevant values. We checked whether these potential outliers were a result of data entry and collection error and corrected them if they were. We turned the remaining outlier trait values to NAs. We size-corrected continuous traits only, as they varied with size, unlike count traits that are fixed during early development. We regressed each trait on standard length using a mixed-model regression, pooling all specimens, following @Stuartetal2017. We appended the size corrected data to the uncorrected trait data frame and used all of our data (raw and size-corrected) to build the imputation model described next.
 
 ## Missing data imputation, including fossil sex
-Briefly, We used multiple imputation (@little2002statistical) to impute the sex of the fossils.  Imputations were performed using the MICE (@MICE) algorithm and implemented in R (@R2022language) with M = 100 imputations. After imputing the sex, we fit a modified Orenstein-Uhlenbeck (OU; @OUProcess) model to each imputed data set using a Bayesian framework to {THIS NEEDS MORE}. We then quantified sexual dimorphism as the {THIS NEEDS MORE; MAYBE WE CAN WRITE TOGETHER}. We describe the details of the imputation model and OU modeling next. 
-
-# Models  {#sec:models}
-## Imputation Model 
-Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate sex of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the sex of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant sex and missing fossil sex, respectively.
-
-\textcolor{red}{AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
-
-We impute missing sex for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching.  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if users intend on performing Bayesian analysis after imputation.  Therefore, we imputed $M = 100$ complete datasets. 
+Briefly, We used multiple imputation (@little2002statistical) to impute the sex of the fossils. Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate sex of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the sex of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant sex and missing fossil sex, respectively. We imputeD missing sex for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching, implemented in R (CITATION).  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if users intend on performing Bayesian analysis after imputation.  Therefore, we imputed $M = 100$ complete datasets. 
 
 \textcolor{red}{presumably this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
+\textcolor{red}{AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
+\textcolor{red}{THE POOLING DESCRIBED IN THE NEXT SENTENCE. WAS IT DONE, AND IF SO, HOW WAS IT USED IN DOWNSTREAM ANALYSES. MATT SAYS THAT HE RAN IS MODELS ON EACH IMPUTED DATA SET. -YS}
+We then pooled all of the draws from the posterior distribution across all the imputed data sets to estimate the posterior distributions of our parameters of interest (i.e., the trait values), rather than using Rubin's combining rules, following @ZhouReiter2010. We used these posterior distributions in our Bayesian analysis. 
 
-We then pooled all of the draws from the posterior distribution across all the imputed data sets to estimate the posterior distributions of our parameters of interest (i.e., the trait values), rather than using Rubin's combining rules, following @ZhouReiter2010. We used these posterior distributions in our Bayesian analysis. \textcolor{red}{This was done, was it used? If Matt ran his models on each imputed data set?.-YS}
-
-<!-- Bayesian Analysis after multiple imputation @ZhouReiter2010: They recommend using a large number of imputations.  5 or 10 is too small.  We are using M = 100. -->
-
-## Bayesian OU modeling
-latent variable is the u in equation 8. likelihood doesn't work as well because it doesn't allow for incorporation of prior information and uncertainty when estimating a latent variable. Knowing u is helpful because it's the error in equation 6. Can estimate the means in eqn 6 that the crux of the research. 
-better able to approximate the latent variables within the model.
-For Bayesian modeling, we dropped the extant data and focused on modeling the evolution of sexual dimorphism through time in the fossils. 
+## Modeling trait means through time for males and females
+The goal of our analysis was to estimate fossil trait means through time, by sex, while incorporating uncertainty in the imputed data, especially uncertainty sex classification. We took a Bayesian approach because imputation is the process of sampling from a posterior predictive distribution of missing data, given observed data. \textcolor{red}{THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH. -YS}
 
 \textcolor{red}{DOES THE NEXT SENTENCE CONTRADICT THE PREVIOUS ONE? BELOW, WE SAY THAT WE USED EACH IMPUTED DATA SET. ABOVE, WE SAY THAT WE POOLED ACROSS IMPUTED DATA SETS.-YS}
-For a given imputed dataset, let $W_{ij}$ be the imputed sex and $\boldsymbol{Y}_{ij}$ be the $K \times 1$ vector of phenotypes for stickleback fossil $j$ at time $t_i$ where $i = 1, \ldots, T$ and $j = 1,\ldots,n_{t}$. Note, we are inputting only the fossil data into our model; connecting to the previous section, $W_{ij}$ and $\boldsymbol{Y}_{ij}$ can be interpreted as $W_{fossil,ij}$ and $\boldsymbol{Y}_{fossil,ij}$. In addition, we denote $Y_{K,ij}$, the last variable in $\boldsymbol{Y}_{ij}$, to be the standard length of the fish,
+To estimate fossil sample means through time, we first dropped the extant individuals from our imputed data sets. Then, for a given imputed dataset, we let $W_{ij}$ be the imputed sex and $\boldsymbol{Y}_{ij}$ be the $K \times 1$ vector of phenotypes for stickleback fossil $j$ at time $t_i$ where $i = 1, \ldots, T$ and $j = 1,\ldots,n_{t}$.  In addition, we denote $Y_{K,ij}$, the last variable in $\boldsymbol{Y}_{ij}$, to be the standard length of each fish individual, a measure of body size.
 \begin{align}
 {Y}_{K,ij} & \iid \left\{\begin{array}{lll} \mathcal{N}(\mu_{K,ft_i},&\sigma_{K}^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{K,mt_i},&\sigma_{K}^2), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:stl}
 \end{align}
 
-It is reasonable to assume that the other continuous traits of stickleback fish will have some correlation with its standard length \textbf{(CITATION)}. We account for this by adding an additional parameter, $\gamma_k$, into our model. More specifically, if $Y_{k,ij}$ is a continuous trait, then
+It is reasonable to assume that the other continuous traits will have some correlation with standard length \textbf{(CITATION)}. We account for this by adding an additional parameter, $\gamma_k$, If $Y_{k,ij}$ is a continuous trait, then
 \begin{align}
 {Y}_{k,ij} & \iid \left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{k,mt_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:cont}
 \end{align}
 
-If $Y_{k,ij}$ is a discrete trait, the conventional method of modelling this data is by fitting a Poisson distribution. However, the Poisson distribution assumes that the mean and variance of $Y_{k,ij}$ are equal ($E(Y_{k,ij}) = \text{Var}(Y_{k,ij})$), while the empirical fossil data may have variances that are not equal to their respective means. To combat this issue, we propose to fit the discrete traits to a generalized Poisson model as defined in @GeneralizedPoisson. Specifically, if $X \sim GP(\lambda,\alpha)$, then 
+If $Y_{k,ij}$ is a discrete trait, the conventional modelling method is to fit a Poisson distribution. However, because the empirical fossil data violate the assumption that the Poisson variance is equal to its mean, we fit discrete traits to a generalized Poisson model as defined in @GeneralizedPoisson. Specifically, if $X \sim GP(\lambda,\alpha)$, then 
 \begin{align}
 P(X = x) = \left\{\begin{array}{cc} \frac{(1 - \alpha)\lambda[(1 - \alpha)\lambda + \alpha x]^{x - 1} \exp\left\{-((1 - \alpha)\lambda  + \alpha x)\right\}}{x!} & (1 - \alpha)\lambda  + \alpha x \geq 0  \\ 0 & (1 - \alpha)\lambda  + \alpha x < 0 \end{array}\right.,
 \label{eq:GP_pmf}
 \end{align}
 where GP denotes a generalized Poisson distribution with $E(X) = \lambda$ and $Var(X) = \frac{\lambda}{(1 - \alpha)^2}$.
 
-We will use the generalized Poisson to model all of the discrete traits in our dataset. In addition, we assume that the discrete traits abdominal vertebrae (mav) and caudal vertebrae (mcv) also have correlation with the standard length of the fish (\textbf{CITATION}). If $Y_{k,ij}$ is one of the above traits, then
+In addition, we allowed that two discrete traits, abdominal vertebrae number (mav) and caudal vertebrae number (mcv) could also with  standard length (\textbf{CITATION}). This is because these are vertebral counts that run in parallel with the standard length measurement, along the anterior-posterior access of the fish; these vertebrae thus contribute to the length of the fish directly, and may evolve in a correlated fashion. If $Y_{k,ij}$ is one of the above traits, then
 \begin{align}
 {Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_corr}
 \end{align}
 
-For the other discrete traits, we also assume the above model except we set $\gamma_k = 0$ because of the assumption of no correlation between the standard length and these traits. More specifically, we assume
+For the other discrete traits, we set $\gamma_k = 0$ because we expect that trait counts are set during early ontogeny, and should not change with size in adult fish. Thus,
 \begin{align}
 {Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_ind}
 \end{align}
+We point out that, for the discrete traits, the means are represented by $\exp\{\mu_{k,ft_i}\}$ and $\exp\{\mu_{k,mt_i}\}$ for ease of modeling.
 
-In the above model descriptions, $\mu_{k,ft_i}$ and $\mu_{k,mt_i}$ model the time-$t_i$ specific mean of phenotype $k$ for female and male stickleback fish, respectively. We point out that, for the discrete traits, the means are represented by $\exp\{\mu_{k,ft_i}\}$ and $\exp\{\mu_{k,mt_i}\}$ for ease of use in our modeling technique. We further set 
+In the above model descriptions, $\mu_{k,ft_i}$ and $\mu_{k,mt_i}$ model the time-$t_i$, sample-specific trait mean $k$ for females and males, respectively.  To account for the possibility that there is a time -dependent trend in $\mu_{k,ft_i}$ and $\mu_{k,mt_i}$, we further set
 \begin{align}
 \mu_{k,gt_i} = \beta_{0,kg} + \beta_{1,kg}t_i + u_{k,gt_i},
 \label{eq:mu}
 \end{align}
-for $g \in \{f,m\}$ where $\beta_{0,kg}$ and $\beta_{1,kg}$ are regression parameters of phenotype $Y_k$ for each sex, accounting for the possibility of a time-dependent trend in the mean structure, and $u_{k,gt_i}$ is the corresponding residual. To account for potential correlations between the residuals for a given trait $k$ and sex $g$, we fit an Ornstein-Uhlenback (OU) process (@OUProcess). More specifically, define $du_{k,gt} = u_{k,g(t + dt)} - u_{k,gt}$, the change in $u_k,gt$ for a given trait $k$ and sex $g$ over a miniscule time period $dt$. The OU process is defined as 
+for $g \in \{f,m\}$, where $\beta_{0,kg}$ and $\beta_{1,kg}$ are regression parameters of phenotype $Y_k$ for each sex, and $u_{k,gt_i}$ is the corresponding residual. To account for potential correlations between the residuals for a given trait $k$ and sex $g$, we fit an Ornstein-Uhlenback (OU) process (@OUProcess). More specifically, we defined $du_{k,gt} = u_{k,g(t + dt)} - u_{k,gt}$, the change in $u_k,gt$ for a given trait $k$ and sex $g$ over a miniscule time period $dt$. The OU process is defined as 
 \begin{align}
 du_{k,gt} = -\kappa_k u_{k,gt} dt + \tau_k dW_t,
 \label{eq:OU_cont}
@@ -248,7 +239,9 @@ where $\kappa_k$ is a parameter associated with the correlation between $u_{k,gt
 u_{k,gt_i} \iid \mathcal{N}\left(u_{k,gt_{i-1}}\exp\{-\kappa_k(t_{i} - t_{i-1})\} , \frac{\tau_k^2(1 - \exp\{-2\kappa_k(t_{i} - t_{i-1}))\}}{2\kappa_k}\right)
 \label{eq:OU_sol}
 \end{align}
-for $i = 2,\cdots,T$. In a traditional OU process, the initial value $u_{k,gt_1}$ is assumed to be a (potentially unknown) constant, and we discuss the procedure for estimating this value below.
+for $i = 2,\cdots,T$. In a traditional OU process, the initial value $u_{k,gt_1}$ is assumed to be a (potentially unknown) constant. This unknown constant can therefore be considered a latent variable, further justifying our Bayesian approach, which better incorporates prior information and uncertainty from missing data imputation in the estimate of the variable.
+
+We discuss the procedure for estimating this value below. \textcolor{red}{DID THIS GET DISCUSSED?-YS}
 
 <!-- In our empirical study, we analyze the following four nested models for the mean process outlined in (\ref{eq:mu}): -->
 <!-- \begin{itemize} -->
@@ -258,11 +251,9 @@ for $i = 2,\cdots,T$. In a traditional OU process, the initial value $u_{k,gt_1}
 <!-- \item No OU with No Trend: The mean for a specific trait and specific sex at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$. -->
 <!-- \end{itemize} -->
 
-Because we are fitting a dataset with a stochastic structure with latent variables to phenotype means (i.e., eqn. 7 is a stochastic structure), we analyze the data via a Bayesian analysis <THIS LAST CLAUSE DOESN'T FOLLOW FROM THE BECAUSE CLAUSE. Add the language about latent variables here>.  Bayesian data analysis is also more naturally used when we have to impute data because imputation is sampling from a posterior predictive distribution of the missing data given the observed data (\textbf{CITATION}). To aid in the sampling procedure for the discrete phenotypes, we declare
+Priors: To aid in the sampling procedure for the discrete phenotypes, we first had to transform the parameters of the generalized Poisson distribution onto the real number line in order to ensure our algorithm can properly sample from the posterior distribution of interest using STAN software. This was done by declaring $\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)$ where $\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.$.
 
-Priors: To aid in the sampling procedure for the discrete phenotypes, we first have to transform the parameters of the generalized Poisson distribution onto the real number line in order to ensure our algorithm can properly sample from the posterior distribution of interest using STAN software. This was done by declaring $\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)$ where $\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.$.
-
-For $k = 1,\cdots,K$, 
+We chose the following priors, designing them to be weakly informative such that the posterior distributions could be influenced by the data, if warranted. For $k = 1,\cdots,K$, 
 
 \begin{align}
 u_{k,gt_1} & \iid \mathcal{N}(0,\tau_{0,k}) \nonumber \\
@@ -276,23 +267,22 @@ u_{k,gt_1} & \iid \mathcal{N}(0,\tau_{0,k}) \nonumber \\
 \beta_{1,kg} & \iid \mathcal{N}(0,3) \nonumber \\
 \label{eq:priors}
 \end{align}
-These priors were chosen to be weakly informative such that the posterior distributions were heavily influenced by the data. 
 
-We also note that, for the discrete phenotypes in equations (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}), there is no $\sigma_k$, and is not sampled, and for the continuous phenotypes in equation (\ref{eq:cont}), there is no $\phi_k$ and is not sampled.
+
+We also note that, for the discrete phenotypes in equations (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}), there is no $\sigma_k$, and it is not sampled, and for the continuous phenotypes in equation (\ref{eq:cont}), there is no $\phi_k$ and it is not sampled.
 
 All models were built using @R2022language and (\textbf STAN)
 
 After running these models, we have posterior distributions of all the model parameters of interest. From these, we can obtain samples from the posterior distribution of mean trait values for each trait for males and females, using equation 6. We use these values for the following analyses.
 
-# Section whatever it happens to be
-Description of methods used to calculate sexual dimorphism (um-uf)
+## Quantifying sexual dimorphism, and testing for increased sexual dimorphism through time.
+We took the mean trait values for each sex at each temporal sample and quantified sexual dimorphism by \textcolor{red}{FILL IN THE METHODS HERE}
 
-# Section whatever ithappens to be plus 1
-Description of Tau analyses, to ask if SD calculated in the section above changes with time. 
+Recall that we predicted that sexual dimorphism should increase through time in Lineage II, following ecological release from predators. To test this prediction, we \textcolor{red}{FILL IN THE METHODS REGARDING TAU ANALYSES HERE}
 
 
 # Results {#sec:results}
-<WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS>
+\textcolor{red}{WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
 
 <!-- Within each trait, the model with the lowest DIC was chosen for that trait <THIS IS METHODS--WHERE IS THIS DESCRIBED IN THE METHODS>.  All subsequent results presented here use the model with the lowest DIC individually by trait <THIS IS METHODS--WHERE IS THIS DESCRIBED IN THE METHODS>.   -->
 
