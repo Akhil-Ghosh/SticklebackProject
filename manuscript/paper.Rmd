@@ -272,8 +272,6 @@ We also note that, for the discrete phenotypes in equations (\ref{eq:disc_corr})
 
 We follow the method outlined in @ZhouandReiter to obtain $R$ draws from the posterior distribution of the outlined model parameters given our observed data and imputed values. More specifically, for the $j^{th}$ imputed data set where $j = 1,\cdots,M$, we obtain $\frac{R}{M}$ draws from the posterior distribution using an MCMC algorithm with a sufficient burnin period, and then we combine these $M$ MCMC draws to say that we have a total of $R$ draws from the overall posterior distribution of interest, which can then be used to assess the presence of sexual dimorphism for a given trait.
 
-All models were built using @R2022language and (\textbf STAN)
-
 After running these models, we have posterior distributions of all the model parameters of interest. From these, we can obtain samples from the posterior distribution of mean trait values for each trait for males and females, using equation 6. We use these values for the following analyses.
 
 ## Quantifying sexual dimorphism, and testing for increased sexual dimorphism through time.
