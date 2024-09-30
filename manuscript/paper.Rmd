@@ -258,7 +258,6 @@ We chose the following priors, designing them to be weakly informative such that
 \begin{align}
 u_{k,gt_1} & \iid \mathcal{N}(0,\tau_{0,k}) \nonumber \\
 \sigma_k & \iid \mathcal{N}(0,10)I_{\{\sigma > 0\}} \nonumber \\
-\sigma_k & \iid \mathcal{N}(0,10) \nonumber \\
 \tau_k & \iid \mathcal{N}(0,10)I_{\{\tau > 0\}} \nonumber \\
 \tau_{0,k} & \iid \mathcal{N}(0,20)I_{\{\tau > 0\}} \nonumber \\
 \kappa_k & \iid \mathcal{N}(0,1)I_{\{\kappa_g > 0\}} \nonumber \\
@@ -271,14 +270,18 @@ u_{k,gt_1} & \iid \mathcal{N}(0,\tau_{0,k}) \nonumber \\
 
 We also note that, for the discrete phenotypes in equations (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}), there is no $\sigma_k$, and it is not sampled, and for the continuous phenotypes in equation (\ref{eq:cont}), there is no $\phi_k$ and it is not sampled.
 
+We follow the method outlined in @ZhouandReiter to obtain $R$ draws from the posterior distribution of the outlined model parameters given our observed data and imputed values. More specifically, for the $j^{th}$ imputed data set where $j = 1,\cdots,M$, we obtain $\frac{R}{M}$ draws from the posterior distribution using an MCMC algorithm with a sufficient burnin period, and then we combine these $M$ MCMC draws to say that we have a total of $R$ draws from the overall posterior distribution of interest, which can then be used to assess the presence of sexual dimorphism for a given trait.
+
 All models were built using @R2022language and (\textbf STAN)
 
 After running these models, we have posterior distributions of all the model parameters of interest. From these, we can obtain samples from the posterior distribution of mean trait values for each trait for males and females, using equation 6. We use these values for the following analyses.
 
 ## Quantifying sexual dimorphism, and testing for increased sexual dimorphism through time.
-We took the mean trait values for each sex at each temporal sample and quantified sexual dimorphism by \textcolor{red}{FILL IN THE METHODS HERE}
+We identify sexual dimorphism first by calculating the difference in mean trait size for males and females at each time for phenotype $k$ ($\mu_{k,m,t_i} - \mu_{k,m,t_i}$) for $i = 1,\cdots,T$ where, for the continuous phenotypes, the mean trait sizes for each sex $\mu_{k,m,t_i}$ and $\mu_{k,f,t_i}$ are calculated using (\ref{eq:mu}).  For the discrete phenotypes, we note that in (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}) the mean trait size is $\lambda_{k,m,t_i} = \exp(\mu_{k,m,t_i})$ and $\lambda_{k,f,t_i} = \exp(\mu_{k,f,t_i})$ for males and females, respectively, which is the value we use in our analysis. For simplicity, we will use $\mu_{k,m,t_i}$ and $\mu_{k,f,t_i}$ as the notation for mean size for both discrete and continuous traits for the rest of this discussion. From our MCMC algorithm, we obtain $M$ samples from the posterior distribution of $\mu_{k,m,t_i} - \mu_{k,f,t_i}$ to use in our analysis.
 
-Recall that we predicted that sexual dimorphism should increase through time in Lineage II, following ecological release from predators. To test this prediction, we \textcolor{red}{FILL IN THE METHODS REGARDING TAU ANALYSES HERE}
+Recall that we predicted that sexual dimorphism should increase through time in Lineage II, following ecological release from predators. However, this change in dimorphism make be increasing at a non-constant rate, as pointed out by the inclusion of the OU process. We assess for dimorphism by calculating a Kendall's $\tau$ coefficient (@KendallsTau). Kendall's $\tau$ assesses the ordinal association between a set of bivariate observations, where $\tau > 0$ indicates concordance between the observations (i.e., as $x$ increases, $y$ also tends to increase.)
+
+For our analysis, we calculate $\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}$ for trait $k$ where $\tau_r$ is the estimate of the Kendall's $\tau$ correlation for $\mu_{k,m,t_i} - \mu_{k,f,t_i}$ versus time $t_i$ for the $r^{th}$ MCMC sample from the posterior distribution. The posterior probability of sexual dimorphism for trait $k$ can be estimated as the proportion of values in $\boldsymbol{\tau}_k$ that are greater than 0 ($\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)$).  We can also assess the strength of the dimorphism by calculating the proportion of posterior samples that are greater than a prespecified threshold \textcolor{red}{(0.5??, idk what this could be.) -MS}
 
 
 # Results {#sec:results}
