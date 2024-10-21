@@ -1,6 +1,6 @@
 ---
 title: |
-  |  \Large Increased sexual dimorphism evolves in a fossil stickleback following ecological release from fish piscivores
+  |  \Large Increased sexual dimorphism does not evolve in a fossil stickleback following ecological release from fish piscivores
 author: | 
   | \large Matthew Stuart$^{1,2}$, Allison Ozark$^{3}$, Raheyma Siddiqui$^3$, Akhil Ghosh$^{1,2}$
   | \large Samantha Swank$^3$, Michael A. Bell$^4$, Gregory J. Matthews$^{1,2}$, and Yoel E. Stuart$^{3,+}$ 
@@ -11,8 +11,8 @@ author: |
   | \large $^4$ University of California Museum of Paleontology, Berkeley, CA, USA \vspace{-1.1mm}
   | \large $^+$ Corresponding: ystuart@luc.edu \vspace{-1.1mm}
 abstract: |
-  | Everyone loves the stickle \vspace{2mm}
-  | *Keywords*: Stickle
+  | Theory suggests that populations should expand their habitat- and resource-use niches when they are freed from interactions with competitors and predators--so-called ecological release. One way that this ecological release can manifest is through increased differences between males and females of the same species as they diverge into different niches. If divergent niche use drives corresponding divergent adaptation in in the traits used to exploit the divergent niches, then theory predicts an increase in sexual dimorphism for those traits, sometimes called character displacement between the sexes. Using a dataset of 16 traits collected from 18 temporal samples spread across 16,500 years of evolution of the fossil stickleback fish, *Gasterosteus doryssus*, we tested the prediction that release from predation inferred in this system would result in character displacement between the sexes. We used data from populations of extant stickleback (*Gasterosteus aculeatus*) to build an imputation model to classify individual sex in fossil specimens. Then, we quantified the extent of sexual dimorphism at each temporal sample, and tracked how it changed through time. NEED TO FINISH THIS   \vspace{2mm}
+  | *Keywords*: character displacement, character release, evolutionary time series, *Gasterosteus doryssus*, missing data imputation
 bibliography: references.bib
 fontsize: 12pt
 link-citations: true
@@ -105,27 +105,28 @@ The lineage II fossil data consist of `r sum(is.na(stick$gender))` specimens of 
 
 
 | Trait Name  | Trait Code | Trait Description           |
-|---------|-----|------------------------------------------|
-|Standard Length|	`stl` |	Distance from anterior tip of premaxilla to posterior end of last vertebra (hypural plate)|
-|Dorsal Spine | `mds` |	Number of dorsal spines from 0 to 3|
-|Dorsal Fin Ray|`mdf`|	Number of bones in the dorsal fin posterior to the third dorsal spine (i.e., soft dorsal fin rays)
-|Anal Fin Ray |`maf`|	Number of bones in the anal fin posterior to the anal spine (i.e., soft dorsal fin rays)|
-|Abdominal Vertebra|mav|	Number of vertebrae anterior to the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
-|Caudal Vertebra|`mcv`	| Number of vertebrae posterior to and including the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
-|Pterygiophore number|`mpt`|	Number of pterygiophores anterior to but excluding the pterygiophore under the third dorsal spine, which is immediately anterior to and contiguous with the dorsal fin|
-|Pelvic Spine length|`lps.sc`	|Length from the base of one pelvic spine above its articulation with the pelvic girdle to its distal tip|
-|Ectocoracoid|`ect.sc`|	Length between the anterior and posterior tips of the shoulder girdle base (i.e., ectocoracoid)|
-|Pelvic Girdle|`tpg.sc`|	Length between the anterior to posterior tips along midline. If vestigial, the sum of longest anterior-posterior axis for the vestiges|
-|Cleithrum length|`cle.sc`|	Length from free dorsal tip to ventral tip of the cleithrum on the anterior margin of the shoulder girdle (i.e., cleithrum)|
-|Premaxilla|`pmx.sc`|	Length from the anterior tip of the premaxilla to the distal tip of the ascending process of the premaxilla |
-|Dorsal Spine|`Ds#.sc #=1/2/3`|	Length from the base of a dorsal spine above the pterygiophore to its distal tip along the anterior edge|
-|Pterygiophore|`lpt.sc`|	Distance between the anterior to posterior tips of the pterygiophore immediately preceding the 3rd dorsal spine (when present)|
+|------------|-----|------------------------------------------|
+|Standard Length|	`stl` |	Distance from anterior tip of premaxilla to posterior end of last vertebra (i.e., the llhypural plate)|
+|Dorsal Spine Count| `mds` |	Number of dorsal spines|
+|Dorsal Fin Ray Count|`mdf`|	Number of bones in the dorsal fin posterior to the third dorsal spine (i.e., soft dorsal fin rays)
+|Anal Fin Ray Count|`maf`|	Number of bones in the anal fin posterior to the anal spine (i.e., soft anal fin rays)|
+|Abdominal Vertebra Count|mav|	Number of vertebrae anterior to the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
+|Caudal Vertebra Count|`mcv`	| Number of vertebrae posterior to and including the first vertebra contacting an anal fin pterygiophore (Aguirre et al. 2014)|
+|Pterygiophore Count|`mpt`|	Number of pterygiophores anterior to but excluding the pterygiophore under the third dorsal spine|
+|Pelvic Spine Length|`lps.sc`	|Length from the base of one pelvic spine at its pelvic girdle articulation to its distal tip|
+|Ectocoracoid Length|`ect.sc`|	Length from the anterior to posterior tips of the shoulder girdle base|
+|Pelvic Girdle Length|`tpg.sc`|	Length from the anterior to posterior tips along midline. If vestigial, the sum of longest axis along vestiges|
+|Cleithrum Length|`cle.sc`|	Length from dorsal tip to ventral tip on the anterior margin of the shoulder girdle|
+|Premaxilla Length|`pmx.sc`|	Length from the anterior tip of the premaxilla to the distal tip of its ascending process|
+|Dorsal Spine Length|`Ds#.sc #=1/2/3`|	Length from the dorsal spine base at the pterygiophore to its distal tip|
+|Pterygiophore Length|`lpt.sc`|	Distance from anterior to posterior edges of the pterygiophore immediately before ds3 (when present)|
 
 \textcolor{red}{This table caption should be part of the table. Top row. at the very least, it should be the width of the table. -YS}
 Table: Traits and trait descriptions. ‘sc’ denotes size correction of trait against standard length. Names of bones follow @Bowne1994 unless otherwise noted.
 
 ## Extant Specimen data
 To span the gamut of stickleback diversity for our predictive imputation model, we sampled modern stickleback from lakes containing generalist stickleback populations (@Hendryetal2009; @Bolnick2011) and from lakes containing benthic-limnetic species pairs (@Baumgartneretal1988; @SchluterandMcPhail1992). The generalist specimens used here were collected by YES in 2013 and were previously described in @Stuartetal2017 (Table S1). These samples were fixed in formalin, then stained for bone with Alizarin Red in 2013. Benthic and limnetic specimens were kindly loaned by D. Schluter and S. Blain at the University of British Columbia. The Schluter lab collected benthic and limnetic individuals from Enos Lake in 1988 and from Emily Lake, Little Quarry Lake, Paxton Lake, and Priest Lake in 2018 (Table S1). The Enos specimens had been fixed whole in formalin and stored in 40% isopropanol. The specimens from the other lakes were initially preserved whole in 95% ethanol in the field before being gradually transferred to water then formalin in the lab and ultimately stored in 40% isopropanol. In 2019, we stained these specimens for bone using Alizarin Red.
+
 We next replicated fossil data collection (Table 1) on these extant specimens. Standard length as well as pelvic-spine length on each side were measured with calipers. We used a dissection microscope to count dorsal spines, pelvic spines, dorsal-fin rays, and anal-fin rays. Right and left-side pelvic girdle lengths and ectocoracoid lengths were measured from ventral photographs taken using a Canon EOS Rebel T7 with a Tamron 16-300 mm MACRO lens mounted on a leveled Kaiser RS1 copy stand. Specimens were held in place for ventral photographs using a small tabletop vise with an attached scale bar. Lateral X-rays were used to measure dorsal spine length, number of pterygiophores anterior to the pterygiophore holding the third spine, length of the pterygiophore just anterior to the third spine, cleithrum length, and pre-maxilla ascending branch length. We also counted vertebrae from the X-rays: abdominal vertebrae were counted anterior to the first vertebra with a haemal spine contacting an anal fin pterygiophore. Caudal vertebrae were posterior, including the first vertebra with the haemal spine contacting the anal fin pterygiophore (following @Aguirreetal2014). X-rays were taken with an AXR Hot Shot X-ray Machine (Associated X-ray Corporation) at the Field Museum of Natural History. Specimens were exposed at 35kV and 4mA. Small fish were exposed for 7s, medium fish for 8s, and large fish for 10s. We developed the film and scanned individual images of each fish using the B&W Negatives setting on an Epson Perfection 4990 Photo flatbed at 2400 dpi. Measurements from photographs and X-rays were taken with FIJI (@Schindelinetal2012) and its plugin ObjectJ (https://sils.fnwi.uva.nl/bcb/objectj/). We dissected individuals from the generalist populations (Table S1) to determine sex from the gonads. Individuals from the species-pair lakes (TableS1) were previously sexed by the Schluter lab, using either dissection or a genotyping protocol \textcolor{red}{(Whom, personal communication)}.
 
 ## Outlier analysis and size correction. 
@@ -140,6 +141,8 @@ We then pooled all of the draws from the posterior distribution across all the i
 
 ## Modeling fossil stickleback trait means through time for males and females
 The goal of our analysis was to estimate fossil trait means through time, by sex, while incorporating uncertainty across imputations in the classification of sex. We used a Bayesian approach to estimate trait means in part because imputation is the process of sampling from a posterior predictive distribution of missing data, given observed data. \textcolor{red}{THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH, EXPLAINING IT TO MY AUDIENCE. -YS} 
+
+\textcolor{red}{MATT, somewhere we need to describe how you handled traits with lots of evolved zeros (ds1, ds2, ds3, lps, tpg) -YS}
 
 To estimate fossil sample means through time, for a given imputed dataset, we let $W_{ij}$ be the imputed sex and $\boldsymbol{Y}_{ij}$ be the $K \times 1$ vector of phenotypes for stickleback fossil $j$ at time $t_i$ where $i = 1, \ldots, T$ and $j = 1,\ldots,n_{t}$.  In addition, we denote $Y_{K,ij}$, the last variable in $\boldsymbol{Y}_{ij}$, to be the standard length of each fish individual, a measure of body size.
 \begin{align}
@@ -190,9 +193,8 @@ u_{k,gt_i} \iid \mathcal{N}\left(u_{k,gt_{i-1}}\exp\{-\kappa_k(t_{i} - t_{i-1})\
 \end{align}
 for $i = 2,\cdots,T$. In a traditional OU process, the initial value $u_{k,gt_1}$ is assumed to be a (potentially unknown) constant. This unknown constant can therefore be considered a latent variable, further justifying our Bayesian approach, which better incorporates prior information and uncertainty from missing data imputation in the estimate of latent variables.
 
-We discuss the procedure for estimating this value below. \textcolor{red}{DID THIS GET DISCUSSED?-YS}
-
-Priors: To aid in the sampling procedure for the discrete phenotypes, we first had to transform the parameters of the generalized Poisson distribution onto the real number line in order to ensure our algorithm can properly sample from the posterior distribution of interest using STAN software. This was done by declaring $\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)$ where $\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.$.
+\textcolor{red}{Q FOR MATT. Is transforming the GP onto the real number line separate from setting the priors? If so, should the statement of transformation go in the section where the GP and discrete trait modeling is discussed. Then priors get their own section here? -YS}
+To aid in the sampling procedure for the discrete phenotypes, we first had to transform the parameters of the generalized Poisson distribution onto the real number line in order to ensure our algorithm can properly sample from the posterior distribution of interest using STAN software. This was done by declaring $\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)$ where $\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.$.
 
 We chose the following priors, designing them to be weakly informative such that the posterior distributions could be influenced by the data, if warranted. For $k = 1,\cdots,K$, 
 
@@ -211,22 +213,24 @@ u_{k,gt_1} & \iid \mathcal{N}(0,\tau_{0,k}) \nonumber \\
 
 We also note that, for the discrete phenotypes in equations (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}), there is no $\sigma_k$, and it is not sampled, and for the continuous phenotypes in equation (\ref{eq:cont}), there is no $\phi_k$ and it is not sampled.
 
-We follow the method outlined in @ZhouandReiter to obtain $R$ draws from the posterior distribution of the outlined model parameters given our observed data and imputed values. More specifically, for the $j^{th}$ imputed data set where $j = 1,\cdots,M$, we obtain $\frac{R}{M}$ draws from the posterior distribution using an MCMC algorithm with a sufficient burnin period, and then we combine these $M$ MCMC draws to say that we have a total of $R$ draws from the overall posterior distribution of interest, which can then be used to assess the presence of sexual dimorphism for a given trait.
+We follow the method outlined in @ZhouReiter2010 to obtain $R$ draws from the posterior distributions of the model parameters given our observed data and imputed values. More specifically, for the $j^{th}$ imputed data set where $j = 1,\cdots,M$, we obtain $\frac{R}{M}$ draws from the posterior distribution using an MCMC algorithm with a sufficient burnin period, and then we combine these $M$ MCMC draws to say that we have a total of $R$ draws from the overall posterior distribution of interest. 
 
-After running these models, we have posterior distributions of all the model parameters of interest. From these, we can obtain samples from the posterior distribution of mean trait values for each trait for males and females, using equation 6. We use these values for the following analyses.
+For the continuous phenotypes, the mean trait sizes for each sex $\mu_{k,m,t_i}$ and $\mu_{k,f,t_i}$ are calculated using (\ref{eq:mu}).For the discrete phenotypes, equations (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}) calculate the mean trait size is $\lambda_{k,m,t_i} = \exp(\mu_{k,m,t_i})$ and $\lambda_{k,f,t_i} = \exp(\mu_{k,f,t_i})$ for males and females. For simplicity, we will use $\mu_{k,m,t_i}$ and $\mu_{k,f,t_i}$ as the notation for mean size for both discrete and continuous traits for the rest of this discussion. From our MCMC algorithm, we obtain $M$ samples from the posterior distribution of $\mu_{k,m,t_i} - \mu_{k,f,t_i}$. That is, with posterior distributions of the model parameters described above, we obtained $M$ samples from the posterior distribution of mean trait values by trait for males and females at each time step. We then used these values to quantify the presence or absence of sexual dimorphism, and describe how sexual dimorphism evolved through time.
 
 ## Quantifying sexual dimorphism, and testing for increased sexual dimorphism through time.
-We identify sexual dimorphism first by calculating the difference in mean trait size for males and females at each time for phenotype $k$ ($\mu_{k,m,t_i} - \mu_{k,m,t_i}$) for $i = 1,\cdots,T$ where, for the continuous phenotypes, the mean trait sizes for each sex $\mu_{k,m,t_i}$ and $\mu_{k,f,t_i}$ are calculated using (\ref{eq:mu}).  For the discrete phenotypes, we note that in (\ref{eq:disc_corr}) and (\ref{eq:disc_ind}) the mean trait size is $\lambda_{k,m,t_i} = \exp(\mu_{k,m,t_i})$ and $\lambda_{k,f,t_i} = \exp(\mu_{k,f,t_i})$ for males and females, respectively, which is the value we use in our analysis. For simplicity, we will use $\mu_{k,m,t_i}$ and $\mu_{k,f,t_i}$ as the notation for mean size for both discrete and continuous traits for the rest of this discussion. From our MCMC algorithm, we obtain $M$ samples from the posterior distribution of $\mu_{k,m,t_i} - \mu_{k,f,t_i}$ to use in our analysis.
+We quantified sexual dimorphism at each time step by calculating the difference in mean trait size for males and females at each time for phenotype $k$, $\mu_{k,m,t_i} - \mu_{k,f,t_i}$, for $i = 1,\cdots,T$. The presence of sexual dimorphism was indicated by... \textcolor{red}{Matt, can you help me with Bayesian the language here? I think this is the place to reference the two post probs plots, yes? Values far from fifty fifty indicate that the mass of the posterior distribution is away from a male female difference of zero. YS}
 
-Recall that we predicted that sexual dimorphism should increase through time in Lineage II, following ecological release from predators. However, this change in dimorphism make be increasing at a non-constant rate, as pointed out by the inclusion of the OU process. We assess for dimorphism by calculating a Kendall's $\tau$ coefficient (@KendallsTau). Kendall's $\tau$ assesses the ordinal association between a set of bivariate observations, where $\tau > 0$ indicates concordance between the observations (i.e., as $x$ increases, $y$ also tends to increase.)
+Then, to test our prediction that ecological release should result in an increase in sexual dimorphism through time, we calculated Kendall's $\tau$ coefficient for each trait (@KendallsTau). Kendall's $\tau$ assesses the ordinal association between a set of bivariate observations, where $\tau > 0$ indicates concordance between the observations (i.e., as $x$ increases, $y$ also tends to increase; here,$x$ is time and $y$ is sexual dimorphism.) Kendall's $\tau$ varies between -1 and 1, and can be thought of as behaving like a correlation. Values farther from zero indicate a stronger relationship.
 
-For our analysis, we calculate $\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}$ for trait $k$ where $\tau_r$ is the estimate of the Kendall's $\tau$ correlation for $\mu_{k,m,t_i} - \mu_{k,f,t_i}$ versus time $t_i$ for the $r^{th}$ MCMC sample from the posterior distribution. The posterior probability of sexual dimorphism for trait $k$ can be estimated as the proportion of values in $\boldsymbol{\tau}_k$ that are greater than 0 ($\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)$).  We can also assess the strength of the dimorphism by calculating the proportion of posterior samples that are greater than a prespecified threshold \textcolor{red}{(0.5??, idk what this could be.) -MS}
+$\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}$ for trait $k$ where $\tau_r$ is the estimate of the Kendall's $\tau$ correlation for $\mu_{k,m,t_i} - \mu_{k,f,t_i}$ versus time $t_i$ for the $r^{th}$ MCMC sample from the posterior distribution. \textcolor{red}{Matt, I think there's an absolute value problem here. Dimorphism can increase of M-F gets more positive or more negative. I've indicated that in the text below, but I could use some help refininig the explanation -YS}
+For each trait, the proportion of values in $\boldsymbol{\tau}_k$ that are greater than 0 ($\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)$) may indicate that males have gotten relatively larger than females, indicating more pronounced dimorphism. For each trait, the proportion of values in $\boldsymbol{\tau}_k$ that are less than 0 ($\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} < 0)$) may indicate that females have gotten relatively larger than males, indicating more pronounced dimormphism.
 
 
 # Results {#sec:results}
-\textcolor{red}{WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
-The extant data used here consists of a total of `r sum(!is.na(stick$gender))` specimens all with known sex (Table S1).  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively. 
+The extant data used here consist of a total of `r sum(!is.na(stick$gender))` specimens all with known sex (Table S1).  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively. 
 
+## Missing Data Imputation
+\textcolor{red}{WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
 
 
 ## Sexual Dimorphism 
@@ -234,18 +238,140 @@ Table \ref{tab:prob0-table} shows the posterior probability of the differences i
 
 Figure \ref{fig:mu-diff-plot} shows the posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females).  The full posterior distributions over time for all traits are shown in the appendix.  
 
-Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray (mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant sexual dimorphism with all but the last having learger mean values in male sepcimen. Other traits such as abdominal vertebra (mav), caudal vertebra (mcv), and pelvic spine length (lps) don't appear to have any discernable sexual dimorphism in the means.  Dorsal spine 3 (ds3) exhibits sexual dimorphism that changes over time.  The mean number of dorsal spine 3 begins larger for females for the earliest observed time periods.  Over time, however, this switches and the male specimens exhibit larger mean values for the latest observed time periods. 
-
-\textcolor{red} {
-Yoel's interpretation of the three paragraphs above. Male and female G. doryssus differ for some traits, indicating detectable sexual dimorphism. This is evidenced by traits with substantial differences in male and female posterior means (i.e., deviation from 0 in Figure \ref{fig:mu-diff-plot}), supported by posterior probabilities that deviate from 0.5 (Figure \ref{fig:prob0-plot}). For example, males are larger than females by 3-8mm on average through time (stl panel in Figure \ref{fig:mu-diff-plot}), with a posterior probability for that mean difference above 70 percent through time (Figure \ref{fig:prob0-plot}). In contrast, the number of abdominal vertebrae (mav) fluctuates about 0 (Figure \ref{fig:mu-diff-plot}), with posterior probabilities fluctuating about 50 percent through time (Figure \ref{fig:prob0-plot}). Table \ref{tab:prob0-table} in the Supplementary Material summarizes the posterior probabilities that male means differ from female means by trait and sample.
-}
-
-\textcolor{red}{can we move mu-diff-plot and prob0-plot here?}
 
 ## Changes over time
+We can also assess the strength of the dimorphism by calculating the proportion of posterior samples that are greater than a prespecified threshold \textcolor{red}{(0.5??, idk what this could be.) -MS}
+
 Table \ref{tab:auc-table} shows the probability that the posterior distribution of the differences in the mean is greater than the posterior distribution of the differences at the first time point.  Values near 0.5 indicate very little difference between the distributions whereas values closer to 0 and 1 indicate changes in the distributions with values of 1 meaning the difference in means has shifted towards males having a larger mean and values of 0 indicating the difference in means has shifted towards larger means in females.  These results are shown graphically in figure \ref{fig:AUC-plot}.
 
-The amount of sexual dimporphism over time does not change substantially for a majority of the trait observed here (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl).  Traits that trend away from the mean difference at the first observed time point include dorsal spine 3 (ds3), anal fin ray (maf), and dorsal fin ray (mdf).  
+
+
+
+
+# Discussion, Future work and conclusions {#sec:conclusions}
+We predicted that release from predators would result in niche expansion and increased sexual dimorphism, based on several studies of modern stickleback. For example, in lakes where sculpin competitors are absent and stickleback (Roesti et al. 2023)
+See Spoljaric and Reimchen 2008, page 512 right column for references and discussion of differences between benthic males and limnetic females. Male stickleback are benthic and littoral (Wootton 1976)…. Reimchen papers in general good for this section.
+Moreover, tooth wear data from the lineage II sequence suggest that individuals in this lineage began eating more planktonic prey over time, expanding toward an open-water niche from the benthic, bottom-feeding niche they started with (Purnell et al. 2007). That this expansion into open water by lineage II coincided with armor reduction is further indicative of a limnetic system with fewer salmonid piscivores (@SchluterandMcPhail1992; @VamosiandSchluter2004; @Roestietal2023).
+
+# Acknowledgements {#sec:acknowl}
+
+We thank O. Abughoush, S. Blain, A. Chaudhary, M. Islam, F. Joaquin, C. Lawson-Weinert, R. Sullivan, J. Tien, M.P. Travis, and W. Shim for help with data collection. We thank D. Schluter and S. Blain for loaning specimens and sharing data. We thank K. Swagel and C. McMahan of the Field Museum for assistance with specimen x-rays. This research was supported by NSF grants BSR-8111013, EAR-9870337, and DEB-0322818, the Center for Field Research (Earthwatch), and the National Geographic Society (2869-84) to MAB. It was also supported by NSF grants DEB-1456462 and EAR-2145830 to YES.  And NSF DMS-2015374 (GJM)
+
+# Data and Code Statement {#sec:datastatement}
+All code for reproducing the analyses in this paper is publicly available at https://github.com/Akhil-Ghosh/SticklebackProject
+\textcolor{red}{Is this true? Matt's code is at this GitHub page? -YS}
+
+# References {#sec:references}
+
+# Supplementary Material {#sec:supplementary}
+<!-- SCRAP CODE and TEXT. YS moved it down here on 21 October 2024 because it was making it hard for me to see the manuscript.  -->
+<!-- THIS FIGURE DOESN'T SHOW MUCH. LET'S CUT FOR SPACE.  -->
+```{r fig.cap = "Fossil sample size for each time period",include=FALSE}
+ggplot(aes(x = time, y = count), data = fortab) + geom_col() + xlab("Sample")  + scale_x_continuous(breaks = 1:18, labels = 1:18)
+```
+<!-- I removed the table and replaced it with a figure -->
+<!-- % latex table generated in R 4.2.2 by xtable 1.8-4 package -->
+<!-- % Mon May  1 11:20:28 2023 -->
+<!-- \begin{table}[ht] -->
+<!-- \centering -->
+<!-- \caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.} -->
+<!-- \begin{tabular}{rl} -->
+<!--   \hline -->
+<!-- time & count \\  -->
+<!--   \hline -->
+<!--   1 & 43 \\  -->
+<!--     2 & 41 \\  -->
+<!--     3 & 51 \\  -->
+<!--     4 & 41 \\  -->
+<!--     5 & 46 \\  -->
+<!--     6 & 48 \\  -->
+<!--     7 & 67 \\  -->
+<!--     8 & 55 \\  -->
+<!--     9 & 42 \\  -->
+<!--    10 & 33 \\  -->
+<!--    11 & 37 \\  -->
+<!--    12 & 22 \\  -->
+<!--    13 & 41 \\  -->
+<!--    14 & 43 \\  -->
+<!--    15 & 46 \\  -->
+<!--    16 & 47 \\  -->
+<!--    17 & 56 \\  -->
+<!--    18 & 55 \\  -->
+<!--    \hline -->
+<!-- \end{tabular} -->
+<!-- \label{tabn} -->
+
+<!-- \end{table} -->
+
+
+<!-- Within each trait, the model with the lowest DIC was chosen for that trait <THIS IS METHODS--WHERE IS THIS DESCRIBED IN THE METHODS>.  All subsequent results presented here use the model with the lowest DIC individually by trait <THIS IS METHODS--WHERE IS THIS DESCRIBED IN THE METHODS>.   -->
+
+<!-- Table \ref{whichmodel} reports the results of model fitting.  X of the Y traits were best fit by a trend model. Best models included an OU component for caudal and abdominal vertebra number (mcv, mav), pelvic spine length (lpt <LPT IS PTERYGIOPHORE LENGTH>) and standard length (stl). Caudal vertebra number was the only trait best fit by a model including both a trend and an OU component.  This implies that not only does caudal vertebra size have a linear trend across sex <WHAT DO YOU MEAN BY LINEAR TREND ACROSS SEX?>, but the average size at one time period is highly correlated with the average size at the next time period <I'VE ALWAYS FOUND THAT THIS AID TO MODEL INTEPRETATION IS BETTER IN THE METHODS, JUST AFTER THE MODELS ARE DESCRIBED>. -->
+
+<!-- \textcolor{red} { -->
+<!-- Yoel's interpretation of the above paragraph. Taking the model with the lowest DIC score as the best model for each trait, we found that cle, ds1, lps, and pmx did not fit either the trend model or the OU model for male-female trait mean differences. In contrast, we found a trend through time in male-female trait mean differences (i.e., sexual dimorphism) for mcv, ds2, ds3, ect, maf, and mdf. This suggests that these traits changed their dimorphism from one time period to the next, with an overall tendency toward ???GREATER/LESS??? dimorphism. IS THIS CORRECT? - YS -->
+<!-- } -->
+<!-- \textcolor{red} { -->
+<!-- We found evidence for an OU process but no trend for lpt, mav, and stl, suggesting that these traits varied through time, about a fixed value for dimorphism. Finally, we found evidence that change in mcv fitted both a trend an an OU process, meaning ??? WHAT BIOLOGICALLY ???. -->
+<!-- } -->
+
+<!-- \textcolor{red} {HOW DO WE RECONCILE THE PRESENCE OF TRENDS IN THESE MODELS WITH AN ABSENCE OF VISIBLE TRENDS IN FIGURES 2 THROUGH 4? I WONDER IF THIS RESULT PARAGRAPH BELONGS BEST AT THE END OF THE RESULTS, RATHER THAN THE BEGINNING. CONSIDER THE STATISTICAL EVIDENCE FOR TRENDS AND OU AFTER WE'VE WALKED THE READERS THROUGH VISUAL EVIDENCE FOR CHANGE. -->
+<!-- } -->
+
+<!-- ## Best fitting models  -->
+<!-- \begin{table}[ht] -->
+<!-- \centering -->
+<!-- \begin{tabular}{|c||c|c|} -->
+<!--   \hline -->
+<!--  & OU & No OU  \\  -->
+<!--   \hline -->
+<!--   \hline -->
+<!-- Trend  &  mcv  & ds2, ds3, ect, maf, mdf \\  -->
+<!--   \hline -->
+<!--   No Trend & lpt, mav, stl  &  cle, ds1, lps, pmx\\ -->
+<!--    \hline -->
+<!-- \end{tabular} -->
+<!-- \label{whichmodel} -->
+<!-- \end{table} -->
+
+
+<!-- Trends terms included in were observed in ds2, ds3, ect, maf, mdf, mcv,  -->
+<!-- OU term included in model: mcv, lpt, stl -->
+<!-- model_list[["cle"]] <- 3 -->
+<!-- model_list[["ds1"]] <- 3 -->
+<!-- model_list[["ds2"]] <- 1 -->
+<!-- model_list[["ds3"]] <- 1 -->
+<!-- model_list[["ect"]] <- 1 -->
+<!-- model_list[["lps"]] <- 3 -->
+<!-- model_list[["lpt"]] <- 2 -->
+<!-- model_list[["maf"]] <- 1 -->
+<!-- model_list[["mav"]] <- 2 -->
+<!-- model_list[["mcv"]] <- 0 -->
+<!-- model_list[["mdf"]] <- 1 -->
+<!-- #model_list[["mds"]] <- 3 -->
+<!-- #model_list[["mpt"]] <- 0 -->
+<!-- model_list[["pmx"]] <- 3 -->
+<!-- model_list[["stl"]] <- 2 -->
+<!-- #model_list[["tpg"]] <- 1 -->
+<!-- Greg notes:  -->
+<!-- - mdf and maf have interesting trends.   -->
+<!-- - ds3 flips over time.  Females have larger values to start and over the course of the time frame wer are looking at males end up with larger mean values.   -->
+<!-- - Most of the other traits have mean differences that are relatively constant over time.   -->
+
+<!-- In our empirical study, we analyze the following four nested models for the mean process outlined in (\ref{eq:mu}): -->
+<!-- \begin{itemize} -->
+<!-- \item OU with Trend: The mean process for each phenotype $k=1,\cdots,K$ and $g \in \{f,m\}$ as previously defined. -->
+<!-- \item OU with No Trend: No linear trend on the mean processes and the overall mean of the phenotype is constant for each sex. This is achieved by setting $\beta_{1,kg} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$ and $g \in \{f,m\}$ -->
+<!-- \item No OU with Trend: No random fluctuations on the mean processes, i.e. the OU process assumption is not needed. This is achieved by setting $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$. -->
+<!-- \item No OU with No Trend: The mean for a specific trait and specific sex at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$. -->
+<!-- \end{itemize} -->
+
+<!-- Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray (mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant sexual dimorphism with all but the last having learger mean values in male sepcimen. Other traits such as abdominal vertebra (mav), caudal vertebra (mcv), and pelvic spine length (lps) don't appear to have any discernable sexual dimorphism in the means.  Dorsal spine 3 (ds3) exhibits sexual dimorphism that changes over time.  The mean number of dorsal spine 3 begins larger for females for the earliest observed time periods.  Over time, however, this switches and the male specimens exhibit larger mean values for the latest observed time periods.  -->
+
+<!-- \textcolor{red} { -->
+<!-- Yoel's interpretation of the three paragraphs above. Male and female G. doryssus differ for some traits, indicating detectable sexual dimorphism. This is evidenced by traits with substantial differences in male and female posterior means (i.e., deviation from 0 in Figure \ref{fig:mu-diff-plot}), supported by posterior probabilities that deviate from 0.5 (Figure \ref{fig:prob0-plot}). For example, males are larger than females by 3-8mm on average through time (stl panel in Figure \ref{fig:mu-diff-plot}), with a posterior probability for that mean difference above 70 percent through time (Figure \ref{fig:prob0-plot}). In contrast, the number of abdominal vertebrae (mav) fluctuates about 0 (Figure \ref{fig:mu-diff-plot}), with posterior probabilities fluctuating about 50 percent through time (Figure \ref{fig:prob0-plot}). Table \ref{tab:prob0-table} in the Supplementary Material summarizes the posterior probabilities that male means differ from female means by trait and sample. -->
+<!-- } -->
+<!-- The amount of sexual dimporphism over time does not change substantially for a majority of the trait observed here (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl).  Traits that trend away from the mean difference at the first observed time point include dorsal spine 3 (ds3), anal fin ray (maf), and dorsal fin ray (mdf).   -->
 
 <!-- #ds3 -->
 <!-- apply(mu_m,2,mean)[1] #2.291846 -->
@@ -254,7 +380,7 @@ The amount of sexual dimporphism over time does not change substantially for a m
 <!--   apply(mu_f,2,mean)[18] #1.184534  -->
 <!-- apply(mu_m,2,mean)[18] - apply(mu_m,2,mean)[1] #-1.027118  -->
 <!-- apply(mu_f,2,mean)[18] - apply(mu_f,2,mean)[1] #-1.263581  -->
-The posterior mean of the mean number of dorsal spine rays at the first observed time point is 2.29 for males and for females it is 2.45.  At the last observed time point, the average number for males and female both dropped to 1.265 and 1.185 for males and females, respectively.  This resulted in a mean number of dorsal spine 3 lost by males of 1.027 and for females it was 1.264.  This resulted in a change of the mean difference from time point 1 to time point 18 of 0.236.  Basically, males and females both lowered the mean number of dorsal spine 3, but females lowered their mean more than the males.  
+<!-- The posterior mean of the mean number of dorsal spine rays at the first observed time point is 2.29 for males and for females it is 2.45.  At the last observed time point, the average number for males and female both dropped to 1.265 and 1.185 for males and females, respectively.  This resulted in a mean number of dorsal spine 3 lost by males of 1.027 and for females it was 1.264.  This resulted in a change of the mean difference from time point 1 to time point 18 of 0.236.  Basically, males and females both lowered the mean number of dorsal spine 3, but females lowered their mean more than the males.   -->
 
 <!-- #maf -->
   <!-- apply(mu_m,2,mean)[1] #8.517534 -->
@@ -266,9 +392,9 @@ The posterior mean of the mean number of dorsal spine rays at the first observed
   <!-- (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.1521742  -->
 <!-- MAF: Number of bones in the anal fin posterior to the anal spine (i.e., softdorsal fin rays) -->
 
-We also observed a change in the differences between males and females for the number of bones int he anal fin ray (maf) and the number of bones in the dorsal fin ray.  The difference in the means of males versus females for anal fin ray bones changed by 0.152 over the course of the observed time periods.  This change was driven mostly by the change in females.  At the first observed time period the had on average 8.291 bones dropping to 8.170 over the 18 times periods observed. Whereas for males the change in means rose only from  8.518 to 8.549, about 0.0316 bones on average.  
+<!-- We also observed a change in the differences between males and females for the number of bones int he anal fin ray (maf) and the number of bones in the dorsal fin ray.  The difference in the means of males versus females for anal fin ray bones changed by 0.152 over the course of the observed time periods.  This change was driven mostly by the change in females.  At the first observed time period the had on average 8.291 bones dropping to 8.170 over the 18 times periods observed. Whereas for males the change in means rose only from  8.518 to 8.549, about 0.0316 bones on average.   -->
 
-A similar change in the difference of the means over time was observed for the number of bones in the dorsal fin (mdf).  However, unlike maf, this change in sexual dimporhism was driven entirely by the males.  The mean change for females over the 18 observed time periods was only 0.0055 with the average number of dorsal fin bones for females starting at 9.287 and the final observed mean of 9.281 resulting in almost no change in the mean.  For males, the average number of dorsal fin bones at the first time point was about 9.568 dropping to 9.734 over the course of the observed time periods for a gain of 0.166 bones on average.  
+<!-- A similar change in the difference of the means over time was observed for the number of bones in the dorsal fin (mdf).  However, unlike maf, this change in sexual dimporhism was driven entirely by the males.  The mean change for females over the 18 observed time periods was only 0.0055 with the average number of dorsal fin bones for females starting at 9.287 and the final observed mean of 9.281 resulting in almost no change in the mean.  For males, the average number of dorsal fin bones at the first time point was about 9.568 dropping to 9.734 over the course of the observed time periods for a gain of 0.166 bones on average.   -->
 
 <!-- #mdf -->
 <!--   apply(mu_m,2,mean)[1] #9.567811  -->
@@ -280,13 +406,13 @@ A similar change in the difference of the means over time was observed for the n
 <!--   (apply(mu_m,2,mean) - apply(mu_f,2,mean))[18] - (apply(mu_m,2,mean) - apply(mu_f,2,mean))[1] #0.1716284 -->
 <!-- MDF: Dorsal fin ray: Number of bones in the dorsal finposterior to the third dorsal spine (i.e.,soft dorsal fin rays. -->
  
-\textcolor{red} {
-Yoel's interpretation of the five paragraphs above. 
-Figure \ref{fig:AUC-plot} shows the posterior probability that the mean male-female difference at time t is different from the male-female difference at time zero. In other words, Figure \ref{fig:AUC-plot} plots whether the sexual dimorphism changes in subsequent samples, always relative to the first sample. The amount of sexual dimporphism over time does not change substantially for a majority of the traits (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl; Figure \ref{fig:AUC-plot}). Traits that change in dimorphism are anal fin ray (maf), and dorsal fin ray (mdf), and dorsal spine 3 (ds3).}
+<!-- \textcolor{red} { -->
+<!-- Yoel's interpretation of the five paragraphs above.  -->
+<!-- Figure \ref{fig:AUC-plot} shows the posterior probability that the mean male-female difference at time t is different from the male-female difference at time zero. In other words, Figure \ref{fig:AUC-plot} plots whether the sexual dimorphism changes in subsequent samples, always relative to the first sample. The amount of sexual dimporphism over time does not change substantially for a majority of the traits (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl; Figure \ref{fig:AUC-plot}). Traits that change in dimorphism are anal fin ray (maf), and dorsal fin ray (mdf), and dorsal spine 3 (ds3).} -->
 
-\textcolor{red} {
-For example, females at time zero averaged 8.29 rays in the anal fin, dropping to 8.17 rays in the final sample. Males averaged 8.52 anal fin rays in the first sample and 8.55 in the last sample. Thus, the difference between males and females started at 0.23 and ended at 0.38, an increase in sexual dimorphism. In contrast, the sign on dimorphism flipped for ds3. The posterior mean length of the third dorsal spine is 2.29mm for males and 2.45mm for females. By the end of the sequence, mean ds3 for males was 1.27 for males and 1.19 for females. Both sexes evolved reduction of ds3, but females lowered their mean more than the males. This resulted in a flip in dimorphism, from larger females to larger males, though both sexes evolved trait reduction. BUT DIMORPHISM SHRUNK THEN, AS THE DIFFERENCE BETWEEN MALES AND FEMALES IS NOW SMALLER??
-}
+<!-- \textcolor{red} { -->
+<!-- For example, females at time zero averaged 8.29 rays in the anal fin, dropping to 8.17 rays in the final sample. Males averaged 8.52 anal fin rays in the first sample and 8.55 in the last sample. Thus, the difference between males and females started at 0.23 and ended at 0.38, an increase in sexual dimorphism. In contrast, the sign on dimorphism flipped for ds3. The posterior mean length of the third dorsal spine is 2.29mm for males and 2.45mm for females. By the end of the sequence, mean ds3 for males was 1.27 for males and 1.19 for females. Both sexes evolved reduction of ds3, but females lowered their mean more than the males. This resulted in a flip in dimorphism, from larger females to larger males, though both sexes evolved trait reduction. BUT DIMORPHISM SHRUNK THEN, AS THE DIFFERENCE BETWEEN MALES AND FEMALES IS NOW SMALLER?? -->
+<!-- } -->
 
 
 
@@ -630,7 +756,7 @@ for (phenotype in names(model_list)){
 
 ```
 
-```{r prob0-table, echo = FALSE, tab.cap= "Posterior probability that the mean for males is larger than the mean for females"}
+```{r prob0-table, echo = FALSE, tab.cap= "Posterior probability that the mean for males is larger than the mean for females",include=FALSE}
 #Which model was used
 mod_df <- data.frame(phenotype = names(unlist(model_list)), mod = unlist(model_list))
 mod_code <- data.frame(mod = 0:3, mod_name = c("OU-Trend","No OU-Trend",
@@ -641,7 +767,7 @@ xtable(results_prob_mu_diff_gt_0_table)
 ```
 
 
-```{r auc-table, echo = FALSE, tab.cap= "AUC comparing time x versus time 0."}
+```{r auc-table, echo = FALSE, tab.cap= "AUC comparing time x versus time 0.",include=FALSE}
 results_auc_mu_diff_table <- results_auc_mu_diff %>%  mutate(auc_mu_diff = round(auc_mu_diff,3)) %>% pivot_wider(names_from = "phenotype", values_from = "auc_mu_diff")
 #library(xtable)
 xtable(results_auc_mu_diff_table)
@@ -650,195 +776,67 @@ xtable(results_auc_mu_diff_table)
 
 
 
-posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females)
+<!-- posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females) -->
 
 
 
 
-```{r mu-diff-plot, echo = FALSE, fig.cap = "Posterior mean difference between males and females, in UNITS?. Values above 0 indicate larger male means"}
+```{r mu-diff-plot, echo = FALSE, fig.cap = "Posterior mean difference between males and females, in UNITS?. Values above 0 indicate larger male means",include=FALSE}
 ggplot(aes(x = time, y = mu_diff), data = results_posterior_mean_diff) + facet_wrap(~phenotype, scale = "free_y") + geom_path() + geom_hline(yintercept = 0, lty = 3) + ylab("Posterior Mean Difference")
 ```
 
-```{r prob0-plot, echo = FALSE, fig.cap = "Posterior probabilities that the male posterior mean is larger than the female posterior mean"}
+```{r prob0-plot, echo = FALSE, fig.cap = "Posterior probabilities that the male posterior mean is larger than the female posterior mean",include=FALSE}
 ggplot(aes(x = time, y = prob_mu_diff_gt_0), data = results_prob_mu_diff_gt_0) + facet_wrap(~phenotype) + geom_path() + #geom_hline(yintercept = 0, lty = 3) + ylim(0,1) + ylab("Posterior Probability") Why yintercept in 0 and not 0.5?
 geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
 
-```{r AUC-plot, echo = FALSE, fig.cap= "The Posterior Probability that male-female differences in subsequent samples are different from male-female differenceds in the initial sample. Values near 0.5 indicate little difference between the distributions. Values closer to 0 indicate that the difference in means has shifted towards larger means in females. Values closer to 1 indicate that the difference in means has shifted toward larger means in males."}
+```{r AUC-plot, echo = FALSE, fig.cap= "The Posterior Probability that male-female differences in subsequent samples are different from male-female differenceds in the initial sample. Values near 0.5 indicate little difference between the distributions. Values closer to 0 indicate that the difference in means has shifted towards larger means in females. Values closer to 1 indicate that the difference in means has shifted toward larger means in males.",include=FALSE}
 ggplot(aes(x = time, y = auc_mu_diff), data = results_auc_mu_diff) + facet_wrap(~phenotype) + geom_path() +  geom_path() + geom_hline(yintercept = 0.5, lty = 3) + ylim(0,1) + ylab("Posterior Probability")
 ```
 
-
-
-
-
-# Discussion, Future work and conclusions {#sec:conclusions}
-We predicted that release from predators would result in niche expansion and increased sexual dimorphism, based on several studies of modern stickleback. For example, in lakes where sculpin competitors are absent and stickleback (Roesti et al. 2023)
-See Spoljaric and Reimchen 2008, page 512 right column for references and discussion of differences between benthic males and limnetic females. Male stickleback are benthic and littoral (Wootton 1976)…. Reimchen papers in general good for this section.
-Moreover, tooth wear data from the lineage II sequence suggest that individuals in this lineage began eating more planktonic prey over time, expanding toward an open-water niche from the benthic, bottom-feeding niche they started with (Purnell et al. 2007). That this expansion into open water by lineage II coincided with armor reduction is further indicative of a limnetic system with fewer salmonid piscivores (@SchluterandMcPhail1992; @VamosiandSchluter2004; @Roestietal2023).
-
-
-# Acknowledgements {-}
-
-We thank O. Abughoush, S. Blain, A. Chaudhary, M. Islam, F. Joaquin, C. Lawson-Weinert, R. Sullivan, J. Tien, M.P. Travis, and W. Shim for help with data collection. We thank D. Schluter and S. Blain for loaning specimens and sharing data. We thank K. Swagel and C. McMahan of the Field Museum for assistance with specimen x-rays. This research was supported by NSF grants BSR-8111013, EAR-9870337, and DEB-0322818, the Center for Field Research (Earthwatch), and the National Geographic Society (2869-84) to MAB. It was also supported by NSF grants DEB-1456462 and EAR-2145830 to YES.  And NSF DMS-2015374 (GJM)
-
-# Supplementary Material {-}
-
-All code for reproducing the analyses in this paper is publicly available at https://github.com/Akhil-Ghosh/SticklebackProject
-
-DIC results here. 
-
-
-## Figures
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("cle"), echo=FALSE}
+<!-- # Figures -->
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("cle"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/cle","mu_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds1"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds1"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/ds1","mu_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds2"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds2"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/ds2","mu_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds3"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ds3"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/ds3","mu_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ect"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("ect"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/ect","mu_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("lps"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("lps"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/lps","mu_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("lpt"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("lpt"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/lpt","mu_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("maf"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("maf"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/maf","lambda_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mav"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mav"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/mav","lambda_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mcv"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mcv"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/mcv","lambda_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mdf"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mdf"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/mdf","lambda_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mds"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mds"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/mds","lambda_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mpt"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("mpt"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/mpt","lambda_diff.pdf"))
 ```
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("pmx"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("pmx"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/pmx","mu_diff.pdf"))
 ```
-
-```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("stl"), echo=FALSE}
+```{r, out.width="0.9\\linewidth", include=TRUE, fig.align="center", fig.cap=c("stl"), echo=FALSE, include = FALSE}
 knitr::include_graphics(here("Figures/stl","mu_diff.pdf"))
 ```
-
-# References
-
-
-<!-- SCRAP CODE and TEXT. YS moved it down here on 21 October 2024 because it was making it hard for me to see the manuscript.  -->
-<!-- THIS FIGURE DOESN'T SHOW MUCH. LET'S CUT FOR SPACE.  -->
-```{r fig.cap = "Fossil sample size for each time period",include=FALSE}
-ggplot(aes(x = time, y = count), data = fortab) + geom_col() + xlab("Sample")  + scale_x_continuous(breaks = 1:18, labels = 1:18)
-```
-<!-- I removed the table and replaced it with a figure -->
-<!-- % latex table generated in R 4.2.2 by xtable 1.8-4 package -->
-<!-- % Mon May  1 11:20:28 2023 -->
-<!-- \begin{table}[ht] -->
-<!-- \centering -->
-<!-- \caption{The number of stickleback fossils at each time point.  Sample size at each time point ranges from a low of 22 to a high of 67.} -->
-<!-- \begin{tabular}{rl} -->
-<!--   \hline -->
-<!-- time & count \\  -->
-<!--   \hline -->
-<!--   1 & 43 \\  -->
-<!--     2 & 41 \\  -->
-<!--     3 & 51 \\  -->
-<!--     4 & 41 \\  -->
-<!--     5 & 46 \\  -->
-<!--     6 & 48 \\  -->
-<!--     7 & 67 \\  -->
-<!--     8 & 55 \\  -->
-<!--     9 & 42 \\  -->
-<!--    10 & 33 \\  -->
-<!--    11 & 37 \\  -->
-<!--    12 & 22 \\  -->
-<!--    13 & 41 \\  -->
-<!--    14 & 43 \\  -->
-<!--    15 & 46 \\  -->
-<!--    16 & 47 \\  -->
-<!--    17 & 56 \\  -->
-<!--    18 & 55 \\  -->
-<!--    \hline -->
-<!-- \end{tabular} -->
-<!-- \label{tabn} -->
-
-<!-- \end{table} -->
-
-
-<!-- Within each trait, the model with the lowest DIC was chosen for that trait <THIS IS METHODS--WHERE IS THIS DESCRIBED IN THE METHODS>.  All subsequent results presented here use the model with the lowest DIC individually by trait <THIS IS METHODS--WHERE IS THIS DESCRIBED IN THE METHODS>.   -->
-
-<!-- Table \ref{whichmodel} reports the results of model fitting.  X of the Y traits were best fit by a trend model. Best models included an OU component for caudal and abdominal vertebra number (mcv, mav), pelvic spine length (lpt <LPT IS PTERYGIOPHORE LENGTH>) and standard length (stl). Caudal vertebra number was the only trait best fit by a model including both a trend and an OU component.  This implies that not only does caudal vertebra size have a linear trend across sex <WHAT DO YOU MEAN BY LINEAR TREND ACROSS SEX?>, but the average size at one time period is highly correlated with the average size at the next time period <I'VE ALWAYS FOUND THAT THIS AID TO MODEL INTEPRETATION IS BETTER IN THE METHODS, JUST AFTER THE MODELS ARE DESCRIBED>. -->
-
-<!-- \textcolor{red} { -->
-<!-- Yoel's interpretation of the above paragraph. Taking the model with the lowest DIC score as the best model for each trait, we found that cle, ds1, lps, and pmx did not fit either the trend model or the OU model for male-female trait mean differences. In contrast, we found a trend through time in male-female trait mean differences (i.e., sexual dimorphism) for mcv, ds2, ds3, ect, maf, and mdf. This suggests that these traits changed their dimorphism from one time period to the next, with an overall tendency toward ???GREATER/LESS??? dimorphism. IS THIS CORRECT? - YS -->
-<!-- } -->
-<!-- \textcolor{red} { -->
-<!-- We found evidence for an OU process but no trend for lpt, mav, and stl, suggesting that these traits varied through time, about a fixed value for dimorphism. Finally, we found evidence that change in mcv fitted both a trend an an OU process, meaning ??? WHAT BIOLOGICALLY ???. -->
-<!-- } -->
-
-<!-- \textcolor{red} {HOW DO WE RECONCILE THE PRESENCE OF TRENDS IN THESE MODELS WITH AN ABSENCE OF VISIBLE TRENDS IN FIGURES 2 THROUGH 4? I WONDER IF THIS RESULT PARAGRAPH BELONGS BEST AT THE END OF THE RESULTS, RATHER THAN THE BEGINNING. CONSIDER THE STATISTICAL EVIDENCE FOR TRENDS AND OU AFTER WE'VE WALKED THE READERS THROUGH VISUAL EVIDENCE FOR CHANGE. -->
-<!-- } -->
-
-<!-- ## Best fitting models  -->
-<!-- \begin{table}[ht] -->
-<!-- \centering -->
-<!-- \begin{tabular}{|c||c|c|} -->
-<!--   \hline -->
-<!--  & OU & No OU  \\  -->
-<!--   \hline -->
-<!--   \hline -->
-<!-- Trend  &  mcv  & ds2, ds3, ect, maf, mdf \\  -->
-<!--   \hline -->
-<!--   No Trend & lpt, mav, stl  &  cle, ds1, lps, pmx\\ -->
-<!--    \hline -->
-<!-- \end{tabular} -->
-<!-- \label{whichmodel} -->
-<!-- \end{table} -->
-
-
-<!-- Trends terms included in were observed in ds2, ds3, ect, maf, mdf, mcv,  -->
-<!-- OU term included in model: mcv, lpt, stl -->
-<!-- model_list[["cle"]] <- 3 -->
-<!-- model_list[["ds1"]] <- 3 -->
-<!-- model_list[["ds2"]] <- 1 -->
-<!-- model_list[["ds3"]] <- 1 -->
-<!-- model_list[["ect"]] <- 1 -->
-<!-- model_list[["lps"]] <- 3 -->
-<!-- model_list[["lpt"]] <- 2 -->
-<!-- model_list[["maf"]] <- 1 -->
-<!-- model_list[["mav"]] <- 2 -->
-<!-- model_list[["mcv"]] <- 0 -->
-<!-- model_list[["mdf"]] <- 1 -->
-<!-- #model_list[["mds"]] <- 3 -->
-<!-- #model_list[["mpt"]] <- 0 -->
-<!-- model_list[["pmx"]] <- 3 -->
-<!-- model_list[["stl"]] <- 2 -->
-<!-- #model_list[["tpg"]] <- 1 -->
-<!-- Greg notes:  -->
-<!-- - mdf and maf have interesting trends.   -->
-<!-- - ds3 flips over time.  Females have larger values to start and over the course of the time frame wer are looking at males end up with larger mean values.   -->
-<!-- - Most of the other traits have mean differences that are relatively constant over time.   -->
-
-<!-- In our empirical study, we analyze the following four nested models for the mean process outlined in (\ref{eq:mu}): -->
-<!-- \begin{itemize} -->
-<!-- \item OU with Trend: The mean process for each phenotype $k=1,\cdots,K$ and $g \in \{f,m\}$ as previously defined. -->
-<!-- \item OU with No Trend: No linear trend on the mean processes and the overall mean of the phenotype is constant for each sex. This is achieved by setting $\beta_{1,kg} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$ and $g \in \{f,m\}$ -->
-<!-- \item No OU with Trend: No random fluctuations on the mean processes, i.e. the OU process assumption is not needed. This is achieved by setting $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$. -->
-<!-- \item No OU with No Trend: The mean for a specific trait and specific sex at each time point is a constant value. This is achieved by setting $\beta_{1,kg} = 0$ and $u_{k,gt_i} = 0$ in (\ref{eq:mu}) for $k = 1,\cdots,K$, $g \in \{f,m\}$, and $i = 1,\cdots,T$. -->
-<!-- \end{itemize} -->
-

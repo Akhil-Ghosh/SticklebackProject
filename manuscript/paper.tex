@@ -101,7 +101,7 @@
   urlcolor={cyan},
   pdfcreator={LaTeX via pandoc}}
 
-\title{~\Large Increased sexual dimorphism evolves in a fossil
+\title{~\Medium Increased sexual dimorphism does not evolve in a fossil
 stickleback following ecological release from fish piscivores}
 \author{\large Matthew Stuart\(^{1,2}\), Allison Ozark\(^{3}\), Raheyma
 Siddiqui\(^3\), Akhil Ghosh\(^{1,2}\)\\
@@ -124,8 +124,26 @@ CA, USA \vspace{-1.1mm}\\
 \begin{document}
 \maketitle
 \begin{abstract}
-Everyone loves the stickle \vspace{2mm}\\
-\emph{Keywords}: Stickle
+Theory suggests that populations should expand their habitat- and
+resource-use niches when they are freed from interactions with
+competitors and predators--so-called ecological release. One way that
+this ecological release can manifest is through increased differences
+between males and females of the same species as they diverge into
+different niches. If divergent niche use drives corresponding divergent
+adaptation in in the traits used to exploit the divergent niches, then
+theory predicts an increase in sexual dimorphism for those traits,
+sometimes called character displacement between the sexes. Using a
+dataset of 16 traits collected from 18 temporal samples spread across
+16,500 years of evolution of the fossil stickleback fish,
+\emph{Gasterosteus doryssus}, we tested the prediction that release from
+predation inferred in this system would result in character displacement
+between the sexes. We used data from populations of extant stickleback
+(\emph{Gasterosteus aculeatus}) to build an imputation model to classify
+individual sex in fossil specimens. Then, we quantified the extent of
+sexual dimorphism at each temporal sample, and tracked how it changed
+through time. \vspace{2mm}\\
+\emph{Keywords}: character displacement, character release, evolutionary
+time series, \emph{Gasterosteus doryssus}, missing data imputation
 \end{abstract}
 
 \newcommand{\iid}{\overset{iid}{\sim}}
@@ -318,9 +336,9 @@ for each of the 18 samples. There are at least 22 specimens in each
 sample with a high of 67 specimens in sample 7.
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1607}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.0893}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.7500}}@{}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2034}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.0847}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.7119}}@{}}
 \toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Trait Name
@@ -332,44 +350,41 @@ Trait Description
 \midrule()
 \endhead
 Standard Length & \texttt{stl} & Distance from anterior tip of
-premaxilla to posterior end of last vertebra (hypural plate) \\
-Dorsal Spine & \texttt{mds} & Number of dorsal spines from 0 to 3 \\
-Dorsal Fin Ray & \texttt{mdf} & Number of bones in the dorsal fin
+premaxilla to posterior end of last vertebra (i.e., the llhypural
+plate) \\
+Dorsal Spine Count & \texttt{mds} & Number of dorsal spines \\
+Dorsal Fin Ray Count & \texttt{mdf} & Number of bones in the dorsal fin
 posterior to the third dorsal spine (i.e., soft dorsal fin rays) \\
-Anal Fin Ray & \texttt{maf} & Number of bones in the anal fin posterior
-to the anal spine (i.e., soft dorsal fin rays) \\
-Abdominal Vertebra & mav & Number of vertebrae anterior to the first
-vertebra contacting an anal fin pterygiophore (Aguirre et al.~2014) \\
-Caudal Vertebra & \texttt{mcv} & Number of vertebrae posterior to and
-including the first vertebra contacting an anal fin pterygiophore
+Anal Fin Ray Count & \texttt{maf} & Number of bones in the anal fin
+posterior to the anal spine (i.e., soft anal fin rays) \\
+Abdominal Vertebra Count & mav & Number of vertebrae anterior to the
+first vertebra contacting an anal fin pterygiophore (Aguirre et
+al.~2014) \\
+Caudal Vertebra Count & \texttt{mcv} & Number of vertebrae posterior to
+and including the first vertebra contacting an anal fin pterygiophore
 (Aguirre et al.~2014) \\
-Pterygiophore number & \texttt{mpt} & Number of pterygiophores anterior
-to but excluding the pterygiophore under the third dorsal spine, which
-is immediately anterior to and contiguous with the dorsal fin \\
-Pelvic Spine length & \texttt{lps.sc} & Length from the base of one
-pelvic spine above its articulation with the pelvic girdle to its distal
-tip \\
-Ectocoracoid & \texttt{ect.sc} & Length between the anterior and
-posterior tips of the shoulder girdle base (i.e., ectocoracoid) \\
-Pelvic Girdle & \texttt{tpg.sc} & Length between the anterior to
-posterior tips along midline. If vestigial, the sum of longest
-anterior-posterior axis for the vestiges \\
-Cleithrum length & \texttt{cle.sc} & Length from free dorsal tip to
-ventral tip of the cleithrum on the anterior margin of the shoulder
-girdle (i.e., cleithrum) \\
-Premaxilla & \texttt{pmx.sc} & Length from the anterior tip of the
-premaxilla to the distal tip of the ascending process of the
-premaxilla \\
-Dorsal Spine & \texttt{Ds\#.sc\ \#=1/2/3} & Length from the base of a
-dorsal spine above the pterygiophore to its distal tip along the
-anterior edge \\
-Pterygiophore & \texttt{lpt.sc} & Distance between the anterior to
-posterior tips of the pterygiophore immediately preceding the 3rd dorsal
-spine (when present) \\
+Pterygiophore Count & \texttt{mpt} & Number of pterygiophores anterior
+to but excluding the pterygiophore under the third dorsal spine \\
+Pelvic Spine Length & \texttt{lps.sc} & Length from the base of one
+pelvic spine at its pelvic girdle articulation to its distal tip \\
+Ectocoracoid Length & \texttt{ect.sc} & Length from the anterior to
+posterior tips of the shoulder girdle base \\
+Pelvic Girdle Length & \texttt{tpg.sc} & Length from the anterior to
+posterior tips along midline. If vestigial, the sum of longest axis
+along vestiges \\
+Cleithrum Length & \texttt{cle.sc} & Length from dorsal tip to ventral
+tip on the anterior margin of the shoulder girdle \\
+Premaxilla Length & \texttt{pmx.sc} & Length from the anterior tip of
+the premaxilla to the distal tip of its ascending process \\
+Dorsal Spine Length & \texttt{Ds\#.sc\ \#=1/2/3} & Length from the
+dorsal spine base at the pterygiophore to its distal tip \\
+Pterygiophore Length & \texttt{lpt.sc} & Distance from anterior to
+posterior edges of the pterygiophore immediately before ds3 (when
+present) \\
 \bottomrule()
 \end{longtable}
 
-\textcolor{red}{This table caption should be part of the table. Top row.. -YS}
+\textcolor{red}{This table caption should be part of the table. Top row. at the very least, it should be the width of the table. -YS}
 Table: Traits and trait descriptions. `sc' denotes size correction of
 trait against standard length. Names of bones follow Bowne
 (\protect\hyperlink{ref-Bowne1994}{1994}) unless otherwise noted.
@@ -398,24 +413,25 @@ S1). The Enos specimens had been fixed whole in formalin and stored in
 preserved whole in 95\% ethanol in the field before being gradually
 transferred to water then formalin in the lab and ultimately stored in
 40\% isopropanol. In 2019, we stained these specimens for bone using
-Alizarin Red. We next replicated fossil data collection (Table 1) on
-these extant specimens. Standard length as well as pelvic-spine length
-on each side were measured with calipers. We used a dissection
-microscope to count dorsal spines, pelvic spines, dorsal-fin rays, and
-anal-fin rays. Right and left-side pelvic girdle lengths and
-ectocoracoid lengths were measured from ventral photographs taken using
-a Canon EOS Rebel T7 with a Tamron 16-300 mm MACRO lens mounted on a
-leveled Kaiser RS1 copy stand. Specimens were held in place for ventral
-photographs using a small tabletop vise with an attached scale bar.
-Lateral X-rays were used to measure dorsal spine length, number of
-pterygiophores anterior to the pterygiophore holding the third spine,
-length of the pterygiophore just anterior to the third spine, cleithrum
-length, and pre-maxilla ascending branch length. We also counted
-vertebrae from the X-rays: abdominal vertebrae were counted anterior to
-the first vertebra with a haemal spine contacting an anal fin
-pterygiophore. Caudal vertebrae were posterior, including the first
-vertebra with the haemal spine contacting the anal fin pterygiophore
-(following Aguirre, Walker, and Gideon
+Alizarin Red.
+
+We next replicated fossil data collection (Table 1) on these extant
+specimens. Standard length as well as pelvic-spine length on each side
+were measured with calipers. We used a dissection microscope to count
+dorsal spines, pelvic spines, dorsal-fin rays, and anal-fin rays. Right
+and left-side pelvic girdle lengths and ectocoracoid lengths were
+measured from ventral photographs taken using a Canon EOS Rebel T7 with
+a Tamron 16-300 mm MACRO lens mounted on a leveled Kaiser RS1 copy
+stand. Specimens were held in place for ventral photographs using a
+small tabletop vise with an attached scale bar. Lateral X-rays were used
+to measure dorsal spine length, number of pterygiophores anterior to the
+pterygiophore holding the third spine, length of the pterygiophore just
+anterior to the third spine, cleithrum length, and pre-maxilla ascending
+branch length. We also counted vertebrae from the X-rays: abdominal
+vertebrae were counted anterior to the first vertebra with a haemal
+spine contacting an anal fin pterygiophore. Caudal vertebrae were
+posterior, including the first vertebra with the haemal spine contacting
+the anal fin pterygiophore (following Aguirre, Walker, and Gideon
 (\protect\hyperlink{ref-Aguirreetal2014}{2014})). X-rays were taken with
 an AXR Hot Shot X-ray Machine (Associated X-ray Corporation) at the
 Field Museum of Natural History. Specimens were exposed at 35kV and 4mA.
@@ -425,16 +441,11 @@ using the B\&W Negatives setting on an Epson Perfection 4990 Photo
 flatbed at 2400 dpi. Measurements from photographs and X-rays were taken
 with FIJI (Schindelin et al.
 (\protect\hyperlink{ref-Schindelinetal2012}{2012})) and its plugin
-ObjectJ (\url{https://sils.fnwi.uva.nl/bcb/objectj/}).
-
-We dissected individuals from the generalist populations (Table S1) to
-determine sex from the gonads. Individuals from the species-pair lakes
-(TableS1) were previously sexed by the Schluter lab, using either
-dissection or a genotyping protocol (Whom, personal communication).
-
-The extant data used here consists of a total of 367 specimens all with
-known sex (Table S1). Of these, there are 202 and 165 female and male
-specimens, respectively.
+ObjectJ (\url{https://sils.fnwi.uva.nl/bcb/objectj/}). We dissected
+individuals from the generalist populations (Table S1) to determine sex
+from the gonads. Individuals from the species-pair lakes (TableS1) were
+previously sexed by the Schluter lab, using either dissection or a
+genotyping protocol \textcolor{red}{(Whom, personal communication)}.
 
 \hypertarget{outlier-analysis-and-size-correction.}{%
 \subsection{Outlier analysis and size
@@ -462,7 +473,7 @@ next.
 \subsection{Missing data imputation, including fossil
 sex}\label{missing-data-imputation-including-fossil-sex}}
 
-Briefly, We used multiple imputation (Little and Rubin
+Briefly, we used multiple imputation (Little and Rubin
 (\protect\hyperlink{ref-little2002statistical}{2002})) to impute the sex
 of the fossils. Let \(\boldsymbol{W}\) be an
 \((n_{extant} + n_{fossil}) \times 1\) vector of the covariate sex of
@@ -473,7 +484,7 @@ unobservable, we further define
 \(\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T\)
 where \(\boldsymbol{W}_{extant}\) and \(\boldsymbol{W}_{fossil}\) are
 the \(n_{extant} \times 1\) and \(n_{fossil} \times 1\) vectors of the
-observed extant sex and missing fossil sex, respectively. We imputeD
+observed extant sex and missing fossil sex, respectively. We imputed
 missing sex for the fossil data by sampling from the posterior
 predictive distribution
 \(P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})\)
@@ -486,31 +497,33 @@ and Reiter (\protect\hyperlink{ref-ZhouReiter2010}{2010}) recommend a
 larger number of imputed data sets if users intend on performing
 Bayesian analysis after imputation. Therefore, we imputed \(M = 100\)
 complete datasets.
+\textcolor{red}{PRESUMABLY this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
 
-\textcolor{red}{presumably this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
 \textcolor{red}{AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
-\textcolor{red}{THE POOLING DESCRIBED IN THE NEXT SENTENCE. WAS IT DONE, AND IF SO, HOW WAS IT USED IN DOWNSTREAM ANALYSES. MATT SAYS THAT HE RAN IS MODELS ON EACH IMPUTED DATA SET. -YS}
+
 We then pooled all of the draws from the posterior distribution across
 all the imputed data sets to estimate the posterior distributions of our
 parameters of interest (i.e., the trait values), rather than using
 Rubin's combining rules, following Zhou and Reiter
-(\protect\hyperlink{ref-ZhouReiter2010}{2010}). We used these posterior
-distributions in our Bayesian analysis.
+(\protect\hyperlink{ref-ZhouReiter2010}{2010}). We then dropped extant
+fish from our imputed data sets and used these posterior distributions
+in our downstream analyses of fossil sexual dimorphism.
 
-\hypertarget{modeling-trait-means-through-time-for-males-and-females}{%
-\subsection{Modeling trait means through time for males and
-females}\label{modeling-trait-means-through-time-for-males-and-females}}
+\hypertarget{modeling-fossil-stickleback-trait-means-through-time-for-males-and-females}{%
+\subsection{Modeling fossil stickleback trait means through time for
+males and
+females}\label{modeling-fossil-stickleback-trait-means-through-time-for-males-and-females}}
 
 The goal of our analysis was to estimate fossil trait means through
-time, by sex, while incorporating uncertainty in the imputed data,
-especially uncertainty sex classification. We took a Bayesian approach
-because imputation is the process of sampling from a posterior
-predictive distribution of missing data, given observed data.
-\textcolor{red}{THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH. -YS}
+time, by sex, while incorporating uncertainty across imputations in the
+classification of sex. We used a Bayesian approach to estimate trait
+means in part because imputation is the process of sampling from a
+posterior predictive distribution of missing data, given observed data.
+\textcolor{red}{THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH, EXPLAINING IT TO MY AUDIENCE. -YS}
 
-\textcolor{red}{DOES THE NEXT SENTENCE CONTRADICT THE PREVIOUS ONE? BELOW, WE SAY THAT WE USED EACH IMPUTED DATA SET. ABOVE, WE SAY THAT WE POOLED ACROSS IMPUTED DATA SETS.-YS}
-To estimate fossil sample means through time, we first dropped the
-extant individuals from our imputed data sets. Then, for a given imputed
+\textcolor{red}{MATT, somewhere we need to describe how you handled traits with lots of evolved zeros (ds1, ds2, ds3, lps, tpg) -YS}
+
+To estimate fossil sample means through time, for a given imputed
 dataset, we let \(W_{ij}\) be the imputed sex and
 \(\boldsymbol{Y}_{ij}\) be the \(K \times 1\) vector of phenotypes for
 stickleback fossil \(j\) at time \(t_i\) where \(i = 1, \ldots, T\) and
@@ -521,51 +534,52 @@ fish individual, a measure of body size. \begin{align}
 \label{eq:stl}
 \end{align}
 
-It is reasonable to assume that the other continuous traits will have
-some correlation with standard length \textbf{(CITATION)}. We account
-for this by adding an additional parameter, \(\gamma_k\), If
-\(Y_{k,ij}\) is a continuous trait, then \begin{align}
+Continuous traits will likely have some correlation with standard length
+(i.e., allometry) (Huxley
+(\protect\hyperlink{ref-Huxley1932}{1932}))(Voje, Bell, and Stuart
+(\protect\hyperlink{ref-Vojeetal2022}{2022}))(Voje et al.
+(\protect\hyperlink{ref-Vojeetal2014}{2014})). We account for this by
+adding an additional parameter, \(\gamma_k\), If \(Y_{k,ij}\) is a
+continuous trait, then \begin{align}
 {Y}_{k,ij} & \overset{iid}{\sim}\left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{k,mt_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:cont}
 \end{align}
 
 If \(Y_{k,ij}\) is a discrete trait, the conventional modelling method
-is to fit a Poisson distribution. However, because the empirical fossil
-data violate the assumption that the Poisson variance is equal to its
-mean, we fit discrete traits to a generalized Poisson model as defined
-in
-(\protect\hyperlink{ref-GeneralizedPoisson}{\textbf{GeneralizedPoisson?}}).
+is to fit a Poisson distribution. However, the empirical fossil data
+violate the assumption that the Poisson variance is equal to its mean,
+so we fitted discrete traits to a generalized Poisson model
+((\protect\hyperlink{ref-GeneralizedPoisson}{\textbf{GeneralizedPoisson?}})).
 Specifically, if \(X \sim GP(\lambda,\alpha)\), then \begin{align}
 P(X = x) = \left\{\begin{array}{cc} \frac{(1 - \alpha)\lambda[(1 - \alpha)\lambda + \alpha x]^{x - 1} \exp\left\{-((1 - \alpha)\lambda  + \alpha x)\right\}}{x!} & (1 - \alpha)\lambda  + \alpha x \geq 0  \\ 0 & (1 - \alpha)\lambda  + \alpha x < 0 \end{array}\right.,
 \label{eq:GP_pmf}
 \end{align} where GP denotes a generalized Poisson distribution with
 \(E(X) = \lambda\) and \(Var(X) = \frac{\lambda}{(1 - \alpha)^2}\).
 
-In addition, we allowed that two discrete traits, abdominal vertebrae
-number (mav) and caudal vertebrae number (mcv) could also with standard
-length (\textbf{CITATION}). This is because these are vertebral counts
-that run in parallel with the standard length measurement, along the
-anterior-posterior access of the fish; these vertebrae thus contribute
-to the length of the fish directly, and may evolve in a correlated
-fashion. If \(Y_{k,ij}\) is one of the above traits, then \begin{align}
+In addition, we modeled two discrete traits, abdominal vertebrae number
+(mav) and caudal vertebrae number (mcv) to vary with standard length.
+This is because these are vertebral counts that made along the
+anterior-posterior access of the fish; these vertebrae contribute to the
+length of the fish directly and may evolve in a correlated fashion. If
+\(Y_{k,ij}\) is one of the above traits, then \begin{align}
 {Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_corr}
 \end{align}
 
-For the other discrete traits, we set \(\gamma_k = 0\) because we expect
-that trait counts are set during early ontogeny, and should not change
-with size in adult fish. Thus, \begin{align}
+For the other discrete counting traits, we set \(\gamma_k = 0\) because
+we expect that trait counts are set during early ontogeny and should not
+change with size in adult fish. Thus, \begin{align}
 {Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_ind}
-\end{align} We point out that, for the discrete traits, the means are
-represented by \(\exp\{\mu_{k,ft_i}\}\) and \(\exp\{\mu_{k,mt_i}\}\) for
-ease of modeling.
+\end{align} We point out that counting trait means are represented by
+\(\exp\{\mu_{k,ft_i}\}\) and \(\exp\{\mu_{k,mt_i}\}\) for ease of
+modeling.
 
 In the above model descriptions, \(\mu_{k,ft_i}\) and \(\mu_{k,mt_i}\)
 model the time-\(t_i\), sample-specific trait mean \(k\) for females and
-males, respectively. To account for the possibility that there is a time
--dependent trend in \(\mu_{k,ft_i}\) and \(\mu_{k,mt_i}\), we further
-set \begin{align}
+males, respectively. To account for the possibility that there is a
+time-dependent (i.e., evolutionary trend) trend in \(\mu_{k,ft_i}\) and
+\(\mu_{k,mt_i}\), we further set \begin{align}
 \mu_{k,gt_i} = \beta_{0,kg} + \beta_{1,kg}t_i + u_{k,gt_i},
 \label{eq:mu}
 \end{align} for \(g \in \{f,m\}\), where \(\beta_{0,kg}\) and
@@ -593,16 +607,14 @@ initial value \(u_{k,gt_1}\) is assumed to be a (potentially unknown)
 constant. This unknown constant can therefore be considered a latent
 variable, further justifying our Bayesian approach, which better
 incorporates prior information and uncertainty from missing data
-imputation in the estimate of the variable.
+imputation in the estimate of latent variables.
 
-We discuss the procedure for estimating this value below.
-\textcolor{red}{DID THIS GET DISCUSSED?-YS}
-
-Priors: To aid in the sampling procedure for the discrete phenotypes, we
-first had to transform the parameters of the generalized Poisson
-distribution onto the real number line in order to ensure our algorithm
-can properly sample from the posterior distribution of interest using
-STAN software. This was done by declaring
+\textcolor{red}{Q FOR MATT. Is transforming the GP onto the real number line separate from setting the priors? If so, should the statement of transformation go in the section where the GP and discrete trait modeling is discussed. Then priors get their own section here? -YS}
+To aid in the sampling procedure for the discrete phenotypes, we first
+had to transform the parameters of the generalized Poisson distribution
+onto the real number line in order to ensure our algorithm can properly
+sample from the posterior distribution of interest using STAN software.
+This was done by declaring
 \(\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)\)
 where
 \(\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.\).
@@ -628,69 +640,79 @@ We also note that, for the discrete phenotypes in equations
 and it is not sampled, and for the continuous phenotypes in equation
 (\ref{eq:cont}), there is no \(\phi_k\) and it is not sampled.
 
-We follow the method outlined in
-(\protect\hyperlink{ref-ZhouandReiter}{\textbf{ZhouandReiter?}}) to
-obtain \(R\) draws from the posterior distribution of the outlined model
-parameters given our observed data and imputed values. More
-specifically, for the \(j^{th}\) imputed data set where
-\(j = 1,\cdots,M\), we obtain \(\frac{R}{M}\) draws from the posterior
-distribution using an MCMC algorithm with a sufficient burnin period,
-and then we combine these \(M\) MCMC draws to say that we have a total
-of \(R\) draws from the overall posterior distribution of interest,
-which can then be used to assess the presence of sexual dimorphism for a
-given trait.
+We follow the method outlined in Zhou and Reiter
+(\protect\hyperlink{ref-ZhouReiter2010}{2010}) to obtain \(R\) draws
+from the posterior distributions of the model parameters given our
+observed data and imputed values. More specifically, for the \(j^{th}\)
+imputed data set where \(j = 1,\cdots,M\), we obtain \(\frac{R}{M}\)
+draws from the posterior distribution using an MCMC algorithm with a
+sufficient burnin period, and then we combine these \(M\) MCMC draws to
+say that we have a total of \(R\) draws from the overall posterior
+distribution of interest.
 
-After running these models, we have posterior distributions of all the
-model parameters of interest. From these, we can obtain samples from the
-posterior distribution of mean trait values for each trait for males and
-females, using equation 6. We use these values for the following
-analyses.
+For the continuous phenotypes, the mean trait sizes for each sex
+\(\mu_{k,m,t_i}\) and \(\mu_{k,f,t_i}\) are calculated using
+(\ref{eq:mu}).For the discrete phenotypes, equations
+(\ref{eq:disc_corr}) and (\ref{eq:disc_ind}) calculate the mean trait
+size is \(\lambda_{k,m,t_i} = \exp(\mu_{k,m,t_i})\) and
+\(\lambda_{k,f,t_i} = \exp(\mu_{k,f,t_i})\) for males and females. For
+simplicity, we will use \(\mu_{k,m,t_i}\) and \(\mu_{k,f,t_i}\) as the
+notation for mean size for both discrete and continuous traits for the
+rest of this discussion. From our MCMC algorithm, we obtain \(M\)
+samples from the posterior distribution of
+\(\mu_{k,m,t_i} - \mu_{k,f,t_i}\). That is, with posterior distributions
+of the model parameters described above, we obtained \(M\) samples from
+the posterior distribution of mean trait values by trait for males and
+females at each time step. We then used these values to quantify the
+presence or absence of sexual dimorphism, and describe how sexual
+dimorphism evolved through time.
 
 \hypertarget{quantifying-sexual-dimorphism-and-testing-for-increased-sexual-dimorphism-through-time.}{%
 \subsection{Quantifying sexual dimorphism, and testing for increased
 sexual dimorphism through
 time.}\label{quantifying-sexual-dimorphism-and-testing-for-increased-sexual-dimorphism-through-time.}}
 
-We identify sexual dimorphism first by calculating the difference in
-mean trait size for males and females at each time for phenotype \(k\)
-(\(\mu_{k,m,t_i} - \mu_{k,m,t_i}\)) for \(i = 1,\cdots,T\) where, for
-the continuous phenotypes, the mean trait sizes for each sex
-\(\mu_{k,m,t_i}\) and \(\mu_{k,f,t_i}\) are calculated using
-(\ref{eq:mu}). For the discrete phenotypes, we note that in
-(\ref{eq:disc_corr}) and (\ref{eq:disc_ind}) the mean trait size is
-\(\lambda_{k,m,t_i} = \exp(\mu_{k,m,t_i})\) and
-\(\lambda_{k,f,t_i} = \exp(\mu_{k,f,t_i})\) for males and females,
-respectively, which is the value we use in our analysis. For simplicity,
-we will use \(\mu_{k,m,t_i}\) and \(\mu_{k,f,t_i}\) as the notation for
-mean size for both discrete and continuous traits for the rest of this
-discussion. From our MCMC algorithm, we obtain \(M\) samples from the
-posterior distribution of \(\mu_{k,m,t_i} - \mu_{k,f,t_i}\) to use in
-our analysis.
+We quantified sexual dimorphism at each time step by calculating the
+difference in mean trait size for males and females at each time for
+phenotype \(k\), \(\mu_{k,m,t_i} - \mu_{k,f,t_i}\), for
+\(i = 1,\cdots,T\). The presence of sexual dimorphism was indicated
+by\ldots{}
+\textcolor{red}{Matt, can you help me with Bayesian the language here? I think this is the place to reference the two post probs plots, yes? Values far from fifty fifty indicate that the mass of the posterior distribution is away from a male female difference of zero. YS}
 
-Recall that we predicted that sexual dimorphism should increase through
-time in Lineage II, following ecological release from predators.
-However, this change in dimorphism make be increasing at a non-constant
-rate, as pointed out by the inclusion of the OU process. We assess for
-dimorphism by calculating a Kendall's \(\tau\) coefficient (KENDALL
+Then, to test our prediction that ecological release should result in an
+increase in sexual dimorphism through time, we calculated Kendall's
+\(\tau\) coefficient for each trait (Kendal
 (\protect\hyperlink{ref-KendallsTau}{1938})). Kendall's \(\tau\)
 assesses the ordinal association between a set of bivariate
 observations, where \(\tau > 0\) indicates concordance between the
-observations (i.e., as \(x\) increases, \(y\) also tends to increase.)
+observations (i.e., as \(x\) increases, \(y\) also tends to increase;
+here,\(x\) is time and \(y\) is sexual dimorphism.) Kendall's \(\tau\)
+varies between -1 and 1, and can be thought of as behaving like a
+correlation. Values farther from zero indicate a stronger relationship.
 
-For our analysis, we calculate
 \(\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}\) for trait \(k\)
 where \(\tau_r\) is the estimate of the Kendall's \(\tau\) correlation
 for \(\mu_{k,m,t_i} - \mu_{k,f,t_i}\) versus time \(t_i\) for the
-\(r^{th}\) MCMC sample from the posterior distribution. The posterior
-probability of sexual dimorphism for trait \(k\) can be estimated as the
-proportion of values in \(\boldsymbol{\tau}_k\) that are greater than 0
-(\(\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)\)). We can also assess the
-strength of the dimorphism by calculating the proportion of posterior
-samples that are greater than a prespecified threshold
-\textcolor{red}{(0.5??, idk what this could be.) -MS}
+\(r^{th}\) MCMC sample from the posterior distribution.
+\textcolor{red}{Matt, I think there's an absolute value problem here. Dimorphism can increase of M-F gets more positive or more negative. I've indicated that in the text below, but I could use some help refininig the explanation -YS}
+For each trait, the proportion of values in \(\boldsymbol{\tau}_k\) that
+are greater than 0 (\(\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)\)) may
+indicate that males have gotten relatively larger than females,
+indicating more pronounced dimorphism. For each trait, the proportion of
+values in \(\boldsymbol{\tau}_k\) that are less than 0
+(\(\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} < 0)\)) may indicate that
+females have gotten relatively larger than males, indicating more
+pronounced dimormphism.
 
 \hypertarget{sec:results}{%
 \section{Results}\label{sec:results}}
+
+The extant data used here consist of a total of 367 specimens all with
+known sex (Table S1). Of these, there are 202 and 165 female and male
+specimens, respectively.
+
+\hypertarget{missing-data-imputation}{%
+\subsection{Missing Data Imputation}\label{missing-data-imputation}}
 
 \textcolor{red}{WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
 
@@ -710,25 +732,12 @@ males versus females (values above 0 indicate means that were greater
 for males versus females). The full posterior distributions over time
 for all traits are shown in the appendix.
 
-Traits such as standard length (stl), anal fin ray (maf), dorsal fin ray
-(mdf), premaxilla (pmx), and dorsal spine 1 (ds1) demonstrate constant
-sexual dimorphism with all but the last having learger mean values in
-male sepcimen. Other traits such as abdominal vertebra (mav), caudal
-vertebra (mcv), and pelvic spine length (lps) don't appear to have any
-discernable sexual dimorphism in the means. Dorsal spine 3 (ds3)
-exhibits sexual dimorphism that changes over time. The mean number of
-dorsal spine 3 begins larger for females for the earliest observed time
-periods. Over time, however, this switches and the male specimens
-exhibit larger mean values for the latest observed time periods.
-
-\textcolor{red} {
-Yoel's interpretation of the three paragraphs above. Male and female G. doryssus differ for some traits, indicating detectable sexual dimorphism. This is evidenced by traits with substantial differences in male and female posterior means (i.e., deviation from 0 in Figure \ref{fig:mu-diff-plot}), supported by posterior probabilities that deviate from 0.5 (Figure \ref{fig:prob0-plot}). For example, males are larger than females by 3-8mm on average through time (stl panel in Figure \ref{fig:mu-diff-plot}), with a posterior probability for that mean difference above 70 percent through time (Figure \ref{fig:prob0-plot}). In contrast, the number of abdominal vertebrae (mav) fluctuates about 0 (Figure \ref{fig:mu-diff-plot}), with posterior probabilities fluctuating about 50 percent through time (Figure \ref{fig:prob0-plot}). Table \ref{tab:prob0-table} in the Supplementary Material summarizes the posterior probabilities that male means differ from female means by trait and sample.
-}
-
-\textcolor{red}{can we move mu-diff-plot and prob0-plot here?}
-
 \hypertarget{changes-over-time}{%
 \subsection{Changes over time}\label{changes-over-time}}
+
+We can also assess the strength of the dimorphism by calculating the
+proportion of posterior samples that are greater than a prespecified
+threshold \textcolor{red}{(0.5??, idk what this could be.) -MS}
 
 Table \ref{tab:auc-table} shows the probability that the posterior
 distribution of the differences in the mean is greater than the
@@ -739,252 +748,6 @@ distributions with values of 1 meaning the difference in means has
 shifted towards males having a larger mean and values of 0 indicating
 the difference in means has shifted towards larger means in females.
 These results are shown graphically in figure \ref{fig:AUC-plot}.
-
-The amount of sexual dimporphism over time does not change substantially
-for a majority of the trait observed here (i.e.~cle, ds1, ds2, ect, lps,
-lpt, mav, mcv, pmx, stl). Traits that trend away from the mean
-difference at the first observed time point include dorsal spine 3
-(ds3), anal fin ray (maf), and dorsal fin ray (mdf).
-
-The posterior mean of the mean number of dorsal spine rays at the first
-observed time point is 2.29 for males and for females it is 2.45. At the
-last observed time point, the average number for males and female both
-dropped to 1.265 and 1.185 for males and females, respectively. This
-resulted in a mean number of dorsal spine 3 lost by males of 1.027 and
-for females it was 1.264. This resulted in a change of the mean
-difference from time point 1 to time point 18 of 0.236. Basically, males
-and females both lowered the mean number of dorsal spine 3, but females
-lowered their mean more than the males.
-
-We also observed a change in the differences between males and females
-for the number of bones int he anal fin ray (maf) and the number of
-bones in the dorsal fin ray. The difference in the means of males versus
-females for anal fin ray bones changed by 0.152 over the course of the
-observed time periods. This change was driven mostly by the change in
-females. At the first observed time period the had on average 8.291
-bones dropping to 8.170 over the 18 times periods observed. Whereas for
-males the change in means rose only from 8.518 to 8.549, about 0.0316
-bones on average.
-
-A similar change in the difference of the means over time was observed
-for the number of bones in the dorsal fin (mdf). However, unlike maf,
-this change in sexual dimporhism was driven entirely by the males. The
-mean change for females over the 18 observed time periods was only
-0.0055 with the average number of dorsal fin bones for females starting
-at 9.287 and the final observed mean of 9.281 resulting in almost no
-change in the mean. For males, the average number of dorsal fin bones at
-the first time point was about 9.568 dropping to 9.734 over the course
-of the observed time periods for a gain of 0.166 bones on average.
-
-\textcolor{red} {
-Yoel's interpretation of the five paragraphs above. 
-Figure \ref{fig:AUC-plot} shows the posterior probability that the mean male-female difference at time t is different from the male-female difference at time zero. In other words, Figure \ref{fig:AUC-plot} plots whether the sexual dimorphism changes in subsequent samples, always relative to the first sample. The amount of sexual dimporphism over time does not change substantially for a majority of the traits (i.e. cle, ds1, ds2, ect, lps, lpt, mav, mcv, pmx, stl; Figure \ref{fig:AUC-plot}). Traits that change in dimorphism are anal fin ray (maf), and dorsal fin ray (mdf), and dorsal spine 3 (ds3).}
-
-\textcolor{red} {
-For example, females at time zero averaged 8.29 rays in the anal fin, dropping to 8.17 rays in the final sample. Males averaged 8.52 anal fin rays in the first sample and 8.55 in the last sample. Thus, the difference between males and females started at 0.23 and ended at 0.38, an increase in sexual dimorphism. In contrast, the sign on dimorphism flipped for ds3. The posterior mean length of the third dorsal spine is 2.29mm for males and 2.45mm for females. By the end of the sequence, mean ds3 for males was 1.27 for males and 1.19 for females. Both sexes evolved reduction of ds3, but females lowered their mean more than the males. This resulted in a flip in dimorphism, from larger females to larger males, though both sexes evolved trait reduction. BUT DIMORPHISM SHRUNK THEN, AS THE DIFFERENCE BETWEEN MALES AND FEMALES IS NOW SMALLER??
-}
-
-\begin{longtable}[]{@{}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0602}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}@{}}
-\toprule()
-\begin{minipage}[b]{\linewidth}\raggedleft
-time
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-cle
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ds1
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ds2
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ds3
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ect
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-lps
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-lpt
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-maf
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-mav
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-mcv
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-mdf
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-pmx
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-stl
-\end{minipage} \\
-\midrule()
-\endhead
-1 & 0.913 & 0.215 & 0.359 & 0.203 & 0.865 & 0.428 & 0.853 & 0.944 &
-0.391 & 0.507 & 0.959 & 0.948 & 0.883 \\
-2 & 0.942 & 0.212 & 0.325 & 0.180 & 0.891 & 0.404 & 0.853 & 0.948 &
-0.520 & 0.520 & 0.963 & 0.967 & 0.908 \\
-3 & 0.843 & 0.207 & 0.249 & 0.153 & 0.770 & 0.279 & 0.803 & 0.965 &
-0.289 & 0.525 & 0.977 & 0.912 & 0.777 \\
-4 & 0.890 & 0.210 & 0.249 & 0.201 & 0.830 & 0.372 & 0.741 & 0.977 &
-0.435 & 0.589 & 0.986 & 0.935 & 0.831 \\
-5 & 0.954 & 0.211 & 0.211 & 0.195 & 0.909 & 0.377 & 0.756 & 0.985 &
-0.533 & 0.622 & 0.992 & 0.975 & 0.921 \\
-6 & 0.885 & 0.211 & 0.134 & 0.171 & 0.820 & 0.291 & 0.686 & 0.991 &
-0.645 & 0.456 & 0.996 & 0.949 & 0.811 \\
-7 & 0.812 & 0.211 & 0.124 & 0.239 & 0.760 & 0.340 & 0.617 & 0.994 &
-0.224 & 0.717 & 0.999 & 0.879 & 0.747 \\
-8 & 0.928 & 0.210 & 0.135 & 0.258 & 0.885 & 0.387 & 0.706 & 0.994 &
-0.342 & 0.730 & 1.000 & 0.969 & 0.872 \\
-9 & 0.899 & 0.213 & 0.145 & 0.304 & 0.857 & 0.406 & 0.715 & 0.995 &
-0.521 & 0.756 & 1.000 & 0.940 & 0.845 \\
-10 & 0.954 & 0.217 & 0.235 & 0.555 & 0.940 & 0.571 & 0.810 & 0.997 &
-0.454 & 0.719 & 1.000 & 0.976 & 0.935 \\
-11 & 0.913 & 0.211 & 0.162 & 0.476 & 0.875 & 0.388 & 0.703 & 0.997 &
-0.363 & 0.657 & 1.000 & 0.957 & 0.864 \\
-12 & 0.949 & 0.221 & 0.262 & 0.726 & 0.929 & 0.585 & 0.803 & 0.997 &
-0.462 & 0.595 & 1.000 & 0.968 & 0.926 \\
-13 & 0.904 & 0.220 & 0.260 & 0.789 & 0.885 & 0.598 & 0.795 & 0.998 &
-0.470 & 0.370 & 1.000 & 0.929 & 0.872 \\
-14 & 0.925 & 0.220 & 0.280 & 0.883 & 0.906 & 0.659 & 0.854 & 0.997 &
-0.526 & 0.472 & 1.000 & 0.958 & 0.898 \\
-15 & 0.880 & 0.225 & 0.283 & 0.839 & 0.849 & 0.617 & 0.796 & 0.997 &
-0.490 & 0.398 & 1.000 & 0.919 & 0.834 \\
-16 & 0.953 & 0.216 & 0.276 & 0.931 & 0.931 & 0.614 & 0.831 & 0.997 &
-0.414 & 0.541 & 1.000 & 0.975 & 0.925 \\
-17 & 0.803 & 0.219 & 0.232 & 0.832 & 0.765 & 0.383 & 0.655 & 0.996 &
-0.569 & 0.758 & 1.000 & 0.854 & 0.751 \\
-18 & 0.780 & 0.212 & 0.225 & 0.817 & 0.726 & 0.297 & 0.558 & 0.995 &
-0.705 & 0.722 & 0.999 & 0.859 & 0.717 \\
-\bottomrule()
-\end{longtable}
-
-\begin{longtable}[]{@{}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0602}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}@{}}
-\toprule()
-\begin{minipage}[b]{\linewidth}\raggedleft
-time
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-cle
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ds1
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ds2
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ds3
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-ect
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-lps
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-lpt
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-maf
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-mav
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-mcv
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-mdf
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-pmx
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-stl
-\end{minipage} \\
-\midrule()
-\endhead
-1 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 &
-0.500 & 0.500 & 0.500 & 0.500 & 0.500 \\
-2 & 0.514 & 0.504 & 0.509 & 0.495 & 0.512 & 0.508 & 0.517 & 0.495 &
-0.396 & 0.490 & 0.495 & 0.511 & 0.513 \\
-3 & 0.636 & 0.514 & 0.559 & 0.516 & 0.628 & 0.601 & 0.602 & 0.475 &
-0.523 & 0.480 & 0.476 & 0.626 & 0.641 \\
-4 & 0.563 & 0.509 & 0.544 & 0.459 & 0.558 & 0.539 & 0.672 & 0.456 &
-0.436 & 0.450 & 0.458 & 0.556 & 0.562 \\
-5 & 0.543 & 0.507 & 0.551 & 0.417 & 0.539 & 0.522 & 0.687 & 0.436 &
-0.389 & 0.425 & 0.439 & 0.537 & 0.544 \\
-6 & 0.618 & 0.512 & 0.589 & 0.415 & 0.613 & 0.579 & 0.716 & 0.415 &
-0.317 & 0.522 & 0.419 & 0.612 & 0.620 \\
-7 & 0.591 & 0.510 & 0.601 & 0.364 & 0.589 & 0.564 & 0.712 & 0.379 &
-0.546 & 0.382 & 0.383 & 0.588 & 0.592 \\
-8 & 0.539 & 0.507 & 0.579 & 0.324 & 0.536 & 0.514 & 0.683 & 0.373 &
-0.478 & 0.368 & 0.378 & 0.537 & 0.540 \\
-9 & 0.524 & 0.506 & 0.586 & 0.299 & 0.521 & 0.510 & 0.636 & 0.355 &
-0.408 & 0.340 & 0.359 & 0.523 & 0.522 \\
-10 & 0.379 & 0.497 & 0.544 & 0.203 & 0.377 & 0.400 & 0.578 & 0.321 &
-0.438 & 0.359 & 0.324 & 0.385 & 0.373 \\
-11 & 0.531 & 0.508 & 0.605 & 0.226 & 0.528 & 0.517 & 0.685 & 0.301 &
-0.528 & 0.403 & 0.303 & 0.530 & 0.533 \\
-12 & 0.363 & 0.492 & 0.547 & 0.150 & 0.360 & 0.386 & 0.566 & 0.284 &
-0.439 & 0.436 & 0.284 & 0.369 & 0.358 \\
-13 & 0.373 & 0.495 & 0.555 & 0.133 & 0.372 & 0.386 & 0.561 & 0.269 &
-0.432 & 0.575 & 0.268 & 0.378 & 0.371 \\
-14 & 0.326 & 0.496 & 0.548 & 0.102 & 0.326 & 0.349 & 0.514 & 0.255 &
-0.399 & 0.514 & 0.253 & 0.334 & 0.323 \\
-15 & 0.365 & 0.492 & 0.552 & 0.107 & 0.365 & 0.373 & 0.502 & 0.250 &
-0.433 & 0.554 & 0.247 & 0.368 & 0.367 \\
-16 & 0.361 & 0.497 & 0.574 & 0.084 & 0.360 & 0.381 & 0.570 & 0.234 &
-0.462 & 0.463 & 0.229 & 0.369 & 0.356 \\
-17 & 0.561 & 0.504 & 0.629 & 0.116 & 0.559 & 0.542 & 0.669 & 0.226 &
-0.364 & 0.313 & 0.219 & 0.559 & 0.565 \\
-18 & 0.625 & 0.512 & 0.648 & 0.121 & 0.617 & 0.596 & 0.735 & 0.220 &
-0.281 & 0.356 & 0.212 & 0.622 & 0.627 \\
-\bottomrule()
-\end{longtable}
-
-posterior mean difference for males versus females (values above 0
-indicate means that were greater for males versus females)
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-latex/mu-diff-plot-1} 
-
-}
-
-\caption{Posterior mean difference between males and females, in UNITS?. Values above 0 indicate larger male means}\label{fig:mu-diff-plot}
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-latex/prob0-plot-1} 
-
-}
-
-\caption{Posterior probabilities that the male posterior mean is larger than the female posterior mean}\label{fig:prob0-plot}
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-latex/AUC-plot-1} 
-
-}
-
-\caption{The Posterior Probability that male-female differences in subsequent samples are different from male-female differenceds in the initial sample. Values near 0.5 indicate little difference between the distributions. Values closer to 0 indicate that the difference in means has shifted towards larger means in females. Values closer to 1 indicate that the difference in means has shifted toward larger means in males.}\label{fig:AUC-plot}
-\end{figure}
 
 \hypertarget{sec:conclusions}{%
 \section{Discussion, Future work and
@@ -1008,9 +771,8 @@ piscivores (Schluter and McPhail
 Schluter (\protect\hyperlink{ref-VamosiandSchluter2004}{2004}); Roesti
 et al. (\protect\hyperlink{ref-Roestietal2023}{2023})).
 
-\hypertarget{acknowledgements}{%
-\section*{Acknowledgements}\label{acknowledgements}}
-\addcontentsline{toc}{section}{Acknowledgements}
+\hypertarget{sec:acknowl}{%
+\section{Acknowledgements}\label{sec:acknowl}}
 
 We thank O. Abughoush, S. Blain, A. Chaudhary, M. Islam, F. Joaquin, C.
 Lawson-Weinert, R. Sullivan, J. Tien, M.P. Travis, and W. Shim for help
@@ -1022,142 +784,18 @@ Center for Field Research (Earthwatch), and the National Geographic
 Society (2869-84) to MAB. It was also supported by NSF grants
 DEB-1456462 and EAR-2145830 to YES. And NSF DMS-2015374 (GJM)
 
-\hypertarget{supplementary-material}{%
-\section*{Supplementary Material}\label{supplementary-material}}
-\addcontentsline{toc}{section}{Supplementary Material}
+\hypertarget{sec:datastatement}{%
+\section{Data and Code Statement}\label{sec:datastatement}}
 
 All code for reproducing the analyses in this paper is publicly
 available at \url{https://github.com/Akhil-Ghosh/SticklebackProject}
+\textcolor{red}{Is this true? Matt's code is at this GitHub page? -YS}
 
-DIC results here.
+\hypertarget{sec:references}{%
+\section{References}\label{sec:references}}
 
-\hypertarget{figures}{%
-\subsection{Figures}\label{figures}}
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/cle/mu_diff} 
-
-}
-
-\caption{cle}\label{fig:unnamed-chunk-6}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/ds1/mu_diff} 
-
-}
-
-\caption{ds1}\label{fig:unnamed-chunk-7}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/ds2/mu_diff} 
-
-}
-
-\caption{ds2}\label{fig:unnamed-chunk-8}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/ds3/mu_diff} 
-
-}
-
-\caption{ds3}\label{fig:unnamed-chunk-9}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/ect/mu_diff} 
-
-}
-
-\caption{ect}\label{fig:unnamed-chunk-10}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/lps/mu_diff} 
-
-}
-
-\caption{lps}\label{fig:unnamed-chunk-11}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/lpt/mu_diff} 
-
-}
-
-\caption{lpt}\label{fig:unnamed-chunk-12}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/maf/lambda_diff} 
-
-}
-
-\caption{maf}\label{fig:unnamed-chunk-13}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/mav/lambda_diff} 
-
-}
-
-\caption{mav}\label{fig:unnamed-chunk-14}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/mcv/lambda_diff} 
-
-}
-
-\caption{mcv}\label{fig:unnamed-chunk-15}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/mdf/lambda_diff} 
-
-}
-
-\caption{mdf}\label{fig:unnamed-chunk-16}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/mds/lambda_diff} 
-
-}
-
-\caption{mds}\label{fig:unnamed-chunk-17}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/mpt/lambda_diff} 
-
-}
-
-\caption{mpt}\label{fig:unnamed-chunk-18}
-\end{figure}
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/pmx/mu_diff} 
-
-}
-
-\caption{pmx}\label{fig:unnamed-chunk-19}
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.9\linewidth]{../Figures/stl/mu_diff} 
-
-}
-
-\caption{stl}\label{fig:unnamed-chunk-20}
-\end{figure}
-
-\hypertarget{references}{%
-\section{References}\label{references}}
+\hypertarget{sec:supplementary}{%
+\section{Supplementary Material}\label{sec:supplementary}}
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
@@ -1279,9 +917,12 @@ Hunt, G, M A Bell, and M P Travis. 2008. {``Evolution Toward a New
 Adaptive Optimum: Phenotypic Evolution in a Fossil Stickleback
 Lineage.''} \emph{Evolution} 62 (3): 700--710.
 
+\leavevmode\vadjust pre{\hypertarget{ref-Huxley1932}{}}%
+Huxley, J S. 1932. \emph{Problems of Relative Growth}. L. MacVeagh.
+
 \leavevmode\vadjust pre{\hypertarget{ref-KendallsTau}{}}%
-KENDALL, M. G. 1938. {``{A NEW MEASURE OF RANK CORRELATION}.''}
-\emph{Biometrika} 30 (1-2): 81--93.
+Kendal, M G. 1938. {``{A new measure of rank correlation}.''}
+\emph{Biometrika} 30 (June): 81--93.
 \url{https://doi.org/10.1093/biomet/30.1-2.81}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-KoscinskiandPietraszewski2004}{}}%
@@ -1389,6 +1030,11 @@ Armor of Sympatric Sticklebacks.''} \emph{Evolution} 58: 376--85.
 Voje, K L, M A Bell, and Y E Stuart. 2022. {``Evolution of Static
 Allometry and Constraint on Evolutionary Allometry in a Fossil
 Stickleback.''} \emph{Journal of Evolutionary Biology} 35 (3): 423--38.
+
+\leavevmode\vadjust pre{\hypertarget{ref-Vojeetal2014}{}}%
+Voje, K L, T F Hansen, C K Egset, G H Bolstad, and C Pelabon. 2014.
+{``Allometric Constraints and the Evolution of Allometry.''}
+\emph{Evolution} 68: 866--85.
 
 \leavevmode\vadjust pre{\hypertarget{ref-ZhouReiter2010}{}}%
 Zhou, X, and J Reiter. 2010. {``A Note on Bayesian Inference After
