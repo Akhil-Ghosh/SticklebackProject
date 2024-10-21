@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.8)  21 OCT 2024 12:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.8)  21 OCT 2024 12:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -453,18 +453,137 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring ON on input line 124.
-! Undefined control sequence.
-\@title ->~\Medium 
-                   Increased sexual dimorphism does not evolve in a fossil s...
-l.126 \begin
-            {abstract} 
-Here is how much of TeX's memory you used:
- 11881 strings out of 475544
- 183062 string characters out of 5776766
- 1925905 words of memory out of 5000000
- 34379 multiletter control sequences out of 15000+600000
- 564381 words of font info for 39 fonts, out of 8000000 for 9000
- 14 hyphenation exceptions out of 8191
- 89i,1n,93p,1053b,385s stack positions out of 10000i,1000n,20000p,200000b,200000s
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 126.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/lm/ot1lmr.fd
+File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 126.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
+File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 126.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/lm/omslmsy.fd
+File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 126.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/lm/omxlmex.fd
+File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <14.4> on input line 126.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <10> on input line 126.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <7> on input line 126.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 126.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 126.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+Overfull \hbox (109.08757pt too wide) in paragraph at lines 126--126
+ [][] 
+ []
 
-!  ==> Fatal error occurred, no output PDF file produced!
+
+
+[1
+
+{/Users/ystuart/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}]
+
+[2]
+
+[3]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 322.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 352.
+(/Users/ystuart/Library/TinyTeX/texmf-dist/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Overfull \hbox (5.46889pt too wide) in paragraph at lines 379--379
+\T1/lmtt/m/n/12 #=1/2/3|  
+ []
+
+[4{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}]
+
+[5]
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <12> on input line 444.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <8> on input line 444.
+LaTeX Font Info:    External font `lmex10' loaded for size
+(Font)              <6> on input line 444.
+
+
+[6]
+
+[7{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
+
+[8{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
+
+[9]
+
+[10]
+
+[11]
+
+LaTeX Warning: Reference `tab:prob0-table' on page 12 undefined on input line 722.
+
+
+LaTeX Warning: Reference `fig:prob0-plot' on page 12 undefined on input line 728.
+
+
+LaTeX Warning: Reference `fig:mu-diff-plot' on page 12 undefined on input line 730.
+
+
+LaTeX Warning: Reference `tab:auc-table' on page 12 undefined on input line 742.
+
+
+LaTeX Warning: Reference `fig:AUC-plot' on page 12 undefined on input line 750.
+
+
+
+[12]
+
+[13]
+
+[14]
+
+Package hyperref Warning: Suppressing link with empty target on input line 952.
+
+
+
+[15]
+
+[16] (./paper.aux)
+ ***********
+LaTeX2e <2024-06-01> patch level 2
+L3 programming layer <2024-05-27>
+ ***********
+
+LaTeX Warning: There were undefined references.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 12286 strings out of 475544
+ 190464 string characters out of 5776766
+ 1941905 words of memory out of 5000000
+ 34606 multiletter control sequences out of 15000+600000
+ 635683 words of font info for 92 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 89i,16n,93p,1069b,583s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+pdfTeX warning (dest): name{ref-GeneralizedPoisson} has been referenced but does not exist, replaced by a fixed one
+
+</Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmib10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
+Output written on paper.pdf (16 pages, 356975 bytes).
+PDF statistics:
+ 467 PDF objects out of 1000 (max. 8388607)
+ 403 compressed objects within 5 object streams
+ 110 named destinations out of 1000 (max. 500000)
+ 137 words of extra memory for PDF output out of 10000 (max. 10000000)
+
