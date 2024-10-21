@@ -7,19 +7,16 @@
   12pt,
 ]{article}
 \usepackage{amsmath,amssymb}
+\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
+  \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -95,7 +92,7 @@
 \fi
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same}
+\urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
   colorlinks=true,
   linkcolor={cyan},
@@ -320,26 +317,11 @@ sampled across the 18 K series samples. Figure 1 shows the sample size
 for each of the 18 samples. There are at least 22 specimens in each
 sample with a high of 67 specimens in sample 7.
 
-THIS FIGURE DOESN'T SHOW MUCH. LET'S CUT FOR SPACE.
-
-\begin{figure}
-
-{\centering \includegraphics{paper_files/figure-latex/unnamed-chunk-2-1} 
-
-}
-
-\caption{Fossil sample size for each time period}\label{fig:unnamed-chunk-2}
-\end{figure}
-
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3492}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1905}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4603}}@{}}
-\caption{Traits and trait descriptions. `sc' denotes size correction of
-trait against standard length. Names of bones follow Bowne
-(\protect\hyperlink{ref-Bowne1994}{1994}) unless otherwise
-noted.}\tabularnewline
-\toprule\noalign{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1607}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.0893}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.7500}}@{}}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Trait Name
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -347,20 +329,8 @@ Trait Code
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Trait Description
 \end{minipage} \\
-\midrule\noalign{}
-\endfirsthead
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-Trait Name
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trait Code
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-Trait Description
-\end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
 Standard Length & \texttt{stl} & Distance from anterior tip of
 premaxilla to posterior end of last vertebra (hypural plate) \\
 Dorsal Spine & \texttt{mds} & Number of dorsal spines from 0 to 3 \\
@@ -390,13 +360,19 @@ girdle (i.e., cleithrum) \\
 Premaxilla & \texttt{pmx.sc} & Length from the anterior tip of the
 premaxilla to the distal tip of the ascending process of the
 premaxilla \\
-Dorsal Spine & \texttt{Ds\#.sc\#\ =\ 1,2,or\ 3} & Length from the base
-of a dorsal spine above the pterygiophore to its distal tip along the
+Dorsal Spine & \texttt{Ds\#.sc\ \#=1/2/3} & Length from the base of a
+dorsal spine above the pterygiophore to its distal tip along the
 anterior edge \\
 Pterygiophore & \texttt{lpt.sc} & Distance between the anterior to
 posterior tips of the pterygiophore immediately preceding the 3rd dorsal
 spine (when present) \\
+\bottomrule()
 \end{longtable}
+
+\textcolor{red}{This table caption should be part of the table. Top row.. -YS}
+Table: Traits and trait descriptions. `sc' denotes size correction of
+trait against standard length. Names of bones follow Bowne
+(\protect\hyperlink{ref-Bowne1994}{1994}) unless otherwise noted.
 
 \hypertarget{extant-specimen-data}{%
 \subsection{Extant Specimen data}\label{extant-specimen-data}}
@@ -664,9 +640,6 @@ of \(R\) draws from the overall posterior distribution of interest,
 which can then be used to assess the presence of sexual dimorphism for a
 given trait.
 
-All models were built using Team
-(\protect\hyperlink{ref-R2022language}{2022}) and (\textbf STAN)
-
 After running these models, we have posterior distributions of all the
 model parameters of interest. From these, we can obtain samples from the
 posterior distribution of mean trait values for each trait for males and
@@ -826,7 +799,7 @@ For example, females at time zero averaged 8.29 rays in the anal fin, dropping t
   >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}@{}}
-\toprule\noalign{}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedleft
 time
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
@@ -856,10 +829,8 @@ pmx
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 stl
 \end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
 1 & 0.913 & 0.215 & 0.359 & 0.203 & 0.865 & 0.428 & 0.853 & 0.944 &
 0.391 & 0.507 & 0.959 & 0.948 & 0.883 \\
 2 & 0.942 & 0.212 & 0.325 & 0.180 & 0.891 & 0.404 & 0.853 & 0.948 &
@@ -896,6 +867,7 @@ stl
 0.569 & 0.758 & 1.000 & 0.854 & 0.751 \\
 18 & 0.780 & 0.212 & 0.225 & 0.817 & 0.726 & 0.297 & 0.558 & 0.995 &
 0.705 & 0.722 & 0.999 & 0.859 & 0.717 \\
+\bottomrule()
 \end{longtable}
 
 \begin{longtable}[]{@{}
@@ -913,7 +885,7 @@ stl
   >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 26\tabcolsep) * \real{0.0723}}@{}}
-\toprule\noalign{}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedleft
 time
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
@@ -943,10 +915,8 @@ pmx
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
 stl
 \end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
 1 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 & 0.500 &
 0.500 & 0.500 & 0.500 & 0.500 & 0.500 \\
 2 & 0.514 & 0.504 & 0.509 & 0.495 & 0.512 & 0.508 & 0.517 & 0.495 &
@@ -983,6 +953,7 @@ stl
 0.364 & 0.313 & 0.219 & 0.559 & 0.565 \\
 18 & 0.625 & 0.512 & 0.648 & 0.121 & 0.617 & 0.596 & 0.735 & 0.220 &
 0.281 & 0.356 & 0.212 & 0.622 & 0.627 \\
+\bottomrule()
 \end{longtable}
 
 posterior mean difference for males versus females (values above 0
@@ -1069,7 +1040,7 @@ DIC results here.
 
 }
 
-\caption{cle}\label{fig:unnamed-chunk-7}
+\caption{cle}\label{fig:unnamed-chunk-6}
 \end{figure}
 \begin{figure}
 
@@ -1077,7 +1048,7 @@ DIC results here.
 
 }
 
-\caption{ds1}\label{fig:unnamed-chunk-8}
+\caption{ds1}\label{fig:unnamed-chunk-7}
 \end{figure}
 \begin{figure}
 
@@ -1085,7 +1056,7 @@ DIC results here.
 
 }
 
-\caption{ds2}\label{fig:unnamed-chunk-9}
+\caption{ds2}\label{fig:unnamed-chunk-8}
 \end{figure}
 \begin{figure}
 
@@ -1093,7 +1064,7 @@ DIC results here.
 
 }
 
-\caption{ds3}\label{fig:unnamed-chunk-10}
+\caption{ds3}\label{fig:unnamed-chunk-9}
 \end{figure}
 \begin{figure}
 
@@ -1101,7 +1072,7 @@ DIC results here.
 
 }
 
-\caption{ect}\label{fig:unnamed-chunk-11}
+\caption{ect}\label{fig:unnamed-chunk-10}
 \end{figure}
 \begin{figure}
 
@@ -1109,7 +1080,7 @@ DIC results here.
 
 }
 
-\caption{lps}\label{fig:unnamed-chunk-12}
+\caption{lps}\label{fig:unnamed-chunk-11}
 \end{figure}
 \begin{figure}
 
@@ -1117,7 +1088,7 @@ DIC results here.
 
 }
 
-\caption{lpt}\label{fig:unnamed-chunk-13}
+\caption{lpt}\label{fig:unnamed-chunk-12}
 \end{figure}
 \begin{figure}
 
@@ -1125,7 +1096,7 @@ DIC results here.
 
 }
 
-\caption{maf}\label{fig:unnamed-chunk-14}
+\caption{maf}\label{fig:unnamed-chunk-13}
 \end{figure}
 \begin{figure}
 
@@ -1133,7 +1104,7 @@ DIC results here.
 
 }
 
-\caption{mav}\label{fig:unnamed-chunk-15}
+\caption{mav}\label{fig:unnamed-chunk-14}
 \end{figure}
 \begin{figure}
 
@@ -1141,7 +1112,7 @@ DIC results here.
 
 }
 
-\caption{mcv}\label{fig:unnamed-chunk-16}
+\caption{mcv}\label{fig:unnamed-chunk-15}
 \end{figure}
 \begin{figure}
 
@@ -1149,7 +1120,7 @@ DIC results here.
 
 }
 
-\caption{mdf}\label{fig:unnamed-chunk-17}
+\caption{mdf}\label{fig:unnamed-chunk-16}
 \end{figure}
 \begin{figure}
 
@@ -1157,7 +1128,7 @@ DIC results here.
 
 }
 
-\caption{mds}\label{fig:unnamed-chunk-18}
+\caption{mds}\label{fig:unnamed-chunk-17}
 \end{figure}
 \begin{figure}
 
@@ -1165,7 +1136,7 @@ DIC results here.
 
 }
 
-\caption{mpt}\label{fig:unnamed-chunk-19}
+\caption{mpt}\label{fig:unnamed-chunk-18}
 \end{figure}
 \begin{figure}
 
@@ -1173,7 +1144,7 @@ DIC results here.
 
 }
 
-\caption{pmx}\label{fig:unnamed-chunk-20}
+\caption{pmx}\label{fig:unnamed-chunk-19}
 \end{figure}
 
 \begin{figure}
@@ -1182,12 +1153,11 @@ DIC results here.
 
 }
 
-\caption{stl}\label{fig:unnamed-chunk-21}
+\caption{stl}\label{fig:unnamed-chunk-20}
 \end{figure}
 
 \hypertarget{references}{%
-\section*{References}\label{references}}
-\addcontentsline{toc}{section}{References}
+\section{References}\label{references}}
 
 \hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
@@ -1405,11 +1375,6 @@ Stuart, Y E, T Veen, J N Weber, D Hanson, M Ravinet, B K Lohman, C J
 Thompson, et al. 2017. {``Contrasting Effects of Environment and
 Genetics Generate a Continuum of Parallel Evolution.''} \emph{Nature
 Ecology and Evolution} 1 (6): 158.
-
-\leavevmode\vadjust pre{\hypertarget{ref-R2022language}{}}%
-Team, R Core. 2022. \emph{R: A Language and Environment for Statistical
-Computing}. Vienna, Austria: R Foundation for Statistical Computing.
-\url{https://www.R-project.org/}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-OUProcess}{}}%
 Uhlenbeck, G E, and L S Ornstein. 1930. {``On the Theory of the Brownian
