@@ -7,16 +7,19 @@
   12pt,
 ]{article}
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math}
+  \usepackage{unicode-math} % this also loads fontspec
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -92,7 +95,7 @@
 \fi
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
+\urlstyle{same}
 \hypersetup{
   colorlinks=true,
   linkcolor={cyan},
@@ -339,7 +342,7 @@ sample with a high of 67 specimens in sample 7.
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2034}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.0847}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.7119}}@{}}
-\toprule()
+\toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
 Trait Name
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -347,8 +350,10 @@ Trait Code
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Trait Description
 \end{minipage} \\
-\midrule()
+\midrule\noalign{}
 \endhead
+\bottomrule\noalign{}
+\endlastfoot
 Standard Length & \texttt{stl} & Distance from anterior tip of
 premaxilla to posterior end of last vertebra (i.e., the llhypural
 plate) \\
@@ -381,7 +386,6 @@ dorsal spine base at the pterygiophore to its distal tip \\
 Pterygiophore Length & \texttt{lpt.sc} & Distance from anterior to
 posterior edges of the pterygiophore immediately before ds3 (when
 present) \\
-\bottomrule()
 \end{longtable}
 
 \textcolor{red}{This table caption should be part of the table. Top row. at the very least, it should be the width of the table. -YS}
@@ -515,12 +519,23 @@ females}\label{modeling-fossil-stickleback-trait-means-through-time-for-males-an
 
 The goal of our analysis was to estimate fossil trait means through
 time, by sex, while incorporating uncertainty across imputations in the
+<<<<<<< HEAD
 classification of sex. We used a Bayesian approach to estimate trait
 means in part because imputation is the process of sampling from a
 posterior predictive distribution of missing data, given observed data.
 \textcolor{red}{Matt, THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH, EXPLAINING IT TO MY AUDIENCE. -YS}
 
 \textcolor{red}{MATT, somewhere we need to describe how you handled traits with lots of evolved zeros (ds1, ds2, ds3, lps, tpg) -YS}
+=======
+classification of sex. As we explain in this section, we are
+implementing a complex model structure to account for the fact that the
+rate of change in the mean of the trait over time may be a non-constant
+value. In addition, we are using multiple imputation procedure to
+account for the fact that the sex is unobserved in the fossils in
+addition to other pieces of information that are missing. We implement a
+Bayesian approach because these methods are more effective for analyzing
+hierarchical model structures as well as incorporating missing data.
+>>>>>>> 979d2fe721c8268db2afc2aecb0406b7e220a4af
 
 To estimate fossil sample means through time, for a given imputed
 dataset, we let \(W_{ij}\) be the imputed sex and
@@ -538,11 +553,28 @@ Continuous traits will likely have some correlation with standard length
 (\protect\hyperlink{ref-Huxley1932}{1932}))(Voje, Bell, and Stuart
 (\protect\hyperlink{ref-Vojeetal2022}{2022}))(Voje et al.
 (\protect\hyperlink{ref-Vojeetal2014}{2014})). We account for this by
-adding an additional parameter, \(\gamma_k\), If \(Y_{k,ij}\) is a
-continuous trait, then \begin{align}
+adding an additional parameter, \(\gamma_k\). In addition, the
+continuous traits ds1, ds2, ds3, lps, tpg are unique in that these
+traits tend to be lost over time, results in a proportion of zeros in
+our empirical dataset. For these random variables, we add binary
+variable \(Z_{ij}\), where \(Z_{k,ij} = 1\) means that the trait is
+lost, and \(Z_{k,ij} = 0\) means the trait is observed. For all other
+continuous traits, we assume \(Z_{k,ij} = 0\)
+
+If \(Y_{k,ij}\) is a continuous trait, then, potentially conditioning on
+\(Z_{k,ij} = 0\), \begin{align}
 {Y}_{k,ij} & \overset{iid}{\sim}\left\{\begin{array}{llll} \mathcal{N}(\mu_{k,ft_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Female} \\ \mathcal{N}(\mu_{k,mt_i} + \gamma_kY_{K,ij},\sigma_k^2), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:cont}
-\end{align}
+\end{align} In other words, (\ref{eq:cont}) only considers the subset of
+fossils where the given trait is present when performing a data
+analysis. For the traits with potential loss, we model the \(Z_{k,ij}\)
+via a \(Bernoulli(p_{k,ij})\) distribution where \begin{align}
+\text{logit}({p}_{k,ij}) & = \left\{\begin{array}{llll} \alpha_{k,ft_i} + \beta_kY_{K,ij} & W_{ij} = \text{Female} \\ \alpha_{k,mt_i} + \beta_kY_{K,ij}, & W_{ij} = \text{Male} \end{array}\right.,
+\label{eq:cont_prob}
+\end{align} and logit is a function to convert the probability to the
+log-odds, to allow for easier modelling of linear techniques while still
+ensuring any probability predictions are guaranteed to be between 0 and
+1.
 
 If \(Y_{k,ij}\) is a discrete trait, the conventional modelling method
 is to fit a Poisson distribution. However, the empirical fossil data
@@ -561,35 +593,46 @@ This is because these are vertebral counts that made along the
 anterior-posterior access of the fish; these vertebrae contribute to the
 length of the fish directly and may evolve in a correlated fashion. If
 \(Y_{k,ij}\) is one of the above traits, then \begin{align}
-{Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
+{Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\lambda_{k,ft_i} = \exp\{\mu_{k,ft_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\lambda_{k,mt_i} = \exp\{\mu_{k,mt_i} + \gamma_kY_{K,ij}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_corr}
 \end{align}
 
 For the other discrete counting traits, we set \(\gamma_k = 0\) because
 we expect that trait counts are set during early ontogeny and should not
 change with size in adult fish. Thus, \begin{align}
-{Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\exp\{\mu_{k,ft_i}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\exp\{\mu_{k,mt_i}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
+{Y}_{k,ij} & \sim \left\{\begin{array}{ll} GP(\lambda_{k,ft_i} = \exp\{\mu_{k,ft_i}\},\alpha_k), & W_{ij} = \text{Female} \\ GP(\lambda_{k,mt_i} = \exp\{\mu_{k,mt_i}\},\alpha_k), & W_{ij} = \text{Male} \end{array}\right..
 \label{eq:disc_ind}
 \end{align} We point out that counting trait means are represented by
-\(\exp\{\mu_{k,ft_i}\}\) and \(\exp\{\mu_{k,mt_i}\}\) for ease of
-modeling.
+\(\exp\{\mu_{k,ft_i}\}\) and \(\exp\{\mu_{k,mt_i}\}\). This distinction
+helps in our modelling procedure because \(\mu_{k,ft_i}\) and
+\(\mu_{k,mt_i}\) are represented on the real number line. This allows
+for easier modelling by linear techniques, and that any mean for the
+discrete traits is strictly positive. In addition, to ensure proper
+sampling from our posterior distribution of interest, we transform
+\(\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)\)
+where
+\(\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.\).
 
-In the above model descriptions, \(\mu_{k,ft_i}\) and \(\mu_{k,mt_i}\)
-model the time-\(t_i\), sample-specific trait mean \(k\) for females and
-males, respectively. To account for the possibility that there is a
-time-dependent (i.e., evolutionary trend) trend in \(\mu_{k,ft_i}\) and
-\(\mu_{k,mt_i}\), we further set \begin{align}
+To account for the possibility that there is a time-dependent (i.e.,
+evolutionary trend) trend in \(\mu_{k,ft_i}\) and \(\mu_{k,mt_i}\), we
+further set \begin{align}
 \mu_{k,gt_i} = \beta_{0,kg} + \beta_{1,kg}t_i + u_{k,gt_i},
 \label{eq:mu}
 \end{align} for \(g \in \{f,m\}\), where \(\beta_{0,kg}\) and
 \(\beta_{1,kg}\) are regression parameters of phenotype \(Y_k\) for each
-sex, and \(u_{k,gt_i}\) is the corresponding residual. To account for
-potential correlations between the residuals for a given trait \(k\) and
-sex \(g\), we fit an Ornstein-Uhlenback (OU) process (Uhlenbeck and
-Ornstein (\protect\hyperlink{ref-OUProcess}{1930})). More specifically,
-we defined \(du_{k,gt} = u_{k,g(t + dt)} - u_{k,gt}\), the change in
-\(u_k,gt\) for a given trait \(k\) and sex \(g\) over a miniscule time
-period \(dt\). The OU process is defined as \begin{align}
+sex, and \(u_{k,gt_i}\) is the corresponding residual. For the
+continuous phenotypes with potential lost trait values, we model
+\(\alpha{k,gt_i}\) in (\ref{eq:cont_prob}) by \begin{align}
+\alpha_{k,gt_i} = \beta_{0,p,kg} + \beta_{1,p,kg}t_i + u_{k,p,gt_i}.
+\label{eq:prob}
+\end{align} For convenience, we drop the subscript \(p\) for all model
+descriptions to come, and assume same modelling techniques apply. To
+account for potential correlations between the residuals for a given
+trait \(k\) and sex \(g\), we fit an Ornstein-Uhlenback (OU) process
+(Uhlenbeck and Ornstein (\protect\hyperlink{ref-OUProcess}{1930})). More
+specifically, we defined \(du_{k,gt} = u_{k,g(t + dt)} - u_{k,gt}\), the
+change in \(u_k,gt\) for a given trait \(k\) and sex \(g\) over a
+miniscule time period \(dt\). The OU process is defined as \begin{align}
 du_{k,gt} = -\kappa_k u_{k,gt} dt + \tau_k dW_t,
 \label{eq:OU_cont}
 \end{align} where \(\kappa_k\) is a parameter associated with the
@@ -607,16 +650,6 @@ constant. This unknown constant can therefore be considered a latent
 variable, further justifying our Bayesian approach, which better
 incorporates prior information and uncertainty from missing data
 imputation in the estimate of latent variables.
-
-\textcolor{red}{Q FOR MATT. Is transforming the GP onto the real number line separate from setting the priors? If so, should the statement of transformation go in the section where the GP and discrete trait modeling is discussed. Then priors get their own section here? -YS}
-To aid in the sampling procedure for the discrete phenotypes, we first
-had to transform the parameters of the generalized Poisson distribution
-onto the real number line in order to ensure our algorithm can properly
-sample from the posterior distribution of interest using STAN software.
-This was done by declaring
-\(\phi_k = \log\left(\frac{\alpha_k - \max_{i,j}(-\lambda_{k,ij}/y_{k,ij})}{1 - \alpha_k}\right)\)
-where
-\(\lambda_{k,ij} = \left\{\begin{array}{cc} \exp(\mu_{k,ft_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Female} \\ \exp(\mu_{k,mt_i} + \gamma_k Y_{K,ij}) & W_{ij} = \text{Male} \end{array}\right.\).
 
 We chose the following priors, designing them to be weakly informative
 such that the posterior distributions could be influenced by the data,
@@ -649,34 +682,62 @@ sufficient burnin period, and then we combine these \(M\) MCMC draws to
 say that we have a total of \(R\) draws from the overall posterior
 distribution of interest.
 
-For the continuous phenotypes, the mean trait sizes for each sex
-\(\mu_{k,m,t_i}\) and \(\mu_{k,f,t_i}\) are calculated using
-(\ref{eq:mu}).For the discrete phenotypes, equations
-(\ref{eq:disc_corr}) and (\ref{eq:disc_ind}) calculate the mean trait
-size is \(\lambda_{k,m,t_i} = \exp(\mu_{k,m,t_i})\) and
-\(\lambda_{k,f,t_i} = \exp(\mu_{k,f,t_i})\) for males and females. For
-simplicity, we will use \(\mu_{k,m,t_i}\) and \(\mu_{k,f,t_i}\) as the
-notation for mean size for both discrete and continuous traits for the
-rest of this discussion. From our MCMC algorithm, we obtain \(M\)
-samples from the posterior distribution of
-\(\mu_{k,m,t_i} - \mu_{k,f,t_i}\). That is, with posterior distributions
-of the model parameters described above, we obtained \(M\) samples from
-the posterior distribution of mean trait values by trait for males and
-females at each time step. We then used these values to quantify the
-presence or absence of sexual dimorphism, and describe how sexual
-dimorphism evolved through time.
-
 \hypertarget{quantifying-sexual-dimorphism-and-testing-for-increased-sexual-dimorphism-through-time.}{%
 \subsection{Quantifying sexual dimorphism, and testing for increased
 sexual dimorphism through
 time.}\label{quantifying-sexual-dimorphism-and-testing-for-increased-sexual-dimorphism-through-time.}}
 
-We quantified sexual dimorphism at each time step by calculating the
-difference in mean trait size for males and females at each time for
-phenotype \(k\), \(\mu_{k,m,t_i} - \mu_{k,f,t_i}\), for
-\(i = 1,\cdots,T\). The presence of sexual dimorphism was indicated
-by\ldots{}
-\textcolor{red}{Matt, can you help me with Bayesian the language here? I think this is the place to reference the two post probs plots, yes? Values far from fifty fifty indicate that the mass of the posterior distribution is away from a male female difference of zero. YS}
+We quantify sexual dimorphism at each time \(t_i: i = 1,\cdots,T\) by
+calculating the difference in mean trait size for males and females at
+each time for a continuous phenotype,
+\(SD_{k,t_i} = \mu_{k,m,t_i} - \mu_{k,f,t_i}\) and for a discrete
+phenotype \(SD_{k,t_i} = \lambda_{k,m,t_i} - \lambda_{k,f,t_i}\). For
+simplicity, we will define sexual dimorphism for both continuous and
+discrete traits as \(SD_{k,t_i} = \mu_{k,m,t_i} - \mu_{k,f,t_i}\).
+Because we are performing a Bayesian analysis, we do not obtain a single
+point estimate of sexual dimorphism at a particular time, but rather
+\(R\) samples from the posterior distribution of sexual dimorphism given
+the observed fossil and extant data. Therefore, our analysis will be
+conducted by calculating
+\(SD_{k,t_i,r} = \mu_{k,m,t_i,r} - \mu_{k,f,t_i,r}\) for
+\(r = 1,\dots,R\) and then perfoming our data analysis on these samples.
+Presence (or absense) of sexual dimorphism for trait \(k\) can be
+indicated by estimating the posterior probability of positive sexual
+dimorphism
+\(P(SD_{k,t_i} > 0 | \boldsymbol{y}) = \frac{1}{R} \sum_{r=1}^R I(SD_{k,t_i,r} > 0)\).
+Figures \ref{fig:post_probs_armor} and \ref{fig:post_probs_nonarmor}
+plot these posterior probabilities across time for each of the armored
+traits and non-armored traits, respectively. The closer the
+\(P(SD_{k,t_i} > 0 | \boldsymbol{y})\) is to 1, the larger the evidence
+that the average trait size for males is larger than females, while if
+\(P(SD_{k,t_i} > 0 | \boldsymbol{y})\) is close to 0, the larger the
+evidence that the average trait size for females is larger than males,
+both indicating strong presence of sexual dimorphism. On the contrary,
+\(P(SD_{k,t_i} > 0 | \boldsymbol{y})\) around 0.5 indicates that the
+average trait size is roughly equivalent for both males and females,
+providing little evidence of dimorphism.
+
+\begin{figure}
+
+{\centering \includegraphics{../Figures/SD_Figures/post_probs_armor} 
+
+}
+
+\caption{Posterior probability of positive sexual dimorphism for armor traits}\label{fig:unnamed-chunk-2}
+\end{figure}
+
+\label{fig:post_probs_armor}
+
+\begin{figure}
+
+{\centering \includegraphics{../Figures/SD_Figures/post_probs_nonarmor} 
+
+}
+
+\caption{Posterior probability of positive sexual dimorphism for non-armor traits}\label{fig:unnamed-chunk-3}
+\end{figure}
+
+\label{fig:post_probs_nonarmor}
 
 Then, to test our prediction that ecological release should result in an
 increase in sexual dimorphism through time, we calculated Kendall's
