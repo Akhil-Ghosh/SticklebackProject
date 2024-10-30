@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.8)  21 OCT 2024 12:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.8)  21 OCT 2024 12:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -531,19 +531,19 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 [11]
 
-LaTeX Warning: Reference `tab:prob0-table' on page 12 undefined on input line 722.
+LaTeX Warning: Reference `tab:prob0-table' on page 12 undefined on input line 721.
 
 
-LaTeX Warning: Reference `fig:prob0-plot' on page 12 undefined on input line 728.
+LaTeX Warning: Reference `fig:prob0-plot' on page 12 undefined on input line 727.
 
 
-LaTeX Warning: Reference `fig:mu-diff-plot' on page 12 undefined on input line 730.
+LaTeX Warning: Reference `fig:mu-diff-plot' on page 12 undefined on input line 729.
 
 
-LaTeX Warning: Reference `tab:auc-table' on page 12 undefined on input line 742.
+LaTeX Warning: Reference `tab:auc-table' on page 12 undefined on input line 741.
 
 
-LaTeX Warning: Reference `fig:AUC-plot' on page 12 undefined on input line 750.
+LaTeX Warning: Reference `fig:AUC-plot' on page 12 undefined on input line 749.
 
 
 
@@ -553,7 +553,7 @@ LaTeX Warning: Reference `fig:AUC-plot' on page 12 undefined on input line 750.
 
 [14]
 
-Package hyperref Warning: Suppressing link with empty target on input line 952.
+Package hyperref Warning: Suppressing link with empty target on input line 951.
 
 
 
@@ -580,7 +580,7 @@ Here is how much of TeX's memory you used:
 pdfTeX warning (dest): name{ref-GeneralizedPoisson} has been referenced but does not exist, replaced by a fixed one
 
 </Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmib10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
-Output written on paper.pdf (16 pages, 356975 bytes).
+Output written on paper.pdf (16 pages, 357043 bytes).
 PDF statistics:
  467 PDF objects out of 1000 (max. 8388607)
  403 compressed objects within 5 object streams

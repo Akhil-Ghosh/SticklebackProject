@@ -357,12 +357,12 @@ Dorsal Fin Ray Count & \texttt{mdf} & Number of bones in the dorsal fin
 posterior to the third dorsal spine (i.e., soft dorsal fin rays) \\
 Anal Fin Ray Count & \texttt{maf} & Number of bones in the anal fin
 posterior to the anal spine (i.e., soft anal fin rays) \\
-Abdominal Vertebra Count & mav & Number of vertebrae anterior to the
-first vertebra contacting an anal fin pterygiophore (Aguirre et
+Abdominal Vertebra Count & \texttt{mav} & Number of vertebrae anterior
+to the first vertebra contacting an anal fin pterygiophore (Aguirre et
 al.~2014) \\
-Caudal Vertebra Count & \texttt{mcv} & Number of vertebrae posterior to
-and including the first vertebra contacting an anal fin pterygiophore
-(Aguirre et al.~2014) \\
+Caudal Vertebra Count & \texttt{mcv} & Vertebrae including and posterior
+to the first that contacts an anal fin pterygiophore (Aguirre et
+al.~2014) \\
 Pterygiophore Count & \texttt{mpt} & Number of pterygiophores anterior
 to but excluding the pterygiophore under the third dorsal spine \\
 Pelvic Spine Length & \texttt{lps.sc} & Length from the base of one
@@ -497,9 +497,8 @@ and Reiter (\protect\hyperlink{ref-ZhouReiter2010}{2010}) recommend a
 larger number of imputed data sets if users intend on performing
 Bayesian analysis after imputation. Therefore, we imputed \(M = 100\)
 complete datasets.
-\textcolor{red}{PRESUMABLY this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
-
-\textcolor{red}{AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
+\textcolor{red}{Greg, PRESUMABLY this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
+\textcolor{red}{Greg, AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
 
 We then pooled all of the draws from the posterior distribution across
 all the imputed data sets to estimate the posterior distributions of our
@@ -519,7 +518,7 @@ time, by sex, while incorporating uncertainty across imputations in the
 classification of sex. We used a Bayesian approach to estimate trait
 means in part because imputation is the process of sampling from a
 posterior predictive distribution of missing data, given observed data.
-\textcolor{red}{THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH, EXPLAINING IT TO MY AUDIENCE. -YS}
+\textcolor{red}{Matt, THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH, EXPLAINING IT TO MY AUDIENCE. -YS}
 
 \textcolor{red}{MATT, somewhere we need to describe how you handled traits with lots of evolved zeros (ds1, ds2, ds3, lps, tpg) -YS}
 
@@ -714,7 +713,7 @@ specimens, respectively.
 \hypertarget{missing-data-imputation}{%
 \subsection{Missing Data Imputation}\label{missing-data-imputation}}
 
-\textcolor{red}{WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
+\textcolor{red}{Greg, WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
 
 \hypertarget{sexual-dimorphism}{%
 \subsection{Sexual Dimorphism}\label{sexual-dimorphism}}
