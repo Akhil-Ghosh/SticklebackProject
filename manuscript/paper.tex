@@ -7,19 +7,16 @@
   12pt,
 ]{article}
 \usepackage{amsmath,amssymb}
+\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
   \usepackage[utf8]{inputenc}
   \usepackage{textcomp} % provide euro and other symbols
 \else % if luatex or xetex
-  \usepackage{unicode-math} % this also loads fontspec
+  \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-\usepackage{lmodern}
-\ifPDFTeX\else
-  % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -95,7 +92,7 @@
 \fi
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same}
+\urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
   colorlinks=true,
   linkcolor={cyan},
@@ -342,7 +339,7 @@ sample with a high of 67 specimens in sample 7.
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2034}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.0847}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.7119}}@{}}
-\toprule\noalign{}
+\toprule()
 \begin{minipage}[b]{\linewidth}\raggedright
 Trait Name
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
@@ -350,10 +347,8 @@ Trait Code
 \end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
 Trait Description
 \end{minipage} \\
-\midrule\noalign{}
+\midrule()
 \endhead
-\bottomrule\noalign{}
-\endlastfoot
 Standard Length & \texttt{stl} & Distance from anterior tip of
 premaxilla to posterior end of last vertebra (i.e., the llhypural
 plate) \\
@@ -386,6 +381,7 @@ dorsal spine base at the pterygiophore to its distal tip \\
 Pterygiophore Length & \texttt{lpt.sc} & Distance from anterior to
 posterior edges of the pterygiophore immediately before ds3 (when
 present) \\
+\bottomrule()
 \end{longtable}
 
 \textcolor{red}{This table caption should be part of the table. Top row. at the very least, it should be the width of the table. -YS}
@@ -519,14 +515,6 @@ females}\label{modeling-fossil-stickleback-trait-means-through-time-for-males-an
 
 The goal of our analysis was to estimate fossil trait means through
 time, by sex, while incorporating uncertainty across imputations in the
-<<<<<<< HEAD
-classification of sex. We used a Bayesian approach to estimate trait
-means in part because imputation is the process of sampling from a
-posterior predictive distribution of missing data, given observed data.
-\textcolor{red}{Matt, THIS NEEDS MORE WORK TO JUSTIFY THE BAYESIAN APPROACH, EXPLAINING IT TO MY AUDIENCE. -YS}
-
-\textcolor{red}{MATT, somewhere we need to describe how you handled traits with lots of evolved zeros (ds1, ds2, ds3, lps, tpg) -YS}
-=======
 classification of sex. As we explain in this section, we are
 implementing a complex model structure to account for the fact that the
 rate of change in the mean of the trait over time may be a non-constant
@@ -535,7 +523,6 @@ account for the fact that the sex is unobserved in the fossils in
 addition to other pieces of information that are missing. We implement a
 Bayesian approach because these methods are more effective for analyzing
 hierarchical model structures as well as incorporating missing data.
->>>>>>> 979d2fe721c8268db2afc2aecb0406b7e220a4af
 
 To estimate fossil sample means through time, for a given imputed
 dataset, we let \(W_{ij}\) be the imputed sex and
