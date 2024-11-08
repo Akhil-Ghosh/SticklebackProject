@@ -251,6 +251,89 @@ $\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}$ for trait $k$ where $\tau
 The extant data used here consist of a total of `r sum(!is.na(stick$gender))` specimens all with known sex (Table S1).  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively. 
 
 ## Missing Data Imputation
+```{r echo = FALSE}
+#Summaries
+dat <- read.csv("Data/updated_stickle_imputations_100.csv")
+
+```
+
+
+```{r eval = FALSE}
+library(mixgb)
+library(mice)
+library(tidyverse)
+library(janitor)
+library(missMethods)
+library(ROCR)
+
+stickle <- read_csv('./Data/Stickle_revamped.csv')
+
+stick <- stickle %>% 
+  mutate(gender = as.factor(case_when(
+    grepl(".M.",univID,fixed=TRUE) ~ "Male",
+    grepl(".F.",univID,fixed=TRUE) ~ "Female",
+    grepl("Fos",univID,fixed=TRUE) ~ NA_character_
+    )), ips = as.factor(ips)
+  ) %>% 
+  select(gender, everything())
+
+stick
+
+extant_stickle <- stick %>% filter(gender != "Fossil") %>% select(!univID)
+extant_stickle
+summary(extant_stickle)
+
+M = 10
+k = 5
+stick_matrix <- matrix(NA, nrow=nrow(extant_stickle), ncol = M)
+set.seed(12)
+fold <- sample(1:k, size = nrow(extant_stickle), replace=TRUE)
+for(i in 1:k){
+extant_stickle_temp <- extant_stickle
+extant_stickle_temp$gender[fold==i] <- NA
+imputed_stick <- mice(extant_stickle_temp,m=M)
+for(n in 1:M){
+  
+  complete_stick <- complete(imputed_stick, n)
+  
+  complete_stick$gender[fold==i]
+  stick_matrix[fold==i, n] <- as.character(complete_stick$gender[fold==i])
+}
+
+}
+pct_male <- apply(stick_matrix,1,function(x){
+  mean(x == "Male")
+})
+
+imptest <- data_frame(truth = as.factor(extant_stickle$gender), pct_male)
+save(imptest, file = "./Data/imptest.RData")
+roc_pred <- prediction(imptest$pct_male, imptest$truth)
+
+auc_rocr <- performance(roc_pred, measure="auc")
+plot(performance(roc_pred, measure="tpr", x.measure="fpr"))
+
+auc_rocr@y.values[[1]]
+
+```
+
+```{r}
+load("./Data/imptest.RData")
+roc_pred <- prediction(imptest$pct_male, imptest$truth)
+
+auc_rocr <- performance(roc_pred, measure="auc")
+perf <- performance(roc_pred, measure="tpr", x.measure="fpr")
+plot(perf)
+dat <- data.frame(fpr = perf@x.values[[1]], tpr = perf@y.values[[1]])
+ggplot(aes(x = fpr, y = tpr), data = dat) + geom_path() + theme_bw() + xlab("False Positive Rate") + ylab("True Positive Rate") + geom_abline(slope = 1, lty = 2, color = rgb(0,0,0,0.2)) + coord_fixed()
+
+```
+
+total sampel size1181
+fossils 814
+extant 367
+`r auc_rocr@y.values[[1]]`
+
+
 \textcolor{red}{Greg, WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
 
 
