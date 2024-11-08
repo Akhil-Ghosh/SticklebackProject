@@ -251,11 +251,6 @@ $\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}$ for trait $k$ where $\tau
 The extant data used here consist of a total of `r sum(!is.na(stick$gender))` specimens all with known sex (Table S1).  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively. 
 
 ## Missing Data Imputation
-```{r echo = FALSE}
-#Summaries
-dat <- read.csv("Data/updated_stickle_imputations_100.csv")
-
-```
 
 
 ```{r eval = FALSE}
@@ -266,7 +261,7 @@ library(janitor)
 library(missMethods)
 library(ROCR)
 
-stickle <- read_csv('./Data/Stickle_revamped.csv')
+stickle <- read_csv('../Data/Stickle_revamped.csv')
 
 stick <- stickle %>% 
   mutate(gender = as.factor(case_when(
@@ -318,30 +313,68 @@ auc_rocr@y.values[[1]]
 
 ```{r}
 load("./Data/imptest.RData")
+library(ROCR)
+library(tidyverse)
 roc_pred <- prediction(imptest$pct_male, imptest$truth)
 
 auc_rocr <- performance(roc_pred, measure="auc")
 perf <- performance(roc_pred, measure="tpr", x.measure="fpr")
-plot(perf)
 dat <- data.frame(fpr = perf@x.values[[1]], tpr = perf@y.values[[1]])
+```
+
+```{r fig.cap = "Reciver-Operating Characteristic Curve comparing imputed sex to actual sex for the extant cases using 5-fold cross validation (AUC = 0.831)"}
 ggplot(aes(x = fpr, y = tpr), data = dat) + geom_path() + theme_bw() + xlab("False Positive Rate") + ylab("True Positive Rate") + geom_abline(slope = 1, lty = 2, color = rgb(0,0,0,0.2)) + coord_fixed()
+```
+
+<!-- While sex is observed for extant fish, the sex for fossil specimen cannot be observed.  Therefore, we turn to multiple imputation to fill in missing values of sex of fossil specimen using the observed extant fish cases.  In addition to missing sex for all of the fossil cases, there are several other cases of missing data in some variables in the fossil data, and those are imputed at the same time as sex is imputed.   -->
+
+In order to test the efficacy of imputing sex in the fossil data, we performed 5-fold cross validation using only the extant cases. For each fold, the missing values, most notably sex, were imputed $M = 5$ times.  These imputations were then combined to estimate the probability of male vs female and an ROC curve was computed to evaluate the accuracy of the imputations.  The AUC was computed to be `r auc_rocr@y.values[[1]]`, indicating a good performance in estimating the probability of a fish being male/female.  
+
+
+<!-- total sampel size1181 -->
+<!-- fossils 814 -->
+<!-- extant 367 -->
+
+```{r echo = FALSE, fig.cap = "Density estimate of the percentage of specimen that were imputted to be male across the M = 100 imputations"}
+#Summaries
+dat <- read.csv("../Data/updated_stickle_imputations_100.csv")
+dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ggplot(aes(x = pct)) + geom_density() + theme_bw()
+```
+
+```{r echo = FALSE}
+meanpct <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(pct = mean(pct))
+sdpct <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(sd = sd(pct))
+
+min <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(sd = min(pct))
+max <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(sd = min(pct))
+
+dat %>% group_by(imp) %>% summarize(pct = sum(gender == "Male") == sum(gender == "Female")) %>% ungroup() %>% summarize(pct = mean(pct))
 
 ```
 
-total sampel size1181
-fossils 814
-extant 367
-`r auc_rocr@y.values[[1]]`
+Across the 100 imputations of the 814 fossil specimen, the average percentage of males in an imputation was `r paste0(round(meanpct$pct,2),"%")` with a standard deviation of `r paste0(round(sdpct$sd,2),"%")` ranging from `r paste0(round(min$sd,2),"%")` to `r paste0(round(max$sd,2),"%")`.  In only 31 of the 100 imputations were there more males than females with the remaining 69 imputations having exactly the same number or more females.  
+
+\textcolor{red}{Yoel, I think I remember you talking about a reason why it made more sense that there were fewer males in the sample tham the females, but I don't remember the details.  Am I remembering this correctly?  Would be nice to add something here about that and say why these imputations are consistent with that.  
+-GJM}
+
+<!-- If we want to compute fraction of missing information.  This also computes imputed means.  -->
+```{r echo = FALSE}
+greg <- function(x){
+dat %>% group_by(imp) %>% summarize(mean = mean(.data[[x]]), var = var(.data[[x]]))  %>% summarize(Q = mean(mean),  W = mean(var), B = var(var)) %>% mutate(Tm = (1+1/100)*B + W, lambda = (1+1/100)*B/Tm, se= sqrt(Tm))
+}
+data.frame(var = names(dat)[4:28],do.call(rbind,lapply(as.list(names(dat)[4:28]),greg))) %>% select(var, Q, se, lambda)
+
+#Fraction of missing information
+# Raghunathan, T. 2016. Missing Data Analysis in Practice. Boca Raton, FL: Boca Raton: CRC Press.
+# Van Buuren, S. 2018. Flexible Imputation of Missing Data. Second Edition. Boca Raton, FL: Chapman & Hall/CRC.
+```
+
 
 
 \textcolor{red}{Greg, WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
 
 
 ## Sexual Dimorphism 
-
-
-
-
 Table \ref{tab:prob0-table} shows the posterior probability of the differences in the means between male and female specimens at each time point.  Probabilities near 0.5 indicate very little difference in the means whereas probabilities far from 0.5 indicate sexual dimorphism with values of 0 and 1 indicating larger mean values for females and males, respectively.  These results are shown graphically in figure \ref{fig:prob0-plot}. 
 
 Figure \ref{fig:mu-diff-plot} shows the posterior mean difference for males versus females (values above 0 indicate means that were greater for males versus females).  The full posterior distributions over time for all traits are shown in the appendix.  
