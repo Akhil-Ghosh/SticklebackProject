@@ -133,11 +133,17 @@ We next replicated fossil data collection (Table 1) on these extant specimens. S
 To check for outliers, we calculated within-group means and standard deviations for each trait separately for K series fossil specimens (pooled across samples) and for extant specimens (within generalist, benthic, or limnetic categories). We noted trait values greater than 3.0 standard deviations from the mean as potential outliers. We deemed 3.0 s.d. to be a reasonable threshold for detecting errors without excluding biologically relevant values. We checked whether these potential outliers were a result of data entry and collection error and corrected them if they were. We turned the remaining outlier trait values to NAs. We size-corrected continuous traits only, as they varied with size, unlike count traits that are fixed during early development. We regressed each trait on standard length using a mixed-model regression, pooling all specimens, following @Stuartetal2017. We appended the size corrected data to the uncorrected trait data frame and used all of our data (raw and size-corrected) to build the imputation model described next.
 
 ## Missing data imputation, including fossil sex
-Briefly, we used multiple imputation (@little2002statistical) to impute the sex of the fossils. Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate sex of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the sex of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant sex and missing fossil sex, respectively. We imputed missing sex for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching, implemented in R (CITATION).  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if users intend on performing Bayesian analysis after imputation.  Therefore, we imputed $M = 100$ complete datasets. 
-\textcolor{red}{Greg, PRESUMABLY this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
-\textcolor{red}{Greg, AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
+Fossil and extant data were combined to create a single data set which contained small amounts on missingness on the observed traits with the exception of sex, which was completely missing for fossil specimens as this was unobservable.  The sex of the fossil data was considered to be missing data and was imputed in the same step of the rest of the missing data using multiple imputation (@little2002statistical).  Imputation was performed using the multiple imputation by chained equations (MICE) algorithm (@MICE) via predictive mean matching (PMM) (@hotdeck) and implemented using the R programming language (@R2022language). Traditionally, the choice for the number of completed data sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if users intend on performing Bayesian analysis, as was performed here, after imputation.  Therefore, we imputed $M = 100$ complete data sets.  Extant fish records were then dropped from each of the imputed data sets, and only the fossil data was used in downstream analyses of fossil sexual dimorphism. 
 
-We then pooled all of the draws from the posterior distribution across all the imputed data sets to estimate the posterior distributions of our parameters of interest (i.e., the trait values), rather than using Rubin's combining rules, following @ZhouReiter2010. We then dropped extant fish from our imputed data sets and used these posterior distributions in our downstream analyses of fossil sexual dimorphism. 
+After performing the Bayesian analysis on each of the $M = 100$ imputed data sets, draws from the posterior distribution based on each of the imputed data sets were pooled together to combine posterior draws across imputations as recommended in @ZhouReiter2010 rather than using Rubin's traditional combining rules.  
+
+<!-- Briefly, we used multiple imputation (@little2002statistical) to impute the sex of the fossils. Let $\boldsymbol{W}$ be an $(n_{extant} + n_{fossil}) \times 1$ vector of the covariate sex of the stickleback fish and $\boldsymbol{Y}$ be an $(n_{extant} + n_{fossil}) \times K$ matrix of the $K$ phenotypes of interest.  Because the sex of the fossilized stickleback fish is unobservable, we further define $\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T$ where $\boldsymbol{W}_{extant}$ and $\boldsymbol{W}_{fossil}$ are the $n_{extant} \times 1$ and $n_{fossil} \times 1$ vectors of the observed extant sex and missing fossil sex, respectively. We imputed missing sex for the fossil data by sampling from the posterior predictive distribution $P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})$ using the multiple imputation by chained equations (MICE) algorithm (@MICE) with predictive mean matching, implemented in R (CITATION).  Traditionally, the choice for the number of completed dats sets is a relatively small number such as $M = 5$ or $M = 10$.  However, @ZhouReiter2010 recommend a larger number of imputed data sets if users intend on performing Bayesian analysis after imputation.  Therefore, we imputed $M = 100$ complete datasets.  -->
+\textcolor{red}{Greg, PRESUMABLY this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
+\textcolor{orange}{Updated - GReg}
+\textcolor{red}{Greg, AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
+\textcolor{orange}{Are we sure we want that here?  I was going to add it in later}
+
+<!-- We then pooled all of the draws from the posterior distribution across all the imputed data sets to estimate the posterior distributions of our parameters of interest (i.e., the trait values), rather than using Rubin's combining rules, following @ZhouReiter2010. We then dropped extant fish from our imputed data sets and used these posterior distributions in our downstream analyses of fossil sexual dimorphism.  -->
 
 ## Modeling fossil stickleback trait means through time for males and females
  The goal of our analysis was to model fossil trait means through time, by sex, while incorporating uncertainty across imputations in the classification of sex. We therefore implemented a Bayesian hierarchical model structure (described below) to account for classfication uncertainty and the fact that the rate of change of any one trait mean over time may be a non-constant value. 
@@ -248,11 +254,11 @@ Then, to test our prediction that ecological release should result in an increas
 $\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}$ for trait $k$ where $\tau_r$ is the estimate of the Kendall's $\tau$ correlation for $\mu_{k,m,t_i} - \mu_{k,f,t_i}$ versus time $t_i$ for the $r^{th}$ MCMC sample from the posterior distribution. For each trait, a large proportion of values in $\boldsymbol{\tau}_k$ that are greater than 0 ($\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)$) may indicate that males have gotten relatively larger than females through time, indicating an increase in male-biased dimorphism through time. A large proportion of values in $\boldsymbol{\tau}_k$ that are less than 0 ($\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} < 0)$) may indicate that females have gotten relatively larger than males, indicating an increase in female-biased dimorphism through time.
 
 # Results {#sec:results}
-The extant data used here consist of a total of `r sum(!is.na(stick$gender))` specimens all with known sex (Table S1).  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively. 
 
 ## Missing Data Imputation
+<!-- The extant data used here consist of a total of `r sum(!is.na(stick$gender))` specimens all with known sex (Table S1).  Of these, there are `r sum(stick$gender == "Female",na.rm = TRUE)` and `r sum(stick$gender == "Male",na.rm = TRUE)` female and male specimens, respectively.  -->
 
-
+### Validating Imputation of Sex
 ```{r eval = FALSE}
 library(mixgb)
 library(mice)
@@ -312,7 +318,7 @@ auc_rocr@y.values[[1]]
 ```
 
 ```{r}
-load("./Data/imptest.RData")
+load("../Data/imptest.RData")
 library(ROCR)
 library(tidyverse)
 roc_pred <- prediction(imptest$pct_male, imptest$truth)
@@ -322,20 +328,33 @@ perf <- performance(roc_pred, measure="tpr", x.measure="fpr")
 dat <- data.frame(fpr = perf@x.values[[1]], tpr = perf@y.values[[1]])
 ```
 
-```{r fig.cap = "Reciver-Operating Characteristic Curve comparing imputed sex to actual sex for the extant cases using 5-fold cross validation (AUC = 0.831)"}
+```{r roc, fig.cap = "Reciver-Operating Characteristic Curve comparing imputed sex to actual sex for the extant cases using 5-fold cross validation (AUC = 0.831)"}
 ggplot(aes(x = fpr, y = tpr), data = dat) + geom_path() + theme_bw() + xlab("False Positive Rate") + ylab("True Positive Rate") + geom_abline(slope = 1, lty = 2, color = rgb(0,0,0,0.2)) + coord_fixed()
 ```
 
 <!-- While sex is observed for extant fish, the sex for fossil specimen cannot be observed.  Therefore, we turn to multiple imputation to fill in missing values of sex of fossil specimen using the observed extant fish cases.  In addition to missing sex for all of the fossil cases, there are several other cases of missing data in some variables in the fossil data, and those are imputed at the same time as sex is imputed.   -->
 
-In order to test the efficacy of imputing sex in the fossil data, we performed 5-fold cross validation using only the extant cases. For each fold, the missing values, most notably sex, were imputed $M = 5$ times.  These imputations were then combined to estimate the probability of male vs female and an ROC curve was computed to evaluate the accuracy of the imputations.  The AUC was computed to be `r auc_rocr@y.values[[1]]`, indicating a good performance in estimating the probability of a fish being male/female.  
+In order to validate the efficacy of imputing sex in the fossil data, we performed 5-fold cross validation using only the extant cases.  For a given fold, we took the true, observed values of sex and removed them to create missing data similar to what we observe with the fossil data.  Then with one fold held out, we performed multiple imputation with $M$ = 5 (using the same model that we use in the actual imputation (i.e. MICE with PMM)) using the remaining folds with sex observed to build a model used to imputed the sex of each fish in the held out fold (along with any other variables that needed to be imputed).  We can then compare the imputed values of sex to the true values of sex to evaluate the imputation accuracy of the imputation model.  These imputations on the hold out samples were then combined to estimate the probability of male vs female (i.e. the probability of being male was estimated as the proportion of imputations that predicted male.  Using these probabilities, an ROC curve (Figure \ref{fig:roc}) was constructed to evaluate the accuracy of the imputations.  The AUC  was `r round(auc_rocr@y.values[[1]],3)`, indicating excellent discrimination (@HosmerLemeshow, Page 177) between a fish being male or female. 
 
 
-<!-- total sampel size1181 -->
-<!-- fossils 814 -->
-<!-- extant 367 -->
+<!-- So, what area under the ROC curve describes good discrimination? Unfortunately there is no “magic” number, only general guidelines. In general, we use the -->
+<!-- following rule of thumb: -->
+<!-- If -->
+<!-- ⎧ -->
+<!-- ⎪⎪⎪⎪⎪⎪⎪⎪⎨ -->
+<!-- ⎪⎪⎪⎪⎪⎪⎪⎪⎩ -->
+<!-- ROC = 0.5 This suggests no discrimination, so we might as well -->
+<!-- flip a coin. -->
+<!-- 0.5 < ROC < 0.7 We consider this poor discrimination, not much better -->
+<!-- than a coin toss. -->
+<!-- 0.7 ≤ ROC < 0.8 We consider this acceptable discrimination. -->
+<!-- 0.8 ≤ ROC < 0.9 We consider this excellent discrimination. -->
+<!-- ROC ≥ 0.9 We consider this outstanding discrimination. -->
 
-```{r echo = FALSE, fig.cap = "Density estimate of the percentage of specimen that were imputted to be male across the M = 100 imputations"}
+
+
+### Summary of Imputed Data 
+```{r est-p, echo = FALSE, fig.cap = "Density estimate of the percentage of specimen that were imputted to be male across the M = 100 imputations"}
 #Summaries
 dat <- read.csv("../Data/updated_stickle_imputations_100.csv")
 dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ggplot(aes(x = pct)) + geom_density() + theme_bw()
@@ -346,32 +365,70 @@ meanpct <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male"))
 sdpct <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(sd = sd(pct))
 
 min <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(sd = min(pct))
-max <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(sd = min(pct))
+max <- dat %>% group_by(imp) %>% summarize(pct = 100*mean(gender == "Male")) %>% ungroup() %>% summarize(sd = max(pct))
 
-dat %>% group_by(imp) %>% summarize(pct = sum(gender == "Male") == sum(gender == "Female")) %>% ungroup() %>% summarize(pct = mean(pct))
+#dat %>% group_by(imp) %>% summarize(pct = sum(gender == "Male") == sum(gender == "Female")) %>% ungroup() %>% summarize(pct = mean(pct))
 
 ```
 
-Across the 100 imputations of the 814 fossil specimen, the average percentage of males in an imputation was `r paste0(round(meanpct$pct,2),"%")` with a standard deviation of `r paste0(round(sdpct$sd,2),"%")` ranging from `r paste0(round(min$sd,2),"%")` to `r paste0(round(max$sd,2),"%")`.  In only 31 of the 100 imputations were there more males than females with the remaining 69 imputations having exactly the same number or more females.  
+```{r echo = FALSE}
+#Ignoring time compute lambda 
+library(tidyverse)
+sum_p <- dat %>% group_by(imp) %>% summarize(pctmale = mean(gender == "Male"), n = n()) %>% mutate(W = pctmale*(1-pctmale)/n) %>% ungroup() %>% summarize(q = mean(pctmale), W = mean(W), B = var(pctmale)) %>% mutate(Tm = (1+1/100)*B,lambda = (1+1/100)*B/Tm, se= sqrt(Tm))
+
+```
+
+Across the 100 imputations of the 814 fossil specimen, the average percentage of males in an imputation was `r paste0(round(meanpct$pct,2),"%")` with a standard deviation across imputations of `r paste0(round(sdpct$sd,2),"%")` ranging from `r paste0(round(min$sd,2),"%")` to `r paste0(round(max$sd,2),"%")`.  In only 31 of the 100 imputations were there more males than females with the remaining 69 imputations having exactly the same number or more females.  Figure \ref{fig:est-p} shows the distribution of the proportion of males across the $M$ = 100 imputations across all time periods.   
+
+```{r male-prop, fig.cap = "Density estimates of the distribution of the proportions of male fish at each time period across 100 imputations"}
+#Now do this across time. 
+library(ggridges)
+dat %>% group_by(imp, time) %>% summarize(pct_male = mean(gender == "Male")) %>% ggplot(aes(x = pct_male, y = time, group = time)) +  geom_density_ridges(fill = "#00AFBB", rel_min_height = 0.05, quantile_lines = TRUE, quantiles = 0.5) + theme_bw() + ylab("Time Period") + xlab("Male Proportion")
+
+#Means of male proportion at each time.
+#dat %>% group_by(imp, time) %>% summarize(mn = mean(gender == "Male")) %>% group_by(time) %>% summarize(pct_male = mean(mn)) %>% ggplot(aes(x = time, y = pct_male)) + geom_point() + geom_path() + theme_bw()
+```
+
+```{r}
+pct_male_medians <- dat %>% group_by(imp, time) %>% summarize(mn = mean(gender == "Male")) %>% group_by(time) %>% summarize(pct_male = median(mn))
+```
+
+Figure \ref{fig:male-prop} shows density estimates of the distribution of the proportions of male fish at each time period across 100 imputations along with the median at each time point.  We can see that the first three time points have proportions of males centered around about 25\% followed by a shift up in proportion of males between time periods 5 and 9 with median values ranging from 44\% to 66.7\%.  Time periods 10 through 13 show a shift back towards more females with the median proportions of males ranging from 30.3\% to 41.5\%.  The last several time points, from 14 through 18, all have median male proportions just above 50\% with the exception of time period 17 with a median male proportion of 39.3\%.  
+
+<!-- Finally, the fraction of missing information, $\lambda$, for the mean of all traits other than sex were all below 0.003. -->
+
+
 
 \textcolor{red}{Yoel, I think I remember you talking about a reason why it made more sense that there were fewer males in the sample tham the females, but I don't remember the details.  Am I remembering this correctly?  Would be nice to add something here about that and say why these imputations are consistent with that.  
 -GJM}
 
 <!-- If we want to compute fraction of missing information.  This also computes imputed means.  -->
-```{r echo = FALSE}
+```{r echo = FALSE, eval = FALSE}
 greg <- function(x){
 dat %>% group_by(imp) %>% summarize(mean = mean(.data[[x]]), var = var(.data[[x]]))  %>% summarize(Q = mean(mean),  W = mean(var), B = var(var)) %>% mutate(Tm = (1+1/100)*B + W, lambda = (1+1/100)*B/Tm, se= sqrt(Tm))
 }
-data.frame(var = names(dat)[4:28],do.call(rbind,lapply(as.list(names(dat)[4:28]),greg))) %>% select(var, Q, se, lambda)
+temp <- data.frame(var = names(dat)[4:28],do.call(rbind,lapply(as.list(names(dat)[4:28]),greg))) %>% select(var, Q, se, lambda)
+
 
 #Fraction of missing information
 # Raghunathan, T. 2016. Missing Data Analysis in Practice. Boca Raton, FL: Boca Raton: CRC Press.
 # Van Buuren, S. 2018. Flexible Imputation of Missing Data. Second Edition. Boca Raton, FL: Chapman & Hall/CRC.
 ```
 
+  
 
 
-\textcolor{red}{Greg, WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
+
+
+
+
+<!-- total sampel size1181 -->
+<!-- fossils 814 -->
+<!-- extant 367 -->
+
+
+
+<!-- \textcolor{red}{Greg, WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS} -->
 
 
 ## Sexual Dimorphism 
