@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.8)  1 NOV 2024 09:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.7.8)  13 NOV 2024 10:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -521,60 +521,80 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 [6]
 
-[7{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}]
+[7]
 
-[8{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
+[8{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{/Users/ystuart/Library/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
 
 [9]
 
 [10]
-<../Figures/SD_Figures/post_probs_armor.pdf, id=238, 361.35pt x 578.16pt>
+<../Figures/SD_Figures/post_probs_armor.pdf, id=246, 361.35pt x 578.16pt>
 File: ../Figures/SD_Figures/post_probs_armor.pdf Graphic file (type pdf)
 <use ../Figures/SD_Figures/post_probs_armor.pdf>
-Package pdftex.def Info: ../Figures/SD_Figures/post_probs_armor.pdf  used on input line 709.
+Package pdftex.def Info: ../Figures/SD_Figures/post_probs_armor.pdf  used on input line 712.
 (pdftex.def)             Requested size: 361.34912pt x 578.15858pt.
-<../Figures/SD_Figures/post_probs_nonarmor.pdf, id=239, 361.35pt x 578.16pt>
+<../Figures/SD_Figures/post_probs_nonarmor.pdf, id=247, 361.35pt x 578.16pt>
 File: ../Figures/SD_Figures/post_probs_nonarmor.pdf Graphic file (type pdf)
 <use ../Figures/SD_Figures/post_probs_nonarmor.pdf>
-Package pdftex.def Info: ../Figures/SD_Figures/post_probs_nonarmor.pdf  used on input line 720.
+Package pdftex.def Info: ../Figures/SD_Figures/post_probs_nonarmor.pdf  used on input line 723.
 (pdftex.def)             Requested size: 361.34912pt x 578.15858pt.
 
 
 [11]
-
-LaTeX Warning: Reference `tab:prob0-table' on page 12 undefined on input line 769.
-
-
-LaTeX Warning: Reference `fig:prob0-plot' on page 12 undefined on input line 775.
-
-
-LaTeX Warning: Reference `fig:mu-diff-plot' on page 12 undefined on input line 777.
-
-
-LaTeX Warning: Reference `tab:auc-table' on page 12 undefined on input line 789.
-
-
-LaTeX Warning: Reference `fig:AUC-plot' on page 12 undefined on input line 797.
-
+<paper_files/figure-latex/roc-1.pdf, id=258, 469.755pt x 325.215pt>
+File: paper_files/figure-latex/roc-1.pdf Graphic file (type pdf)
+<use paper_files/figure-latex/roc-1.pdf>
+Package pdftex.def Info: paper_files/figure-latex/roc-1.pdf  used on input line 768.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+<paper_files/figure-latex/est-p-1.pdf, id=261, 469.755pt x 325.215pt>
+File: paper_files/figure-latex/est-p-1.pdf Graphic file (type pdf)
+<use paper_files/figure-latex/est-p-1.pdf>
+Package pdftex.def Info: paper_files/figure-latex/est-p-1.pdf  used on input line 800.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
+<paper_files/figure-latex/male-prop-1.pdf, id=263, 469.755pt x 325.215pt>
+File: paper_files/figure-latex/male-prop-1.pdf Graphic file (type pdf)
+<use paper_files/figure-latex/male-prop-1.pdf>
+Package pdftex.def Info: paper_files/figure-latex/male-prop-1.pdf  used on input line 817.
+(pdftex.def)             Requested size: 469.75386pt x 325.2142pt.
 
 
 [12]
+
+LaTeX Warning: Reference `tab:prob0-table' on page 13 undefined on input line 842.
+
+
+LaTeX Warning: Reference `fig:prob0-plot' on page 13 undefined on input line 848.
+
+
+LaTeX Warning: Reference `fig:mu-diff-plot' on page 13 undefined on input line 850.
+
+
 
 [13]
 
 [14]
 
-Package hyperref Warning: Suppressing link with empty target on input line 999.
-
-
-
 [15]
+
+Package hyperref Warning: Suppressing link with empty target on input line 1088.
+
+
 
 [16]
 
-[17 <../Figures/SD_Figures/post_probs_armor.pdf>]
+[17]
 
-[18 <../Figures/SD_Figures/post_probs_nonarmor.pdf>] (./paper.aux)
+[18]
+
+[19 <../Figures/SD_Figures/post_probs_armor.pdf>]
+
+[20 <../Figures/SD_Figures/post_probs_nonarmor.pdf>]
+
+[21 <./paper_files/figure-latex/roc-1.pdf>]
+
+[22 <./paper_files/figure-latex/est-p-1.pdf>]
+
+[23 <./paper_files/figure-latex/male-prop-1.pdf>] (./paper.aux)
  ***********
 LaTeX2e <2024-06-01> patch level 2
 L3 programming layer <2024-05-27>
@@ -584,10 +604,10 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 12320 strings out of 475544
- 191649 string characters out of 5776766
- 1941905 words of memory out of 5000000
- 34634 multiletter control sequences out of 15000+600000
+ 12367 strings out of 475544
+ 193134 string characters out of 5776766
+ 1942905 words of memory out of 5000000
+ 34666 multiletter control sequences out of 15000+600000
  635683 words of font info for 92 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  89i,16n,93p,1069b,583s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -595,10 +615,10 @@ Here is how much of TeX's memory you used:
 pdfTeX warning (dest): name{ref-GeneralizedPoisson} has been referenced but does not exist, replaced by a fixed one
 
 </Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmex10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmi8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmmib10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr17.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmr8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmri12.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy10.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy6.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmsy8.pfb></Users/ystuart/Library/TinyTeX/texmf-dist/fonts/type1/public/lm/lmtt12.pfb>
-Output written on paper.pdf (18 pages, 371247 bytes).
+Output written on paper.pdf (23 pages, 431581 bytes).
 PDF statistics:
- 497 PDF objects out of 1000 (max. 8388607)
- 427 compressed objects within 5 object streams
- 116 named destinations out of 1000 (max. 500000)
- 147 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 568 PDF objects out of 1000 (max. 8388607)
+ 487 compressed objects within 5 object streams
+ 131 named destinations out of 1000 (max. 500000)
+ 178 words of extra memory for PDF output out of 10000 (max. 10000000)
 

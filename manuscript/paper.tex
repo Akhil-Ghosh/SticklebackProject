@@ -473,56 +473,51 @@ next.
 \subsection{Missing data imputation, including fossil
 sex}\label{missing-data-imputation-including-fossil-sex}}
 
-Briefly, we used multiple imputation (Little and Rubin
-(\protect\hyperlink{ref-little2002statistical}{2002})) to impute the sex
-of the fossils. Let \(\boldsymbol{W}\) be an
-\((n_{extant} + n_{fossil}) \times 1\) vector of the covariate sex of
-the stickleback fish and \(\boldsymbol{Y}\) be an
-\((n_{extant} + n_{fossil}) \times K\) matrix of the \(K\) phenotypes of
-interest. Because the sex of the fossilized stickleback fish is
-unobservable, we further define
-\(\boldsymbol{W} = (\boldsymbol{W}_{extant}^T,\boldsymbol{W}_{fossil}^T)^T\)
-where \(\boldsymbol{W}_{extant}\) and \(\boldsymbol{W}_{fossil}\) are
-the \(n_{extant} \times 1\) and \(n_{fossil} \times 1\) vectors of the
-observed extant sex and missing fossil sex, respectively. We imputed
-missing sex for the fossil data by sampling from the posterior
-predictive distribution
-\(P(\boldsymbol{W}_{fossil}|\boldsymbol{W}_{extant},\boldsymbol{Y})\)
-using the multiple imputation by chained equations (MICE) algorithm
-(Buuren and Groothuis-Oudshoorn (\protect\hyperlink{ref-MICE}{2011}))
-with predictive mean matching, implemented in R (CITATION).
-Traditionally, the choice for the number of completed dats sets is a
-relatively small number such as \(M = 5\) or \(M = 10\). However, Zhou
-and Reiter (\protect\hyperlink{ref-ZhouReiter2010}{2010}) recommend a
-larger number of imputed data sets if users intend on performing
-Bayesian analysis after imputation. Therefore, we imputed \(M = 100\)
-complete datasets.
-\textcolor{red}{Greg, PRESUMABLY this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
-\textcolor{red}{Greg, AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
+Fossil and extant data were combined to create a single data set which
+contained small amounts on missingness on the observed traits with the
+exception of sex, which was completely missing for fossil specimens as
+this was unobservable. The sex of the fossil data was considered to be
+missing data and was imputed in the same step of the rest of the missing
+data using multiple imputation (Little and Rubin
+(\protect\hyperlink{ref-little2002statistical}{2002})). Imputation was
+performed using the multiple imputation by chained equations (MICE)
+algorithm (Buuren and Groothuis-Oudshoorn
+(\protect\hyperlink{ref-MICE}{2011})) via predictive mean matching (PMM)
+(Andridge and Little (\protect\hyperlink{ref-hotdeck}{2010})) and
+implemented using the R programming language (R Core Team
+(\protect\hyperlink{ref-R2022language}{2022})). Traditionally, the
+choice for the number of completed data sets is a relatively small
+number such as \(M = 5\) or \(M = 10\). However, Zhou and Reiter
+(\protect\hyperlink{ref-ZhouReiter2010}{2010}) recommend a larger number
+of imputed data sets if users intend on performing Bayesian analysis, as
+was performed here, after imputation. Therefore, we imputed \(M = 100\)
+complete data sets. Extant fish records were then dropped from each of
+the imputed data sets, and only the fossil data was used in downstream
+analyses of fossil sexual dimorphism.
 
-We then pooled all of the draws from the posterior distribution across
-all the imputed data sets to estimate the posterior distributions of our
-parameters of interest (i.e., the trait values), rather than using
-Rubin's combining rules, following Zhou and Reiter
-(\protect\hyperlink{ref-ZhouReiter2010}{2010}). We then dropped extant
-fish from our imputed data sets and used these posterior distributions
-in our downstream analyses of fossil sexual dimorphism.
+After performing the Bayesian analysis on each of the \(M = 100\)
+imputed data sets, draws from the posterior distribution based on each
+of the imputed data sets were pooled together to combine posterior draws
+across imputations as recommended in Zhou and Reiter
+(\protect\hyperlink{ref-ZhouReiter2010}{2010}) rather than using Rubin's
+traditional combining rules.
+
+\textcolor{red}{Greg, PRESUMABLY this also imputes missing data in the other traits? We should probably say that explicitly. -YS}
+\textcolor{orange}{Updated - GReg}
+\textcolor{red}{Greg, AKHIL'S METHODS FOR VALIDATION OF THE IMPUTATION MODEL GOES HERE}
+\textcolor{orange}{Are we sure we want that here?  I was going to add it in later}
 
 \hypertarget{modeling-fossil-stickleback-trait-means-through-time-for-males-and-females}{%
 \subsection{Modeling fossil stickleback trait means through time for
 males and
 females}\label{modeling-fossil-stickleback-trait-means-through-time-for-males-and-females}}
 
-The goal of our analysis was to estimate fossil trait means through
-time, by sex, while incorporating uncertainty across imputations in the
-classification of sex. As we explain in this section, we are
-implementing a complex model structure to account for the fact that the
-rate of change in the mean of the trait over time may be a non-constant
-value. In addition, we are using multiple imputation procedure to
-account for the fact that the sex is unobserved in the fossils in
-addition to other pieces of information that are missing. We implement a
-Bayesian approach because these methods are more effective for analyzing
-hierarchical model structures as well as incorporating missing data.
+The goal of our analysis was to model fossil trait means through time,
+by sex, while incorporating uncertainty across imputations in the
+classification of sex. We therefore implemented a Bayesian hierarchical
+model structure (described below) to account for classfication
+uncertainty and the fact that the rate of change of any one trait mean
+over time may be a non-constant value.
 
 To estimate fossil sample means through time, for a given imputed
 dataset, we let \(W_{ij}\) be the imputed sex and
@@ -541,11 +536,15 @@ Continuous traits will likely have some correlation with standard length
 (\protect\hyperlink{ref-Vojeetal2022}{2022}))(Voje et al.
 (\protect\hyperlink{ref-Vojeetal2014}{2014})). We account for this by
 adding an additional parameter, \(\gamma_k\). In addition, the
-continuous traits ds1, ds2, ds3, lps, tpg are unique in that these
-traits tend to be lost over time, results in a proportion of zeros in
-our empirical dataset. For these random variables, we add binary
-variable \(Z_{ij}\), where \(Z_{k,ij} = 1\) means that the trait is
-lost, and \(Z_{k,ij} = 0\) means the trait is observed. For all other
+continuous traits ds1, ds2, ds3, lps, tpg are notable because they tend
+to be lost during the evolution of armor reduction in this system (Bell,
+Baumgartner, and Oslon (\protect\hyperlink{ref-Belletal1985}{1985}),
+Stuart, Travis, and Bell
+(\protect\hyperlink{ref-Stuartetal2020}{2020})). This generates
+meaningful zeros for trait lengths in our empirical dataset that violate
+model assumptions. Therefore, for these random variables, we added the
+binary variable \(Z_{ij}\), where \(Z_{k,ij} = 1\) means that the trait
+is lost, and \(Z_{k,ij} = 0\) means the trait is observed. For all other
 continuous traits, we assume \(Z_{k,ij} = 0\)
 
 If \(Y_{k,ij}\) is a continuous trait, then, potentially conditioning on
@@ -561,7 +560,11 @@ via a \(Bernoulli(p_{k,ij})\) distribution where \begin{align}
 \end{align} and logit is a function to convert the probability to the
 log-odds, to allow for easier modelling of linear techniques while still
 ensuring any probability predictions are guaranteed to be between 0 and
-1.
+1. Modeling traits this way allows us to first estimate the probability
+of trait loss for an individual at a given time, and ask if the sexes
+differ in their tendency toward loss through time. Then, for individuals
+that have not lost the trait, we can estimate trait values and calculate
+sexual dimorphism through time.
 
 If \(Y_{k,ij}\) is a discrete trait, the conventional modelling method
 is to fit a Poisson distribution. However, the empirical fossil data
@@ -740,28 +743,98 @@ correlation. Values farther from zero indicate a stronger relationship.
 \(\boldsymbol{\tau}_k = \{\tau_{k,r}: r = 1,\cdots,R\}\) for trait \(k\)
 where \(\tau_r\) is the estimate of the Kendall's \(\tau\) correlation
 for \(\mu_{k,m,t_i} - \mu_{k,f,t_i}\) versus time \(t_i\) for the
-\(r^{th}\) MCMC sample from the posterior distribution.
-\textcolor{red}{Matt, I think there's an absolute value problem here. Dimorphism can increase of M-F gets more positive or more negative. I've indicated that in the text below, but I could use some help refininig the explanation -YS}
-For each trait, the proportion of values in \(\boldsymbol{\tau}_k\) that
-are greater than 0 (\(\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)\)) may
-indicate that males have gotten relatively larger than females,
-indicating more pronounced dimorphism. For each trait, the proportion of
-values in \(\boldsymbol{\tau}_k\) that are less than 0
+\(r^{th}\) MCMC sample from the posterior distribution. For each trait,
+a large proportion of values in \(\boldsymbol{\tau}_k\) that are greater
+than 0 (\(\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} > 0)\)) may indicate
+that males have gotten relatively larger than females through time,
+indicating an increase in male-biased dimorphism through time. A large
+proportion of values in \(\boldsymbol{\tau}_k\) that are less than 0
 (\(\frac{1}{R} \sum_{r=1}^R I(\tau_{k,r} < 0)\)) may indicate that
-females have gotten relatively larger than males, indicating more
-pronounced dimormphism.
+females have gotten relatively larger than males, indicating an increase
+in female-biased dimorphism through time.
 
 \hypertarget{sec:results}{%
 \section{Results}\label{sec:results}}
 
-The extant data used here consist of a total of 367 specimens all with
-known sex (Table S1). Of these, there are 202 and 165 female and male
-specimens, respectively.
-
 \hypertarget{missing-data-imputation}{%
 \subsection{Missing Data Imputation}\label{missing-data-imputation}}
 
-\textcolor{red}{Greg, WE NEED RESULTS SECTION DESCRIBING THE RESULTS OF AKHIL'S MULTIPLE IMPUTATION, BOTH THE TESTS OF HOW WELL THE MODEL WORKED CLASSIFYING MODEL SAMPLES, AND SUMMARY STATISTICS OF FOSSIL IMPUTATION RESULTS -YS}
+\hypertarget{validating-imputation-of-sex}{%
+\subsubsection{Validating Imputation of
+Sex}\label{validating-imputation-of-sex}}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-latex/roc-1} 
+
+}
+
+\caption{Reciver-Operating Characteristic Curve comparing imputed sex to actual sex for the extant cases using 5-fold cross validation (AUC = 0.831)}\label{fig:roc}
+\end{figure}
+
+In order to validate the efficacy of imputing sex in the fossil data, we
+performed 5-fold cross validation using only the extant cases. For a
+given fold, we took the true, observed values of sex and removed them to
+create missing data similar to what we observe with the fossil data.
+Then with one fold held out, we performed multiple imputation with \(M\)
+= 5 (using the same model that we use in the actual imputation
+(i.e.~MICE with PMM)) using the remaining folds with sex observed to
+build a model used to imputed the sex of each fish in the held out fold
+(along with any other variables that needed to be imputed). We can then
+compare the imputed values of sex to the true values of sex to evaluate
+the imputation accuracy of the imputation model. These imputations on
+the hold out samples were then combined to estimate the probability of
+male vs female (i.e.~the probability of being male was estimated as the
+proportion of imputations that predicted male. Using these
+probabilities, an ROC curve (Figure \ref{fig:roc}) was constructed to
+evaluate the accuracy of the imputations. The AUC was 0.831, indicating
+excellent discrimination (Hosmer, Lemeshow, and Sturdivant
+(\protect\hyperlink{ref-HosmerLemeshow}{2013}), Page 177) between a fish
+being male or female.
+
+\hypertarget{summary-of-imputed-data}{%
+\subsubsection{Summary of Imputed Data}\label{summary-of-imputed-data}}
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-latex/est-p-1} 
+
+}
+
+\caption{Density estimate of the percentage of specimen that were imputted to be male across the M = 100 imputations}\label{fig:est-p}
+\end{figure}
+
+Across the 100 imputations of the 814 fossil specimen, the average
+percentage of males in an imputation was 46.64\% with a standard
+deviation across imputations of 6.79\% ranging from 30.1\% to 62.29\%.
+In only 31 of the 100 imputations were there more males than females
+with the remaining 69 imputations having exactly the same number or more
+females. Figure \ref{fig:est-p} shows the distribution of the proportion
+of males across the \(M\) = 100 imputations across all time periods.
+
+\begin{figure}
+
+{\centering \includegraphics{paper_files/figure-latex/male-prop-1} 
+
+}
+
+\caption{Density estimates of the distribution of the proportions of male fish at each time period across 100 imputations}\label{fig:male-prop}
+\end{figure}
+
+Figure \ref{fig:male-prop} shows density estimates of the distribution
+of the proportions of male fish at each time period across 100
+imputations along with the median at each time point. We can see that
+the first three time points have proportions of males centered around
+about 25\% followed by a shift up in proportion of males between time
+periods 5 and 9 with median values ranging from 44\% to 66.7\%. Time
+periods 10 through 13 show a shift back towards more females with the
+median proportions of males ranging from 30.3\% to 41.5\%. The last
+several time points, from 14 through 18, all have median male
+proportions just above 50\% with the exception of time period 17 with a
+median male proportion of 39.3\%.
+
+\textcolor{red}{Yoel, I think I remember you talking about a reason why it made more sense that there were fewer males in the sample tham the females, but I don't remember the details.  Am I remembering this correctly?  Would be nice to add something here about that and say why these imputations are consistent with that.  
+-GJM}
 
 \hypertarget{sexual-dimorphism}{%
 \subsection{Sexual Dimorphism}\label{sexual-dimorphism}}
@@ -782,19 +855,26 @@ for all traits are shown in the appendix.
 \hypertarget{changes-over-time}{%
 \subsection{Changes over time}\label{changes-over-time}}
 
+We estimated the change in sexual dimorphism over time by calculating
+the distribution of Kendall's Tau for each trait. Here, positive values
+of Tau indicate that sexual dimorphism (defined as male means minus
+female means) increased through time. Average Tau values ranged from X
+to Y across traits and the proportion of positive area under the curve
+ranged from Z to W (Table Tau). Distributions are available for each
+trait in the Supplementary Material (Figures SX-SX+15). In Figure (Tau),
+we show representative distributions. For example,
+
+Something about the probability of dimorphim in the probability of loss?
+I.e., the prob\_zero plots. For example, ds2\_prob\_zero has lots of
+positive area under the curve indicating that the rate of loss in males
+and females diverged, such that males were more likely to lose ds2
+through time. Interestingly, for the individuals that kept their spines,
+dimorphism increased, with females getting larger than males (or males
+getting smaller than females).
+
 We can also assess the strength of the dimorphism by calculating the
 proportion of posterior samples that are greater than a prespecified
 threshold \textcolor{red}{(0.5??, idk what this could be.) -MS}
-
-Table \ref{tab:auc-table} shows the probability that the posterior
-distribution of the differences in the mean is greater than the
-posterior distribution of the differences at the first time point.
-Values near 0.5 indicate very little difference between the
-distributions whereas values closer to 0 and 1 indicate changes in the
-distributions with values of 1 meaning the difference in means has
-shifted towards males having a larger mean and values of 0 indicating
-the difference in means has shifted towards larger means in females.
-These results are shown graphically in figure \ref{fig:AUC-plot}.
 
 \hypertarget{sec:conclusions}{%
 \section{Discussion, Future work and
@@ -851,6 +931,11 @@ Aguirre, W E, K Walker, and S Gideon. 2014. {``Tinkering with the Axial
 Skeleton: Vertebral Number Variation in Ecologically Divergent
 Threespine Stickleback Populations.''} \emph{Biological Journal of the
 Linnean Society} 113 (1): 204--19.
+
+\leavevmode\vadjust pre{\hypertarget{ref-hotdeck}{}}%
+Andridge, R. R., and R. J. A. Little. 2010. {``A Review of Hot Deck
+Imputation for Survey Non-Response.''} \emph{International Statistical
+Review} 78 (1): 40--64.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Baumgartneretal1988}{}}%
 Baumgartner, J V, M A Bell, and P H Weinberg. 1988. {``Body Form
@@ -959,6 +1044,10 @@ Hone, D W E, and J C Mallon. 2017. {``Protracted Growth Impedes the
 Detection of Sexual Dimorphism in Non-Avian Dinosaurs.''}
 \emph{Palaeontology} 60 (4): 535--45.
 
+\leavevmode\vadjust pre{\hypertarget{ref-HosmerLemeshow}{}}%
+Hosmer, D. W., Jr., S. Lemeshow, and R. X. Sturdivant. 2013.
+\emph{Applied Logistic Regression, 3rd Edition}. Wiley.
+
 \leavevmode\vadjust pre{\hypertarget{ref-Huntetal2008}{}}%
 Hunt, G, M A Bell, and M P Travis. 2008. {``Evolution Toward a New
 Adaptive Optimum: Phenotypic Evolution in a Fossil Stickleback
@@ -998,6 +1087,11 @@ Naturalist} 174: 898--905.
 Pfennig, D W, and K S Pfennig. 2012. \emph{\href{}{Evolution's Wedge:
 Competition and the Origins of Diversity}}. University of California
 Press, Berkeley, USA.
+
+\leavevmode\vadjust pre{\hypertarget{ref-R2022language}{}}%
+R Core Team. 2022. \emph{R: A Language and Environment for Statistical
+Computing}. Vienna, Austria: R Foundation for Statistical Computing.
+\url{https://www.R-project.org/}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Reimchen1994}{}}%
 Reimchen, T E. 1994. {``Predators and Morphological Evolution in
