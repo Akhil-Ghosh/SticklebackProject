@@ -11,8 +11,8 @@ library(mice)
 ```
 
 ```{r}
-setwd('/Users/akhilghosh/Desktop/RStudioProjects2022Fall/SticklebackProject/RawData_ReadOnly')
-stickle <- read_csv("AO.sexualdimorphismPruned.sc.forAnalysis_forMICE_Modeling_20June2023.csv")
+#setwd('/Users/akhilghosh/Desktop/RStudioProjects2022Fall/SticklebackProject/RawData_ReadOnly')
+stickle <- read_csv("../RawData_ReadOnly/AO.sexualdimorphismPruned.sc.forAnalysis_forMICE_Modeling_20June2023.csv")
 
 summary(stickle)
 stick <- stickle %>% 
@@ -24,6 +24,17 @@ stick <- stickle %>%
   ) %>% 
   select(gender, everything())
 
+#Manual Fixes
+ # <!-- LQx.B.M.139 was called male in hand (and in our database) but is female by dissection. -->
+ # <!-- LQx.B.M.155 was called male in hand (and in our database) but is female by dissection. -->
+ # <!--     Pax.B.M.081 was called male in hand (and in our database) but is female by dissection. -->
+ # <!--     Pax.L.M.113 was called male in hand (and in our database) but is female by dissection. -->
+ # <!--     Pax.L.M.115 was called male in hand (and in our database) but is female by dissection. -->
+stick$gender[stick$univID == "LQx.B.M.139"] <- "Female"
+#stick$gender[stick$univID == "LQx.B.M.155"] <- "Female"
+stick$gender[stick$univID == "Pax.B.M.081"] <- "Female"
+stick$gender[stick$univID == "Pax.L.M.113"]<- "Female"
+stick$gender[stick$univID == "Pax.L.M.115"] <- "Female"
 ```
 
 ```{r}
@@ -56,6 +67,7 @@ csv_list[[i]] <- complete_stick_list[[i]][-c(1:367),] %>% mutate(imp = rep(i, 81
 }
 
 combined_csv<- do.call(rbind,csv_list) %>% select(imp, time,gender, everything())
+write_csv(combined_csv, file = "../Data/updated_stickle_imputations_100_20250904.csv")
 ```
 
 
