@@ -41,8 +41,14 @@ cle: cleithrum length (mm)
 pmx: premaxila length (mm)
 
 
+ <!-- LQx.B.M.139 was called male in hand (and in our database) but is female by dissection. -->
+ <!-- LQx.B.M.155 was called male in hand (and in our database) but is female by dissection. -->
+ <!--     Pax.B.M.081 was called male in hand (and in our database) but is female by dissection. -->
+ <!--     Pax.L.M.113 was called male in hand (and in our database) but is female by dissection. -->
+ <!--     Pax.L.M.115 was called male in hand (and in our database) but is female by dissection. -->
+
 ```{r}
-stickle <- read_csv('stickle_revamped.csv')
+stickle <- read_csv('../Data/Stickle_revamped.csv')
 
 stick <- stickle %>% 
   mutate(gender = as.factor(case_when(
@@ -53,7 +59,27 @@ stick <- stickle %>%
   ) %>% 
   select(gender, everything())
 
-stick
+#Manual Fixes
+ # <!-- LQx.B.M.139 was called male in hand (and in our database) but is female by dissection. -->
+ # <!-- LQx.B.M.155 was called male in hand (and in our database) but is female by dissection. -->
+ # <!--     Pax.B.M.081 was called male in hand (and in our database) but is female by dissection. -->
+ # <!--     Pax.L.M.113 was called male in hand (and in our database) but is female by dissection. -->
+ # <!--     Pax.L.M.115 was called male in hand (and in our database) but is female by dissection. -->
+stick$gender[stick$univID == "LQx.B.M.139"] <- "Female"
+#stick$gender[stick$univID == "LQx.B.M.155"] <- "Female"
+stick$gender[stick$univID == "Pax.B.M.081"] <- "Female"
+stick$gender[stick$univID == "Pax.L.M.113"]<- "Female"
+stick$gender[stick$univID == "Pax.L.M.115"] <- "Female"
+
+#Exploring the ones that were changed
+stick %>% filter(univID %in% c("LQx.B.M.139","Pax.B.M.081","Pax.L.M.113","Pax.L.M.115"))
+
+stick %>% mutate(changed = univID %in% c("LQx.B.M.139","Pax.B.M.081","Pax.L.M.113","Pax.L.M.115")) %>% filter(changed) %>% ggplot(aes(x = ds3, y = lps, col = changed)) + geom_point(alpha = 0.5)
+
+stick %>% mutate(changed = univID %in% c("LQx.B.M.139","Pax.B.M.081","Pax.L.M.113","Pax.L.M.115"))  %>% ggplot(aes(x = changed, y = lps, color = changed)) + geom_boxplot() + geom_jitter()
+
+
+stick %>% mutate(changed = univID %in% c("LQx.B.M.139","Pax.B.M.081","Pax.L.M.113","Pax.L.M.115"))  %>% ggplot(aes(x = changed, y = ds3, color = changed)) + geom_boxplot() + geom_jitter()
 
 extant_stickle <- stick %>% filter(gender != "Fossil") %>% select(!univID)
 extant_stickle

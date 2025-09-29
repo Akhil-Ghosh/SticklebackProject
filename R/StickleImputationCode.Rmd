@@ -71,3 +71,46 @@ write_csv(combined_csv, file = "../Data/updated_stickle_imputations_100_20250904
 ```
 
 
+```{r}
+combined_csv <- read.csv("../Data/updated_stickle_imputations_100_20250904.csv")
+combined_csv %>% group_by(imp) %>% summarize(percent_male = 100*mean(gender == "Male")) %>% ggplot(aes(x = percent_male)) + geom_density() + theme_bw() + xlab("Percent Male")
+```
+
+
+
+
+
+# Cross validation
+
+```{r}
+set.seed(2025)
+stick_extant <- stick %>% filter(substring(univID,1,3) != "Fos") 
+stick_extant$ind <- sample(rep(1:5,75), nrow(stick_extant),replace = FALSE)
+
+
+M <- 100
+preds <- list()
+for (i in 1:5){
+temp <- stick_extant 
+temp$gender[temp$ind == i] <- NA
+imp_temp <- mice(temp %>% select(-ind),m = M)
+comp_temp <- complete(imp_temp, "long")
+comp_temp$ind <- rep(temp$ind,M)
+comp_temp <- comp_temp %>% mutate(gender_true = rep(stick_extant$gender,M)) %>% filter(ind == i) 
+preds[[i]] <- comp_temp %>% group_by(.id, gender_true) %>% summarize(pct_male = mean(gender == "Male"))
+}
+
+stack <- do.call(rbind,preds)
+
+library(ROCR)
+roc_pred <- prediction(stack$pct_male, stack$gender_true)
+auc_rocr <- performance(roc_pred, measure="auc")
+perf <- performance(roc_pred, measure="tpr", x.measure="fpr")
+data.frame(FPR = perf@x.values[[1]], TPR = perf@y.values[[1]]) %>% ggplot(aes(x = FPR,y = TPR)) + geom_line() + theme_bw() + geom_abline(slope = 1, linetype = 3)
+```
+
+
+
+
+
+
