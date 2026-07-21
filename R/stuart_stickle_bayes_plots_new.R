@@ -2,6 +2,9 @@ rm(list=ls())
 library(tidyverse)
 library(ggridges)
 library(LaplacesDemon)
+library(officer)
+library(flextable)
+library(xtable)
 
 vars <- c("stl","lps","ect","tpg",
           "cle","pmx","ds1","ds2",
@@ -22,114 +25,185 @@ dat <- read.csv("../Data/updated_stickle_imputations_100.csv")
 times <- read.csv("../RawData_ReadOnly/KSampleMeanTimes.csv")
 years <- times$Inverted.Year/1000
 T <- max(dat$time)
+times_for_join <- data.frame(time = c(1:T),
+                             years = times$Inverted.Year/1000)
+
+summ_prop_tbl <- dat %>%
+  left_join(times_for_join,by = "time") %>%
+  group_by(time,years,imp) %>%
+  summarise(samp_size = n(),
+            n_male = sum(gender=="Male"),
+            n_female = sum(gender=="Female")) %>%
+  group_by(time,years) %>%
+  summarise(`Sample Size` = min(samp_size),
+            `Number of Males (95% CI)` = paste0(round(median(n_male),2),
+                                    " (",
+                                    round(quantile(n_male,0.025),2),
+                                    ",",
+                                    round(quantile(n_male,0.975),2),
+                                    ")"),
+            `Number of Females (95% CI)` = paste0(round(median(n_female),2),
+                                                " (",
+                                                round(quantile(n_female,0.025),2),
+                                                ",",
+                                                round(quantile(n_female,0.975),2),
+                                                ")")) %>%
+  ungroup() %>%
+  rename(Time = time,Year = years)
+doc <- read_docx()
+ft <- flextable(summ_prop_tbl)
+doc %>%
+  body_add_flextable(ft)
+print(doc, target = "summary_prop_males.docx")
+
+tau_dat <- dat %>%
+  left_join(times_for_join,by = "time") %>%
+  group_by(years,imp) %>%
+  summarise(success = sum(gender == "Male"),
+            failure = sum(gender == "Female"),
+            .groups = "drop") %>%
+  uncount(100) %>%
+  mutate(iter = row_number() %% 100,
+         post_prop = rbeta(n = n(),0.5+success,0.5+failure)) %>%
+  group_by(imp,iter) %>%
+  summarise(tau = cor(years,post_prop,method = "kendall"),
+            .groups = "drop")
+p_tau_prob <- length(which(tau_dat$tau > 0))/10000
+ggplot(tau_dat) +
+  geom_histogram(aes(x=tau)) +
+  xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+  ggtitle("") +
+  geom_vline(aes(xintercept=mean(tau))) +
+  geom_vline(aes(xintercept=0),colour="red",linetype=2)+
+  annotate("text",
+         x = -1,
+         y = Inf,
+         label = sprintf("P(tau > 0) == %.4f", p_tau_prob),
+         parse = TRUE,
+         hjust = 0,
+         vjust = 1.5) +
+  theme_bw(base_size = 12)
+ggsave("../Figures/Figure_3_tau.pdf",width=5,height=3)
+
+dat %>%
+  left_join(times_for_join,by = "time") %>%
+  group_by(years,imp) %>%
+  summarise(prop_male = mean(gender == "Male"),
+            .groups = "drop") %>%
+  group_by(years) %>%
+  mutate(median_prop = median(prop_male)) %>%
+  ggplot(aes(x = prop_male, y = years, group = years)) +
+  stat_density_ridges(quantile_lines = TRUE,quantiles=2,scale = 1.2, rel_min_height = 0.01,alpha=0.3,fill="blue") +
+  xlab("Male Proportion") + ylab("Relative Time of Deposition (1000s of years)") +
+  coord_flip() +
+  theme_bw()
+ggsave("../Figures/Figure_3.pdf",width=8,height=7)
 
 R <- 1000
 
+post_probs <- data.frame(Phenotype = NULL,
+                         Time = NULL,
+                         Value = NULL)
+post_probs_zero <- data.frame(Phenotype = NULL,
+                         Time = NULL,
+                         Value = NULL)
 armor <- c("ds1","ds2","ds3","lps","lpt","mpt","tpg")
 nonarmor <- vars[c(!vars %in% armor)]
-post_probs_armor <- NULL
-post_probs_nonarmor <- NULL
 
-slopes <- NULL
-pvals <- NULL
+means <- NULL
+sds <- NULL
+taus <- NULL
+tau_prob <- NULL
 
-# for (var in vars){
-#   file.remove(paste0("Figures/",var,"/mu_diff.pdf"))
-#   file.remove(paste0("Figures/",var,"/lambda_diff.pdf"))
-#   file.remove(paste0("Figures/",var,"/mu_m.pdf"))
-#   file.remove(paste0("Figures/",var,"/lambda_m.pdf"))
-#   file.remove(paste0("Figures/",var,"/mu_f.pdf"))
-#   file.remove(paste0("Figures/",var,"/lambda_f.pdf"))
-#   file.remove(paste0("Figures/",var,"/beta.pdf"))
-#   file.remove(paste0("Figures/",var,"/gamma.pdf"))
-#   file.remove(paste0("Figures/",var,"/theta.pdf"))
-# }
+means_zero <- NULL
+sds_zero <- NULL
+taus_zero <- NULL
+tau_prob_zero <- NULL
+
+tau_means <- NULL
+tau_probs <- NULL
 
 for (i in 1:length(vars)){
+  print(i)
   phenotype = vars[i]
+  var_dat <- dat %>%
+    select(!ends_with(".sc")) %>%
+    left_join(times_for_join,by = "time") %>%
+    select(years,imp,contains(phenotype)) %>%
+    rename(trait = all_of(phenotype)) %>%
+    group_by(years,imp) %>%
+    summarise(size = n(),
+              xbar = mean(trait),
+              s2 = var(trait),
+              .groups = "drop") %>%
+    uncount(100) %>%
+    mutate(iter = row_number() %% 100,
+           post_var = 1/rgamma(n = n(),
+                             shape = 1 + size/2,
+                             rate = 1 + (size-1)*s2/2 + 0*size/(size + 0)*xbar^2/2))
 
-  if (phenotype == "tpg"){
-    bestDIC = 1
-  } else {
-    bestDIC = 0
-  }
+  var_scat_plot <- var_dat %>%
+    group_by(years) %>%
+    summarise(med = median(post_var),
+              low = quantile(post_var,0.025),
+              upp = quantile(post_var,0.975)) %>%
+    ggplot() +
+    geom_point(aes(x=years,med)) +
+    geom_segment(aes(x=years,xend=years,y=low,yend=upp)) +
+    ylab(expression(s^2)) +
+    xlab("Time") +
+    ggtitle(paste("Posterior sample variance for",phenotype)) +
+    theme_bw(base_size = 12)
 
-  samps <- readRDS(paste0("../Figures/",phenotype,"/posterior_samples_",phenotype,"_",bestDIC,".RDS"))
+  ggsave(paste0("../Figures/SampVarScatterPlots/",phenotype,".pdf"),
+         var_scat_plot,
+         width=5,height=8)
+
+  tau_dat <- var_dat %>%
+    group_by(imp,iter) %>%
+    summarise(tau = cor(years,post_var,method = "kendall"),
+              .groups = "drop")
+  tau_means <- c(tau_means,mean(tau_dat$tau))
+  p_tau_prob <- length(which(tau_dat$tau > 0))/10000
+  tau_probs <- c(tau_probs,p_tau_prob)
+  tau_plot <- ggplot(tau_dat) +
+    geom_histogram(aes(x=tau)) +
+    xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+    ggtitle(phenotype) +
+    geom_vline(aes(xintercept=mean(tau))) +
+    geom_vline(aes(xintercept=0),colour="red",linetype=2)+
+    annotate("text",
+             x = -1,
+             y = Inf,
+             label = sprintf("P(tau > 0) == %.4f", p_tau_prob),
+             parse = TRUE,
+             hjust = 0,
+             vjust = 1.5) +
+    theme_bw(base_size = 12)
+  ggsave(paste0("../Figures/TauHistograms/",phenotype,"SampVar.pdf"),
+        tau_plot,
+        width=5,height=3)
+}
+
+doc <- read_docx()
+ft <- flextable(cbind(vars,round(tau_means,4),tau_probs) %>%
+                  as.data.frame)
+doc %>%
+  body_add_flextable(ft)
+print(doc, target = "summary_table.docx")
+for (i in 1:length(vars)){
+  phenotype = vars[i]
+  samps <- readRDS(paste0("../Figures/posterior_samples_",phenotype,"_0.RDS"))
 
   if (i != 1){
-    samps_stl <- readRDS(paste0("../Figures/stl/posterior_samples_stl_0.RDS"))
+    samps_stl <- readRDS(paste0("../Figures/posterior_samples_stl_0.RDS"))
   }
-
-  if (phenotype == "tpg"){
-    mu_hi <- samps %>% select(contains("mu_hi"))
-    mu_lo <- samps %>% select(contains("mu_lo"))
-    mu_prob <- samps %>% select(contains("mu_prob"))
-  } else if (phenotype == "mds" | phenotype == "mpt"){
-    beta0 <- samps %>% select(matches("beta0.*"))
-    beta1 <- samps %>% select(matches("beta1.*"))
-    u <- samps %>% select(matches("^u\\[.*"))
-    beta0_f <- samps %>% select(matches("beta0\\[1,.*"))
-    beta1_f <- samps %>% select(matches("beta1\\[1,.*"))
-    u_f <- u %>% select(!matches(".*([1][9]|[2-3][0-9]),"))
-    beta0_m <- samps %>% select(matches("beta0\\[2,.*"))
-    beta1_m <- samps %>% select(matches("beta1\\[2,.*"))
-    u_m <- u %>% select(matches(".*([1][9]|[2-3][0-9]),"))
-
-    if (phenotype == "mds"){
-      for (j in 1:4){
-        tmp <- (beta0_f[,j] + rep(years,each = 10000) * beta1_f[,j]) %>% matrix(nrow=10000) +
-          u_f[,1:18 + (j-1)*18]
-        assign(paste0("softmax_f_",j),tmp)
-        tmp <- (beta0_m[,j] + rep(years,each = 10000) * beta1_m[,j]) %>% matrix(nrow=10000) +
-          u_m[,1:18 + (j-1)*18]
-        assign(paste0("softmax_m_",j),tmp)
-      }
-
-      prob_f_1 <- exp(softmax_f_1)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4))
-      prob_f_2 <- exp(softmax_f_2)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4))
-      prob_f_3 <- exp(softmax_f_3)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4))
-      prob_f_4 <- exp(softmax_f_4)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4))
-      prob_m_1 <- exp(softmax_m_1)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4))
-      prob_m_2 <- exp(softmax_m_2)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4))
-      prob_m_3 <- exp(softmax_m_3)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4))
-      prob_m_4 <- exp(softmax_m_4)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4))
-
-      mu_f <- prob_f_2 + 2*prob_f_3 + 3*prob_f_4
-      mu_m <- prob_m_2 + 2*prob_m_3 + 3*prob_f_4
-    } else if (phenotype == "mpt"){
-      for (j in 1:5){
-        tmp <- (beta0_f[,j] + rep(years,each = 10000) * beta1_f[,j]) %>% matrix(nrow=10000) +
-          u_f[,1:18 + (j-1)*18]
-        assign(paste0("softmax_f_",j),tmp)
-        tmp <- (beta0_m[,j] + rep(years,each = 10000) * beta1_m[,j]) %>% matrix(nrow=10000) +
-          u_m[,1:18 + (j-1)*18]
-        assign(paste0("softmax_m_",j),tmp)
-      }
-
-      prob_f_1 <- exp(softmax_f_1)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4) + exp(softmax_f_5))
-      prob_f_2 <- exp(softmax_f_2)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4) + exp(softmax_f_5))
-      prob_f_3 <- exp(softmax_f_3)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4) + exp(softmax_f_5))
-      prob_f_4 <- exp(softmax_f_4)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4) + exp(softmax_f_5))
-      prob_f_5 <- exp(softmax_f_5)/(exp(softmax_f_1) + exp(softmax_f_2) + exp(softmax_f_3) + exp(softmax_f_4) + exp(softmax_f_5))
-      prob_m_1 <- exp(softmax_m_1)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4) + exp(softmax_m_5))
-      prob_m_2 <- exp(softmax_m_2)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4) + exp(softmax_m_5))
-      prob_m_3 <- exp(softmax_m_3)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4) + exp(softmax_m_5))
-      prob_m_4 <- exp(softmax_m_4)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4) + exp(softmax_m_5))
-      prob_m_5 <- exp(softmax_m_5)/(exp(softmax_m_1) + exp(softmax_m_2) + exp(softmax_m_3) + exp(softmax_m_4) + exp(softmax_m_5))
-
-      mu_f <- 3*prob_f_1 + 4*prob_f_2 + 5*prob_f_3 + 6*prob_f_4 + 7*prob_f_5
-      mu_m <- 3*prob_m_1 + 4*prob_m_2 + 5*prob_m_3 + 6*prob_m_4 + 7*prob_m_5
-    }
-  } else {
-    mu <- samps %>% select(contains("mu"))
-  }
+  mu <- samps %>% select(contains("mu"))
+  # }
   if (i != 1){
     mu_stl <- samps_stl %>% select(contains("mu"))
     sigma_stl <- samps_stl %>% select(sigma)
-    if (phenotype == "tpg"){
-      gamma_hi <- samps %>% select(gamma_hi)
-      gamma_lo <- samps %>% select(gamma_lo)
-    } else if (phenotype != "mds" & phenotype != "mpt"){
+    if (phenotype != "mds" & phenotype != "mpt"){
       gamma <- samps %>% select(gamma)
     }
   }
@@ -137,14 +211,9 @@ for (i in 1:length(vars)){
   if (phenotype == "mav" | phenotype == "mcv"){
     mu_f <- exp(mu[,1:T] + as.data.frame(rep(gamma,18)) * mu_stl[,1:T] + as.data.frame(rep((gamma*sigma_stl)^2,18))/2)
     mu_m <- exp(mu[,(T+1):(2*T)] + as.data.frame(rep(gamma,18)) * mu_stl[,(T+1):(2*T)] + as.data.frame(rep((gamma*sigma_stl)^2,18))/2)
-  } else if (phenotype == "mdf" | phenotype == "maf"){
+  } else if (substr(phenotype,1,1) == "m"){
     mu_f <- exp(mu[,1:T])
     mu_m <- exp(mu[,(T+1):(2*T)])
-  } else if (phenotype == "tpg"){
-    mu_f <- (mu_hi[,1:T] + as.data.frame(rep(gamma_hi,18)) * mu_stl[,1:T]) * invlogit(mu_prob[,1:T]) +
-      (mu_lo[,1:T]  + as.data.frame(rep(gamma_lo,18)) * mu_stl[,1:T]) * (1 - invlogit(mu_prob[,1:T]))
-    mu_m <- mu_hi[,(T+1):(2*T)] * invlogit(mu_prob[,(T+1):(2*T)]) +
-      mu_lo[,(T+1):(2*T)] * (1 - invlogit(mu_prob[,(T+1):(2*T)]))
   } else if (i  %in% c(2:10)){
     mu_f <- mu[,1:T] + as.data.frame(rep(gamma,18)) * mu_stl[,1:T]
     mu_m <- mu[,(T+1):(2*T)] + as.data.frame(rep(gamma,18)) * mu_stl[,(T+1):(2*T)]
@@ -154,290 +223,176 @@ for (i in 1:length(vars)){
   }
 
   mu_diff_med <- apply(mu_m - mu_f,2,median)
+  mu_diff_low <- apply(mu_m - mu_f,2,quantile,0.025)
+  mu_diff_upp <- apply(mu_m - mu_f,2,quantile,0.975)
 
-  # if(i > 10){
-  #   mu_diff <- exp(mu_diff)
-  # }
-
-  # mulab <- if (i <= 10){
-  #   ylab(expression(paste(mu[mt],"-",mu[ft])))
-  # } else {
-  #   ylab(expression(paste(lambda[mt],"-",lambda[ft])))
-  # }
-
-  # mu_flab <- if (i <= 10){
-  #   xlab(expression(mu[ft]))
-  # } else {
-  #   xlab(expression(lambda[ft]))
-  # }
-  #
-  # mu_mlab <- if (i <= 10){
-  #   xlab(expression(mu[mt]))
-  # } else {
-  #   xlab(expression(lambda[mt]))
-  # }
-
-  # best_model <- case_when(bestDIC == 0 ~ "OU - Trend",
-  #                         bestDIC == 1 ~ "No OU - Trend",
-  #                         bestDIC == 2 ~ "OU - No Trend",
-  #                         bestDIC == 3 ~ "No OU - No Trend")
-
-  plot_dat <- data.frame(years,
-                    mu_diff_med)
-  lin_mod <- lm(mu_diff_med ~ years,plot_dat)
-  curr_plot <- ggplot(plot_dat,aes(x=years,y=mu_diff_med)) +
+  curr_plot <- ggplot() +
     geom_point(aes(x=years,mu_diff_med)) +
-    geom_smooth(method="lm",se=FALSE) +
-    # geom_hline(aes(yintercept = 0),colour = "red",linetype=2) +
+    geom_segment(aes(x=years,xend=years,y=mu_diff_low,yend=mu_diff_upp)) +
     ylab(expression(paste(mu[mt],"-",mu[ft]))) +
     xlab(expression(t)) +
-    ggtitle(paste(phenotype,": ",
-                   expression(beta[1])," = ",
-                   summary(lin_mod)$coefficients[2,1] %>% signif(4),
-                   ", p = ",
-                   summary(lin_mod)$coefficients[2,4] %>% signif(4))) +
-    theme_bw()
+    ggtitle(paste(phenotype)) +
+    geom_hline(aes(yintercept=0),colour = "red",linetype=2) +
+    theme_bw(base_size = 12)
 
-  if (max(plot_dat$mu_diff_med) > 0 & min(plot_dat$mu_diff_med) < 0){
-    final_plot <- curr_plot +
-      geom_hline(aes(yintercept = 0),colour = "red",linetype=2)
-  } else if (max(plot_dat$mu_diff_med) < 0 & min(plot_dat$mu_diff_med) > 0){
-    final_plot <- curr_plot +
-      geom_hline(aes(yintercept = 0),colour = "red",linetype=2)
-  } else {
-    final_plot <- curr_plot
+  if (phenotype == "pmx"){
+    dat_pmx_curr <- data.frame(years=years,
+                               mu_diff_med=mu_diff_med,
+                               mu_diff_low=mu_diff_low,
+                               mu_diff_upp=mu_diff_upp)
+    fig_4ai <- ggplot(dat_pmx_curr) +
+      geom_point(aes(x=years,mu_diff_med)) +
+      geom_segment(aes(x=years,xend=years,y=mu_diff_low,yend=mu_diff_upp)) +
+      ylab(expression(paste(mu[mt],"-",mu[ft]))) +
+      xlab("Relative Time of Deposition (1000s of years)") +
+      ggtitle("Premaxilla length (A)") +
+      geom_hline(aes(yintercept=0),colour = "red",linetype=2) +
+      theme_bw(base_size = 12)
+  } else if (phenotype == "tpg"){
+    dat_tpg_curr <- data.frame(years=years,
+                               mu_diff_med=mu_diff_med,
+                               mu_diff_low=mu_diff_low,
+                               mu_diff_upp=mu_diff_upp)
+    fig_4bi <- ggplot(dat_tpg_curr) +
+      geom_point(aes(x=years,mu_diff_med)) +
+      geom_segment(aes(x=years,xend=years,y=mu_diff_low,yend=mu_diff_upp)) +
+      ylab(expression(paste(mu[mt],"-",mu[ft]))) +
+      xlab("Relative Time of Deposition (1000s of years)") +
+      ggtitle("Pelvic girdle length (C)") +
+      geom_hline(aes(yintercept=0),colour = "red",linetype=2) +
+      theme_bw(base_size = 12)
+  } else if (phenotype == "ds2"){
+    dat_ds2_curr <- data.frame(years=years,
+                               mu_diff_med=mu_diff_med,
+                               mu_diff_low=mu_diff_low,
+                               mu_diff_upp=mu_diff_upp)
+    fig_4ci <- ggplot(dat_ds2_curr) +
+      geom_point(aes(x=years,mu_diff_med)) +
+      geom_segment(aes(x=years,xend=years,y=mu_diff_low,yend=mu_diff_upp)) +
+      ylab(expression(paste(mu[mt],"-",mu[ft]))) +
+      xlab("Relative Time of Deposition (1000s of years)") +
+      ggtitle("Dorsal spine 2 length (E)") +
+      geom_hline(aes(yintercept=0),colour = "red",linetype=2) +
+      theme_bw(base_size = 12)
+  } else if (phenotype == "mcv"){
+    dat_mcv_curr <- data.frame(years=years,
+                               mu_diff_med=mu_diff_med,
+                               mu_diff_low=mu_diff_low,
+                               mu_diff_upp=mu_diff_upp)
+    fig_4di <- ggplot(dat_mcv_curr) +
+      geom_point(aes(x=years,mu_diff_med)) +
+      geom_segment(aes(x=years,xend=years,y=mu_diff_low,yend=mu_diff_upp)) +
+      ylab(expression(paste(mu[mt],"-",mu[ft]))) +
+      xlab("Relative Time of Deposition (1000s of years)") +
+      ggtitle("Caudal vert. count (G)") +
+      geom_hline(aes(yintercept=0),colour = "red",linetype=2) +
+      theme_bw(base_size = 12)
   }
 
-  ggsave(paste0("../Figures/SD_Figures/",phenotype,".pdf"),
-         final_plot,
-         width=5,height=8)
+  means <- c(means,mean(apply(mu_m - mu_f,1,mean)))
+  sds <- c(sds,var(apply(mu_m - mu_f,1,mean)) + mean(apply(mu_m - mu_f,1,var)))
+  tau_inter <- sapply(1:10000,function(r){cor(years,unlist(mu_m[r,] - mu_f[r,]),method="kendall")})
+  taus <- c(taus,mean(tau_inter))
+  tau_prob <- c(tau_prob,length(which(tau_inter > 0))/10000)
+  p_tau <- mean(tau_inter > 0)
+    tau_plot <- ggplot() +
+      geom_histogram(aes(x=tau_inter)) +
+      xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+      ggtitle(phenotype) +
+      geom_vline(aes(xintercept=mean(tau_inter))) +
+      geom_vline(aes(xintercept=0),colour="red",linetype=2) +
+      geom_text(
+        aes(
+          x = -1,
+          y = Inf,
+          label = sprintf("P(tau > 0) == %.4f", p_tau)
+        ),
+        parse = TRUE,
+        hjust = 0,
+        vjust = 1.5
+      ) +
+      theme_bw(base_size = 12)
 
-  slopes <- c(slopes,summary(lm(mu_diff_med ~ years,plot_dat))$coefficients[2,1])
-  pvals <- c(pvals,summary(lm(mu_diff_med ~ years,plot_dat))$coefficients[2,4])
+    if (phenotype == "pmx"){
+      dat_pmx_tau <-  data.frame(tau_inter=tau_inter)
+      p_tau_pmx <- p_tau
+      fig_4aii <- ggplot(dat_pmx_tau) +
+        geom_histogram(aes(x=tau_inter)) +
+        xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+        ggtitle("Premaxilla length (B)") +
+        geom_vline(aes(xintercept=mean(tau_inter))) +
+        geom_vline(aes(xintercept=0),colour="red",linetype=2)+
+        annotate("text",
+                 x = -1,
+                 y = Inf,
+                 label = sprintf("P(tau > 0) == %.4f", p_tau_pmx),
+                 parse = TRUE,
+                 hjust = 0,
+                 vjust = 1.5) +
+        theme_bw(base_size = 12)
+    } else if (phenotype == "tpg"){
+      dat_tpg_tau <-  data.frame(tau_inter=tau_inter)
+      p_tau_tpg <- p_tau
+      fig_4bii <- ggplot(dat_tpg_tau) +
+        geom_histogram(aes(x=tau_inter)) +
+        xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+        ggtitle("Pelvic girdle length (D)") +
+        geom_vline(aes(xintercept=mean(tau_inter))) +
+        geom_vline(aes(xintercept=0),colour="red",linetype=2)+
+        annotate("text",
+                 x = -1,
+                 y = Inf,
+                 label = sprintf("P(tau > 0) == %.4f", p_tau_tpg),
+                 parse = TRUE,
+                 hjust = 0,
+                 vjust = 1.5) + theme_bw(base_size = 12)
+    } else if (phenotype == "ds2"){
+      dat_ds2_tau <-  data.frame(tau_inter=tau_inter)
+      p_tau_ds2 <- p_tau
+      fig_4cii <- ggplot(dat_ds2_tau) +
+        geom_histogram(aes(x=tau_inter)) +
+        xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+        ggtitle("Dorsal spine 2 length (F)") +
+        geom_vline(aes(xintercept=mean(tau_inter))) +
+        geom_vline(aes(xintercept=0),colour="red",linetype=2)+
+        annotate("text",
+                 x = -1,
+                 y = Inf,
+                 label = sprintf("P(tau > 0) == %.4f", p_tau_ds2),
+                 parse = TRUE,
+                 hjust = 0,
+                 vjust = 1.5) + theme_bw(base_size = 12)
+    } else if (phenotype == "mcv"){
+      dat_mcv_tau <-  data.frame(tau_inter=tau_inter)
+      p_tau_mcv <- p_tau
+      fig_4dii <- ggplot(dat_mcv_tau) +
+        geom_histogram(aes(x=tau_inter)) +
+        xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+        ggtitle("Caudal vert. count (H)") +
+        geom_vline(aes(xintercept=mean(tau_inter))) +
+        geom_vline(aes(xintercept=0),colour="red",linetype=2)+
+        annotate("text",
+                 x = -1,
+                 y = Inf,
+                 label = sprintf("P(tau > 0) == %.4f", p_tau_mcv),
+                 parse = TRUE,
+                 hjust = 0,
+                 vjust = 1.5) + theme_bw(base_size = 12)
+    }
 
-  # names(mu_f) <- c(1:18)
-  # as.data.frame(mu_f) %>%
-  #   gather("Time","Value") %>%
-  #   mutate(Time = as.numeric(Time)) %>%
-  #   ggplot(aes(x=Value,y=Time,group=Time)) +
-  #   geom_density_ridges(fill="red",alpha=0.5) +
-  #   scale_y_reverse() +
-  #   mu_flab +
-  #   ylab(expression(t)) +
-  #   theme_bw()
-  # if (i <= 10){
-  #   ggsave(paste0("Figures/",phenotype,"/mu_f.pdf"),width=5,height=8)
-  # } else {
-  #   ggsave(paste0("Figures/",phenotype,"/lambda_f.pdf"),width=5,height=8)
-  # }
-  #
-  # names(mu_m) <- c(1:18)
-  # as.data.frame(mu_m) %>%
-  #   gather("Time","Value") %>%
-  #   mutate(Time = as.numeric(Time)) %>%
-  #   ggplot(aes(x=Value,y=Time,group=Time)) +
-  #   geom_density_ridges(fill="blue",alpha=0.5) +
-  #   scale_y_reverse() +
-  #   mu_mlab +
-  #   ylab(expression(t)) +
-  #   theme_bw()
-  # if (i <= 10){
-  #   ggsave(paste0("Figures/",phenotype,"/mu_m.pdf"),width=5,height=8)
-  # } else {
-  #   ggsave(paste0("Figures/",phenotype,"/lambda_m.pdf"),width=5,height=8)
-  # }
-
-#   if (i >=2 & i <= 10){
-#     samps %>%
-#       rename(beta = paste0("beta_",phenotype))%>%
-#       select(beta) %>%
-#       ggplot() +
-#       geom_density(aes(x=beta)) +
-#       geom_vline(aes(xintercept = 0),colour = "red",linetype=2) +
-#       theme_bw() +
-#       xlab(expression(beta[g])) +
-#       ylab(expression(paste("p(",beta[g],"|",bold(X),")")))
-#     ggsave(paste0("Figures/",phenotype,"/beta.pdf"),width=5,height=8)
-#   }
-#   if (phenotype == "mav"){
-#     samps %>%
-#       rename(beta = paste0("beta_",phenotype))%>%
-#       select(beta) %>%
-#       ggplot() +
-#       geom_density(aes(x=beta)) +
-#       geom_vline(aes(xintercept = 0),colour = "red",linetype=2) +
-#       theme_bw() +
-#       xlab(expression(beta[g])) +
-#       ylab(expression(paste("p(",beta[g],"|",bold(X),")")))
-#     ggsave(paste0("Figures/",phenotype,"/beta.pdf"),width=5,height=8)
-#   }
-#   if (phenotype == "mcv"){
-#     samps %>%
-#       rename(beta = paste0("beta_",phenotype))%>%
-#       select(beta) %>%
-#       ggplot() +
-#       geom_density(aes(x=beta)) +
-#       geom_vline(aes(xintercept = 0),colour = "red",linetype=2) +
-#       theme_bw() +
-#       xlab(expression(beta[g])) +
-#       ylab(expression(paste("p(",beta[g],"|",bold(X),")")))
-#     ggsave(paste0("Figures/",phenotype,"/beta.pdf"),width=5,height=8)
-#   }
-# }
-#
-  # if (phenotype %in% armor){
-  #   post_probs_armor <- cbind(post_probs_armor,
-  #                         apply(mu_diff,2,function(x){length(which(x > 0))/length(x)}))
-  # } else {
-  #   post_probs_nonarmor <- cbind(post_probs_nonarmor,
-  #                            apply(mu_diff,2,function(x){length(which(x > 0))/length(x)}))
-  # }
-
-
-# for (i in 1:length(armor)){
-#   if (substr(armor[i],1,1) == "m"){
-#     mu <- samps %>% select(contains(paste0("lambda_",armor[i])))
-#   } else {
-#     mu <- samps %>% select(contains(paste0("mu_",armor[i])))
-#   }
-#   mu_f <- mu[,1:T]
-#   mu_m <- mu[,(T+1):(2*T)]
-#
-#   mu_diff <- mu_m - mu_f
-#
-#   if (i == 1){
-#     probs <- apply(mu_diff,2,function(x){length(which(x > 0))/length(x)})
-#   } else {
-#     probs <- cbind(probs,
-#              apply(mu_diff,2,function(x){length(which(x > 0))/length(x)}))
-#   }
-# }
-#
-# colnames(probs) <- armor
-# as.data.frame(probs) %>%
-#   gather("Phenotype","Value") %>%
-#   mutate(Time = rep(1:T,length(armor))) %>%
-#   ggplot() +
-#   geom_line(aes(x=Time,y=Value,linetype=Phenotype,colour=Phenotype)) +
-#   theme_bw() +
-#   ylab(expression(paste("P(",mu[mt],"-",mu[ft],"|",bold(y),")")))
-# ggsave(paste0("Figures/post_probs_armor.pdf"),width=5,height=8)
-#
-# for (i in 1:length(nonarmor)){
-#   if (substr(nonarmor[i],1,1) == "m"){
-#     mu <- samps %>% select(contains(paste0("lambda_",nonarmor[i])))
-#   } else {
-#     mu <- samps %>% select(contains(paste0("mu_",nonarmor[i])))
-#   }
-#   mu_f <- mu[,1:T]
-#   mu_m <- mu[,(T+1):(2*T)]
-#
-#   mu_diff <- mu_m - mu_f
-#
-#   if (i == 1){
-#     probs <- apply(mu_diff,2,function(x){length(which(x > 0))/length(x)})
-#   } else {
-#     probs <- cbind(probs,
-#                    apply(mu_diff,2,function(x){length(which(x > 0))/length(x)}))
-#   }
+    gridExtra::grid.arrange(curr_plot,tau_plot,nrow=2) %>%
+    ggsave(paste0("../Figures/",phenotype,"_supplemental.pdf"),
+             .,
+             width=8.5,height=11)
 }
-#
-# colnames(post_probs_armor) <- armor
-# as.data.frame(post_probs_armor) %>%
-#   gather("Phenotype","Value") %>%
-#   mutate(Time = rep(1:T,length(armor))) %>%
-#   ggplot() +
-#   geom_line(aes(x=Time,y=Value,linetype=Phenotype,colour=Phenotype)) +
-#   theme_bw() +
-#   ylab(expression(paste("P(",mu[mt],"-",mu[ft],"|",bold(y),")")))
-# ggsave(paste0("Figures/post_probs_armor.pdf"),width=5,height=8)
-#
-# colnames(post_probs_nonarmor) <- nonarmor
-# as.data.frame(post_probs_nonarmor) %>%
-#   gather("Phenotype","Value") %>%
-#   mutate(Time = rep(1:T,length(nonarmor))) %>%
-#   ggplot() +
-#   geom_line(aes(x=Time,y=Value,linetype=Phenotype,colour=Phenotype)) +
-#   theme_bw() +
-#   ylab(expression(paste("P(",mu[mt],"-",mu[ft],"|",bold(y),")")))
-# ggsave(paste0("Figures/post_probs_nonarmor.pdf"),width=5,height=8)
-#
-# for (i in 1:length(cont_w_zeros)){
-#   phenotype = cont_w_zeros[i]
-#
-#   bestDIC = mods_zeros[i]
-#
-#   samps <- readRDS(paste0("Figures/",phenotype,"/posterior_samples_",phenotype,"prob_",bestDIC,".RDS"))
-#   samps_stl <- readRDS(paste0("Figures/stl/posterior_samples_stl_",mods[1],".RDS"))
-#
-#   N <- nrow(samps)
-#
-#   mu <- samps %>% select(contains("mu"))
-#
-#   mu_stl <- samps_stl %>% select(contains("mu"))
-#   sigma_stl <- samps_stl %>% select(sigma)
-#   gamma <- samps %>% select(gamma)
-#
-#   p <- sapply(1:N,function(i){
-#     stl_sim <- matrix(rnorm(R*2*T,as.vector(unlist(mu_stl[1,])),sigma_stl[1,]),ncol=2*T,byrow=TRUE)
-#     apply(invlogit(matrix(unlist(mu[i,]),nrow=R,ncol=2*T,byrow=TRUE) + gamma[i,1] * stl_sim),2,mean)
-#   })
-#
-#   p <- 1 - p
-#
-#   p_f <- p[1:T,]
-#   p_m <- p[(T+1):(2*T),]
-#
-#   p_diff <- p_m - p_f
-#
-#   plab <- xlab(expression(paste(p[mt],"-",p[ft])))
-#
-#   rownames(p_diff) <- c(1:18)
-#   rownames(p_m) <- c(1:18)
-#   rownames(p_f) <- c(1:18)
-#
-#   as.data.frame(t(p_diff)) %>%
-#     gather("Time","Value") %>%
-#     mutate(Time = as.numeric(Time)) %>%
-#     ggplot(aes(x=Value,y=Time,group=Time)) +
-#     geom_density_ridges(fill="blue",alpha=0.5) +
-#     scale_y_reverse() +
-#     geom_vline(aes(xintercept = 0),colour = "red",linetype=2) +
-#     plab +
-#     ylab(expression(t)) +
-#     ggtitle(paste0(phenotype,": ",best_model)) +
-#     theme_bw()
-#   ggsave(paste0("Figures/",phenotype,"/p_diff.pdf"),width=5,height=8)
-#
-#   as.data.frame(t(p_m)) %>%
-#     gather("Time","Value") %>%
-#     mutate(Time = as.numeric(Time)) %>%
-#     ggplot(aes(x=Value,y=Time,group=Time)) +
-#     geom_density_ridges(fill="blue",alpha=0.5) +
-#     scale_y_reverse() +
-#     xlab(expression(paste(p[mt]))) +
-#     ylab(expression(t)) +
-#     ggtitle(paste0(phenotype,": ",best_model)) +
-#     theme_bw()
-#   ggsave(paste0("Figures/",phenotype,"/p_m.pdf"),width=5,height=8)
-#
-#   as.data.frame(t(p_f)) %>%
-#     gather("Time","Value") %>%
-#     mutate(Time = as.numeric(Time)) %>%
-#     ggplot(aes(x=Value,y=Time,group=Time)) +
-#     geom_density_ridges(fill="red",alpha=0.5) +
-#     scale_y_reverse() +
-#     xlab(expression(paste(p[ft]))) +
-#     ylab(expression(t)) +
-#     ggtitle(paste0(phenotype,": ",best_model)) +
-#     theme_bw()
-#   ggsave(paste0("Figures/",phenotype,"/p_f.pdf"),width=5,height=8)
-# }
+gridExtra::grid.arrange(fig_4ai,fig_4aii,fig_4bi,fig_4bii,fig_4ci,fig_4cii,fig_4di,fig_4dii,nrow=4) %>%
+  ggsave(filename="../Figures/Figure_4.pdf",width=11,height=14)
+
 for (i in 1:length(cont_w_zeros)){
   phenotype = cont_w_zeros[i]
 
-  samps <- readRDS(paste0("../Figures/",phenotype,"/posterior_samples_",phenotype,"prob_0.RDS"))
-  samps_stl <- readRDS(paste0("../Figures/stl/posterior_samples_stl_0.RDS"))
+  samps <- readRDS(paste0("../Figures/posterior_samples_",phenotype,"prob_0.RDS"))
+  samps_stl <- readRDS(paste0("../Figures/posterior_samples_stl_0.RDS"))
 
   N <- nrow(samps)
 
@@ -457,37 +412,79 @@ for (i in 1:length(cont_w_zeros)){
   p_m <- p[(T+1):(2*T),]
 
   p_diff_med <- apply(p_m - p_f,1,median)
+  p_diff_low <- apply(p_m - p_f,1,quantile,0.025)
+  p_diff_upp <- apply(p_m - p_f,1,quantile,0.975)
 
-  plot_dat <- data.frame(years,
-                         p_diff_med)
-  lin_mod <- lm(p_diff_med ~ years,plot_dat)
-  curr_plot <- ggplot(plot_dat,aes(x=years,y=p_diff_med)) +
+  post_probs_zero <- rbind(post_probs_zero,
+                      data.frame(Phenotype = rep(phenotype,18),
+                                 Time = years,
+                                 Value = apply(p_m - p_f,1,function(x){length(which(x > 0))/length(x)})))
+
+
+  curr_plot <- ggplot() +
     geom_point(aes(x=years,p_diff_med)) +
-    geom_smooth(method="lm",se=FALSE) +
-    # geom_hline(aes(yintercept = 0),colour = "red",linetype=2) +
+    geom_segment(aes(x=years,xend=years,y=p_diff_low,yend=p_diff_upp)) +
     ylab(expression(paste(p[mt],"-",p[ft]))) +
     xlab(expression(t)) +
-    ggtitle(paste0(phenotype,": ",
-                   expression(beta[1])," = ",
-                   summary(lin_mod)$coefficients[2,1] %>% signif(4),
-                   ", p = ",
-                   summary(lin_mod)$coefficients[2,4] %>% signif(4))) +
+    ggtitle(paste(phenotype)) +
+    geom_hline(aes(yintercept=0),colour = "red",linetype=2) +
     theme_bw()
 
-  if (max(plot_dat$p_diff_med) > 0 & min(plot_dat$p_diff_med) < 0){
-    final_plot <- curr_plot +
-      geom_hline(aes(yintercept = 0),colour = "red",linetype=2)
-  } else if (max(plot_dat$p_diff_med) < 0 & min(plot_dat$p_diff_med) > 0){
-    final_plot <- curr_plot +
-      geom_hline(aes(yintercept = 0),colour = "red",linetype=2)
-  } else {
-    final_plot <- curr_plot
-  }
+  p_m_diff_med <- apply(p_m,1,median)
+  p_m_diff_low <- apply(p_m,1,quantile,0.025)
+  p_m_diff_upp <- apply(p_m,1,quantile,0.975)
 
-  ggsave(paste0("../Figures/SD_Figures/",phenotype,"_prob_zero.pdf"),
-         final_plot,
-         width=5,height=8)
+  p_f_diff_med <- apply(p_f,1,median)
+  p_f_diff_low <- apply(p_f,1,quantile,0.025)
+  p_f_diff_upp <- apply(p_f,1,quantile,0.975)
 
-  slopes <- c(slopes,summary(lm(p_diff_med ~ years,plot_dat))$coefficients[2,1])
-  pvals <- c(pvals,summary(lm(p_diff_med ~ years,plot_dat))$coefficients[2,4])
+  p_dat <- data.frame(years = rep(years,2),
+                      sex = factor(rep(c("Males","Females"),each=T),
+                                   levels = c("Males","Females")),
+                      p_med = c(p_m_diff_med,p_f_diff_med),
+                      p_low = c(p_m_diff_low,p_f_diff_low),
+                      p_upp = c(p_m_diff_upp,p_f_diff_upp))
+  curr_sep_plot <- ggplot(p_dat) +
+    geom_point(aes(x=years,p_med)) +
+    geom_segment(aes(x=years,xend=years,y=p_low,yend=p_upp)) +
+    facet_wrap(~sex) +
+    ylab(expression(p)) +
+    xlab(expression(t)) +
+    ggtitle(paste(phenotype)) +
+    theme_bw()
+
+  curr_sep_plot %>%
+    ggsave(paste0("../Figures/",phenotype,"_supplemental_zero_mvf.pdf"),
+           .,
+           width=8.5,height=11)
+
+  means_zero <- c(means_zero,mean(apply(p_m - p_f,1,mean)))
+  sds_zero <- c(sds_zero,var(apply(p_m - p_f,1,mean)) + mean(apply(p_m - p_f,1,var)))
+  tau_inter <- sapply(1:10000,function(r){cor(years,unlist(p_m[,r] - p_f[,r]),method="kendall")})
+  taus_zero <- c(taus_zero,mean(tau_inter))
+  tau_prob_zero <- c(tau_prob_zero,length(which(tau_inter > 0))/10000)
+  p_tau <- mean(tau_inter > 0)
+  tau_plot <- ggplot() +
+    geom_histogram(aes(x=tau_inter)) +
+    xlab(expression(tau)) + ylab("") + xlim(-1,1) +
+    ggtitle(phenotype) +
+    geom_vline(aes(xintercept=mean(tau_inter))) +
+    geom_vline(aes(xintercept=0),colour="red",linetype=2)+
+    geom_text(
+      aes(
+        x = -1,
+        y = Inf,
+        label = sprintf("P(tau > 0) == %.4f", p_tau)
+      ),
+      parse = TRUE,
+      hjust = 0,
+      vjust = 1.5
+    ) + theme_bw()
+
+  gridExtra::grid.arrange(curr_plot,tau_plot,nrow=2) %>%
+    ggsave(paste0("../Figures/",phenotype,"_supplemental_zero.pdf"),
+           .,
+           width=8.5,height=11)
+
+
 }

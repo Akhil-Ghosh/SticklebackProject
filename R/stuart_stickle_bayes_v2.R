@@ -4,13 +4,13 @@ library(rstan)
 library(ggridges)
 library(bayesplot)
 
-dat <- read.csv("Data/updated_stickle_imputations_100.csv")
-times <- read.csv("RawData_ReadOnly/KSampleMeanTimes.csv")
+dat <- read.csv("../Data/updated_stickle_imputations_100_20250904.csv")
+times <- read.csv("../RawData_ReadOnly/KSampleMeanTimes.csv")
 times$time <- c(1:18)
 dat <- dat %>% left_join(times %>% select(time,Inverted.Year))
 dat$Inverted.Year <- dat$Inverted.Year/1000
 dat$group <- factor(paste(dat$gender,letters[dat$time]))
-
+dat$mds <- dat$mds + 1
 cont <- "
 data{
   int<lower=0> N;
@@ -85,12 +85,11 @@ model{
   gamma ~ normal(0,5);
 }
 "
-
 cont_zeros <- "
 data{
   int<lower=0> N;
   int<lower=0> T;
-  int<lower=0,upper=1> y;
+  int<lower=0,upper=1> y[N];
   vector[N] stl;
   matrix[N,2*T] X;
   vector[T] time;
@@ -153,13 +152,7 @@ model{
   gamma ~ normal(0,5);
 }
 "
-
 disc <- "
-function{
-  real genpoiss_lpmf(int y, real lambda_1, real lambda_2){
-
-  }
-}
 data{
   int<lower=0> N;
   int<lower=0> T;
@@ -215,15 +208,15 @@ transformed parameters{
     lambda = exp(X * mu + gamma * stl);
   }
 
-  real alpha = -(exp(phi) + max(-lambda ./ y)) / (1 + exp(phi));
+  real alpha = (exp(phi) + min(lambda ./ y)/(-1 + min(lambda ./ y))) / (1 + exp(phi));
 }
 
 model{
 // Data Model
   for (i in 1:N){
-    target += log(lambda[i]) +
-              (y[i] - 1) * log(lambda[i] + alpha * y[i]) -
-              (lambda[i] + alpha * y[i]);
+    target += (y[i] - 1) * log((1-alpha) * lambda[i] + alpha * y[i]) -
+              ((1-alpha) * lambda[i] + alpha * y[i])  +
+              log((1-alpha) * lambda[i]);
   }
 
   // OU Process for Gender and Time Specific Means
@@ -267,10 +260,13 @@ T <- max(dat$time)
 time <- times$Inverted.Year/1000
 Delta <- diff(times$Inverted.Year)/1000
 
-for (mod in 0:3){
-  #for (var in vars){
-  for (var in vars[substr(vars,1,1) == "m"]){
+init_values_disc <- list(
+  beta0_f = 0, beta0_m = 0, beta1_f = 0, beta1_m = 0,
+  kappa = 0, gamma = 0
+)
 
+for (mod in 0:0){
+  for (var in vars){
     samps <- NULL
     samps_prob <- NULL
     y <- matrix(dat[,var],ncol=M)
@@ -323,10 +319,10 @@ for (mod in 0:3){
         samps <- rbind(samps,as.data.frame(fit))
       } else if (var %in% cont_w_zeros){
         fit <- sampling(stan_cont,
-                        list(N=length(delta),T=T,X=X[y[,m] != 0,],
+                        list(N=length(which(y[,m] != 0)),T=T,X=X[y[,m] != 0,],
                              y=y[y[,m] != 0,m],stl=stl[y[,m] != 0,m],
                              time=time,Delta=Delta,
-                             ind=1,mod=mod),
+                             ind=0,mod=mod),
                         iter=1500,chains=1,warmup=1000,thin=5,
                         pars = c("beta0_f","beta0_m",
                                  "beta1_f","beta1_m",
@@ -336,9 +332,9 @@ for (mod in 0:3){
         samps <- rbind(samps,as.data.frame(fit))
         fit_prob <- sampling(stan_cont_zeros,
                             list(N=N,T=T,X=X,
-                                 y=delta[,m],stl=stl,
+                                 y=delta[,m],stl=stl[,m],
                                  time=time,Delta=Delta,
-                                 ind=1,mod=mod),
+                                 ind=0,mod=mod),
                             iter=1500,chains=1,warmup=1000,thin=5,
                             pars = c("beta0_f","beta0_m",
                                      "beta1_f","beta1_m",
@@ -361,10 +357,10 @@ for (mod in 0:3){
         samps <- rbind(samps,as.data.frame(fit))
       }
     }
-    samps_name <- paste0("Figures/",var,"/posterior_samples_",var,"_",mod,".RDS")
+    samps_name <- paste0("../Figures/",var,"/posterior_samples_",var,"_",mod,".RDS")
     saveRDS(samps,file=samps_name)
     if(var %in% cont_w_zeros){
-      samps_prob_name <- paste0("Figures/",var,"/posterior_samples_",var,"prob_",mod,".RDS")
+      samps_prob_name <- paste0("../Figures/",var,"/posterior_samples_",var,"prob_",mod,".RDS")
       saveRDS(samps_prob,file=samps_prob_name)
     }
   }
