@@ -1,6 +1,6 @@
 ---
 title: "StickleImputationCode"
-author: "Akhil Ghosh"
+author: "Anonymous"
 output: html_document
 ---
 
